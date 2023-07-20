@@ -1,0 +1,26 @@
+highlighter: rouge
+permalink: /blog/:year/:month/:day/:title/
+environment: prod
+domain: "ntwalibas.github.io"
+url: "http://ntwalibas.github.io"
+baseurl: "ntwalibas.github.io"
+
+future: false
+show_drafts: false
+
+plugins:
+  # - jekyll-scholar
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-katex
+  - jekyll-toc
+katex:
+  js_path: "assets"  # Path used to search for katex.min.js
+  rendering_options:
+    # Default KaTeX rendering options. See https://github.com/Khan/KaTeX#rendering-options
+    throw_error: false      # throwOnError - set to false if you want rendering to output error as text rather than a build error
+    error_color: "#cc0000"  # errorColor
+toc:
+  min_level: 1
+  max_level: 3
+  ordered_list: false
