@@ -13,7 +13,19 @@ def circuit():
     qml.S(wires = 0)
     return qml.counts(qml.PauliY(0))
 
+@qml.qnode(dev)
+def custom_circuit():
+    # Prepare the state
+    qml.Hadamard(wires = 0)
+    qml.S(wires = 0)
+    
+    # Perform a change of basis
+    qml.adjoint(qml.S(wires = 0))
+    qml.Hadamard(wires = 0)
+
+    # Measure in standard basis
+    return qml.counts(qml.PauliZ(0))
 
 if __name__ == "__main__":
-    results = circuit()
+    results = custom_circuit()
     print(results)
