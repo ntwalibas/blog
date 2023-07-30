@@ -22,6 +22,7 @@ group :jekyll_plugins do
 	gem "jekyll-feed"
 	gem "jekyll-katex"
 	gem "jekyll-toc"
+	gem "jekyll-spaceship"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem

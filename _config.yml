@@ -12,10 +12,11 @@ plugins:
   - jekyll-feed
   - jekyll-katex
   - jekyll-toc
+  - jekyll-spaceship
 katex:
   js_path: "assets"  # Path used to search for katex.min.js
   rendering_options:
-    throw_error: false
+    throw_error: true
     error_color: "#cc0000"
 toc:
   min_level: 1
