@@ -3,29 +3,48 @@ from pennylane import numpy as np
 
 dev = qml.device(
     "default.qubit",
-    wires = 1,
+    wires = 2,
     shots = 10000
 )
 
 @qml.qnode(dev)
 def circuit():
+    qml.PauliX(wires = 0)
     qml.Hadamard(wires = 0)
-    qml.S(wires = 0)
-    return qml.counts(qml.PauliY(0))
+    qml.PauliX(wires = 1)
+    return qml.counts(qml.PauliX(0)), qml.counts(qml.PauliZ(1))
+    return qml.counts()
+    
+    # return qml.expval(qml.PauliX(0))
+    # return qml.expval(qml.PauliZ(1))
 
 @qml.qnode(dev)
-def custom_circuit():
-    # Prepare the state
-    qml.Hadamard(wires = 0)
-    qml.S(wires = 0)
-    
-    # Perform a change of basis
-    qml.adjoint(qml.S(wires = 0))
-    qml.Hadamard(wires = 0)
+def circuit2():
+    qml.PauliX(wires = 0)
+    qml.PauliX(wires = 1)
+    qml.Hadamard(wires = 1)
+    return qml.counts(qml.PauliZ(0) @ qml.PauliX(1))
 
-    # Measure in standard basis
-    return qml.counts(qml.PauliZ(0))
+@qml.qnode(dev)
+def circuit2p():
+    qml.PauliX(wires = 0)
+    qml.PauliX(wires = 1)
+    qml.Hadamard(wires = 1)
+    qml.Hadamard(wires = 1)
+    return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
+
+@qml.qnode(dev)
+def circuit3():
+    qml.Hadamard(wires=0)
+    qml.CNOT(wires=[0, 1])
+    return qml.counts(qml.PauliZ(0)), qml.counts(qml.PauliZ(1))
+
+@qml.qnode(dev)
+def circuit4():
+    qml.Hadamard(wires=0)
+    qml.CNOT(wires=[0, 1])
+    return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
 
 if __name__ == "__main__":
-    results = custom_circuit()
+    results = circuit4()
     print(results)
