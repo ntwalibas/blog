@@ -44,7 +44,7 @@ We will adopt the following notation for those matrices.
 - Identity $I$ matrix:
 {% katexmm %}
 $$
-\sigma_i = I =
+\sigma^{(i)} = I =
 \begin{bmatrix}
 1 & 0 \\
 0 & 1
@@ -55,7 +55,7 @@ $$
 - Pauli $X$ matrix:
 {% katexmm %}
 $$
-\sigma_x = X =
+\sigma^{(x)} = X =
 \begin{bmatrix}
 0 & 1 \\
 1 & 0
@@ -66,7 +66,7 @@ $$
 - Pauli $Y$ matrix:
 {% katexmm %}
 $$
-\sigma_y = Y =
+\sigma^{(y)} = Y =
 \begin{bmatrix}
 0 & -i \\
 i & 0
@@ -77,7 +77,7 @@ $$
 - Pauli $Z$ matrix:
 {% katexmm %}
 $$
-\sigma_z = Z =
+\sigma^{(z)} = Z =
 \begin{bmatrix}
 1 & 0 \\
 0 & -1
@@ -94,7 +94,7 @@ $$
     matrices can either be gates or observables.
     And the way they are handled in code depends on whether one
     is dealing with a gate or an observable.<br>
-    For instance, as a gate the Pauli matrix $\sigma_x$ will appear
+    For instance, as a gate the Pauli matrix $\sigma^{(x)}$ will appear
     exactly as it is in both code and equations.
     But as an observable, it will appear as the matrix above
     in equations but will be translated to a Hadamard gate in code.
@@ -129,10 +129,15 @@ the current quantum computing landscape.
 ### Theoretical tools
 The reader is expected to know the following mathematics:
 1. Finding the eigenvalues and eigenvectors of an operator.
+2. Basic operations on matrices.
+3. Kronecker product, especially using the mixed-product property.
 
-The reader is also expected to know the following physics:
-1. The measurement postulate, specifically projective measurements.
-We will provide a review of the relevant mathematics nonetheless.
+The reader is also expected to know the following basic quantum theory:
+1. Quantum states as rays in Hilbert space.
+2. Quantum gates that evolve quantum states.
+
+A review of the measurement postulate will be provided
+so it is not a prerequisite.
 
 ### Software tools
 We will use Pennylane from Xanadu to run code we write.
@@ -253,24 +258,24 @@ probabilities but not much else beside that.
     form a <i>complete</i> basis. This means that we can express
     any state in the corresponding space as a linear combination
     of the eigenvectors of that Hermitian operator.<br>
-    For example the $\sigma_z$ observable, being a Hermitian operator,
+    For example the $\sigma^{(z)}$ observable, being a Hermitian operator,
     has eigenvectors $\ket{0} = \begin{bmatrix}0\\1\end{bmatrix}$ and
     $\ket{1} = \begin{bmatrix}1\\0\end{bmatrix}$.<br>
     Consequently every one qubit state can be written as
     $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$.
-    States written using the eigenvectors of $\sigma_z$ are said to be
-    written in the <i>standard basis</i> or simply in the $\sigma_z$ basis.<br>
+    States written using the eigenvectors of $\sigma^{(z)}$ are said to be
+    written in the <i>standard basis</i> or simply in the $\sigma^{(z)}$ basis.<br>
     (It is called standard basis because it maps to classical binary,
     which is the standard for classical computing.)<br><br>
-    Similarly the $\sigma_x$ observable has eigenvectors
+    Similarly the $\sigma^{(x)}$ observable has eigenvectors
     $\ket{+} = \dfrac{1}{\sqrt{2}}\begin{bmatrix}1\\1\end{bmatrix}$ and
     $\ket{-} = \dfrac{1}{\sqrt{2}}\begin{bmatrix}1\\-1\end{bmatrix}$.<br>
     Therefore every one qubit state can also be written as
     $\ket{\psi} = c_0 \ket{+} + c_1 \ket{-}$.
-    States written using the eigenvectors of $\sigma_x$ are said to be
-    written in the <i>Hadamard basis</i> or the simply in the $\sigma_x$ basis.<br>
-    (It is called the Hadamard basis because the eigenvectors of $\sigma_x$ are
-    obtained by applying the Hadamard gate to eigenvectors of $\sigma_z$.)<br><br>
+    States written using the eigenvectors of $\sigma^{(x)}$ are said to be
+    written in the <i>Hadamard basis</i> or the simply in the $\sigma^{(x)}$ basis.<br>
+    (It is called the Hadamard basis because the eigenvectors of $\sigma^{(x)}$ are
+    obtained by applying the Hadamard gate to eigenvectors of $\sigma^{(z)}$.)<br><br>
     <b>However, we will find it convenient most of the time to work
     in the standard basis.</b><br><br>
     So performing a measurement in the standard basis is equivalent
@@ -292,15 +297,15 @@ about can be expressed as a linear combination of Pauli
 matrices and the identity matrix.<br>
 **Therefore we only need to learn how to measure Pauli matrices.**
 
-#### Measurement of $\sigma_z$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
-We begin by find the eigenvalues and eigenvectors of $\sigma_z$
+#### Measurement of $\sigma^{(z)}$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
+We begin by find the eigenvalues and eigenvectors of $\sigma^{(z)}$
 then use equation $(2)$ to calculate the probabilities.
 
 * **Eigenvalues**:<br>
 {% katexmm %}
 $$
 \begin{align}
-    \det\begin{vmatrix} \sigma_z - \lambda \sigma_i \end{vmatrix} &= 0 \\
+    \det\begin{vmatrix} \sigma^{(z)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
     \implies
     \det\begin{vmatrix}
         \begin{bmatrix}
@@ -314,14 +319,14 @@ $$
 $$
 {% endkatexmm %}
 
-The eigenvalues of $\sigma_z$ are $\lambda_0 = +1$ and $\lambda_1 = -1$.
+The eigenvalues of $\sigma^{(z)}$ are $\lambda_0 = +1$ and $\lambda_1 = -1$.
 
 * **Eigenvectors**:<br>
     * *Eigenvector corresponding to eigenvalue $\lambda_0 = +1$*
         {% katexmm %}
         $$
         \begin{align}
-            \sigma_z \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
+            \sigma^{(z)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
             \implies
             \begin{bmatrix}
             1 & 0 \\
@@ -371,7 +376,7 @@ The eigenvalues of $\sigma_z$ are $\lambda_0 = +1$ and $\lambda_1 = -1$.
         {% katexmm %}
         $$
         \begin{align}
-            \sigma_z \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
+            \sigma^{(z)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
             \implies
             \begin{bmatrix}
             1 & 0 \\
@@ -457,21 +462,21 @@ $$
 {% endkatexmm %}
 
 We conclude then that the circuit to perform a measurement
-of the $\sigma_z$ observable given a state $\psi$ is as follows:
+of the $\sigma^{(z)}$ observable given a state $\psi$ is as follows:
 
 <div class='figure'>
     <img src='/assets/images/vqe/z-measurement.png'
-         style='width: 30%; height: auto; display: block; margin: 0 auto'/>
+         style='width: 20%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
-        <span class='caption-label'>Measurement of the $\sigma_z$ observable:</span>
+        <span class='caption-label'>Measurement of the $\sigma^{(z)}$ observable:</span>
         since the identity $I$ acts on the state $\ket{\psi}$ we need not do
         anything, we just measure directly.
     </div>
 </div>
 
 * **Code for performing the measurement**<br>
-We prepare the state $\ket{\psi} = RY(\dfrac{\pi}{2})\ket{0}$ and measure
-the $\sigma_z$ observable with respect to that state.
+We prepare the state $\ket{\psi} = RY(^\pi/_2)\ket{0}$ and measure
+the $\sigma^{(z)}$ observable with respect to that state.
 $RY$ is a rotation about the $Y$ axis.
 
 <div class='figure' markdown='1'>
@@ -489,6 +494,7 @@ dev = qml.device(
 def circuit(y: float):
     # Prepare the state against which to measure
     qml.RY(y, wires = 0)
+
     # Get the frequencies for each eigenvalue of the Z observable
     return qml.counts(qml.PauliZ(0))
 
@@ -497,28 +503,28 @@ if __name__ == "__main__":
     print(results)
 {% endhighlight %}
 <div class='caption'>
-    <span class='caption-label'>Measurent of the $\sigma_z$ observable:</span>
-    we prepare the state $\ket{\psi} = RY(\dfrac{\pi}{2})$
-    as a generic example, any will do.
+    <span class='caption-label'>Measurent of the $\sigma^{(z)}$ observable:</span>
+    we prepare the state $\ket{\psi} = RY(^\pi/_2)\ket{0}$
+    as a generic example, any state would do.
 </div>
 </div>
 
-Note that if we prepared eigenvectors of $\sigma_z$
+Note that if we prepared eigenvectors of $\sigma^{(z)}$
 we will obtain eigenvalues with $100\%$ probability.
 That is if we prepare the $\ket{0}$ state, we will obtain
 eigenvalue $+1$ with $100\%$ probability.<br>
 Equivalently, if we prepare $\ket{1}$, we will obtain
 eigenvalue $-1$ with $100\%$ probability.
 
-#### Measurement of $\sigma_y$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
-As with the $\sigma_z$ observable, we find the eigenvalues
+#### Measurement of $\sigma^{(y)}$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
+As with the $\sigma^{(z)}$ observable, we find the eigenvalues
 and eigenvectors.
 
 * **Eigenvalues**:<br>
 {% katexmm %}
 $$
 \begin{align}
-    \det\begin{vmatrix} \sigma_y - \lambda \sigma_i \end{vmatrix} &= 0 \\
+    \det\begin{vmatrix} \sigma^{(y)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
     \implies
     \det\begin{vmatrix}
         \begin{bmatrix}
@@ -532,14 +538,14 @@ $$
 $$
 {% endkatexmm %}
 
-The eigenvalues of $\sigma_y$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
+The eigenvalues of $\sigma^{(y)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
 
 * **Eigenvectors**:<br>
     * *Eigenvector corresponding to eigenvalue $\lambda_+ = +1$*
         {% katexmm %}
         $$
         \begin{align}
-            \sigma_z \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
+            \sigma^{(y)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
             \implies
             \begin{bmatrix}
             0 & -i \\
@@ -583,13 +589,13 @@ The eigenvalues of $\sigma_y$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
 
         Thus $\ket{\lambda_+} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ i \end{bmatrix}$.
         This eigenvector is also written as $\ket{+i} = \ket{\lambda_+}$.
-        Expressed in the $\sigma_z$ basis, $\ket{+i} = \dfrac{1}{\sqrt{2}}(\ket{0} + \ket{1})$.
+        Expressed in the $\sigma^{(z)}$ basis, $\ket{+i} = \dfrac{1}{\sqrt{2}}(\ket{0} + i\ket{1})$.
     
     * *Eigenvector corresponding to eigenvalue $\lambda_- = -1$*
         {% katexmm %}
         $$
         \begin{align}
-            \sigma_z \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
+            \sigma^{(y)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
             \implies
             \begin{bmatrix}
             0 & -i \\
@@ -631,9 +637,9 @@ The eigenvalues of $\sigma_y$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
         from which it follows that $c_1 = \dfrac{1}{\sqrt{2}}$.
         Consequently $c_1 = -\dfrac{i}{\sqrt{2}}$.
 
-        Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ i \end{bmatrix}$.
+        Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -i \end{bmatrix}$.
         This eigenvector is also written as $\ket{-i} = \ket{\lambda_-}$.
-        Expressed in the $\sigma_z$ basis, $\ket{-i} = \dfrac{1}{\sqrt{2}}(\ket{0} - \ket{1})$.
+        Expressed in the $\sigma^{(z)}$ basis, $\ket{-i} = \dfrac{1}{\sqrt{2}}(\ket{0} - i\ket{1})$.
 
 * **Measurement with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$**<br>
 We calculate only the probability of obtaining eigenvalue $+1$ given the state
@@ -647,11 +653,11 @@ $$
     &= \lvert (c_0 \ket{0} + c_1 \ket{1})\ket{+i}\rvert^{2} \\
     &= \lvert c_0 \braket{0\\|+i} + c_1 \braket{1\\|+i} \rvert^{2} \\
     &= \left\lvert c_0 \left(\bra{0} \left(\dfrac{1}{\sqrt{2}} (\ket{0} + i\ket{1})\right)\right)
-    + c_1 \left(\bra{1} \left(\dfrac{1}{\sqrt{2}} (\ket{0} - i\ket{1})\right)\right) \right\rvert^{2} \\
+    + c_1 \left(\bra{1} \left(\dfrac{1}{\sqrt{2}} (\ket{0} + i\ket{1})\right)\right) \right\rvert^{2} \\
     &= \left\lvert \dfrac{c_0}{\sqrt{2}}\left( \braket{0\\|0} \right)
-    + \dfrac{-ic_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
-    &= \left\lvert \dfrac{c_0}{\sqrt{2}} - \dfrac{ic_1}{\sqrt{2}} \right\rvert^{2} \\
-    &= \dfrac{1}{2} \lvert c_0 - ic_1 \rvert^{2} \\
+    + \dfrac{ic_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
+    &= \left\lvert \dfrac{c_0}{\sqrt{2}} + \dfrac{ic_1}{\sqrt{2}} \right\rvert^{2} \\
+    &= \dfrac{1}{2} \lvert c_0 + ic_1 \rvert^{2} \\
     &= \dfrac{1}{2} \left(\sqrt{c_{0}^{2} + c_{1}^{2}}\right)^{2} \\
     &= \dfrac{c_{0}^{2} + c_{1}^{2}}{2}
 \end{align}
@@ -688,24 +694,24 @@ $$
 {% endkatexmm %}
 
 We conclude then that the circuit to perform a measurement
-of the $\sigma_y$ observable given a state $\psi$ is as follows:
+of the $\sigma^{(y)}$ observable given a state $\psi$ is as follows:
 
 <div class='figure'>
     <img src='/assets/images/vqe/y-measurement.png'
          style='width: 30%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
-        <span class='caption-label'>Measurement of the $\sigma_y$ observable:</span>
-        we need to perform a basis change from the $\sigma_z$ basis to the $\sigma_y$
+        <span class='caption-label'>Measurement of the $\sigma^{(y)}$ observable:</span>
+        we need to perform a basis change from the $\sigma^{(z)}$ basis to the $\sigma^{(y)}$
         basis using $HS^\dagger$ then perform a standard measurement in the
-        $\sigma_z$ basis. We will get eigenvectors in the $\sigma_z$ basis
+        $\sigma^{(z)}$ basis. We will get eigenvectors in the $\sigma^{(z)}$ basis
         but the probabilities will correspond to measurements of the
-        eigenvectors of $\sigma_y$.
+        eigenvalues of $\sigma^{(y)}$.
     </div>
 </div>
 
 * **Code for performing the measurement**<br>
 We prepare the state $\ket{\psi} = H\ket{0}$ and measure
-the $\sigma_y$ observable with respect to that state.
+the $\sigma^{(y)}$ observable with respect to that state.
 
 <div class='figure' markdown='1'>
 {% highlight python %}
@@ -720,31 +726,412 @@ dev = qml.device(
 
 @qml.qnode(dev)
 def circuit():
+    """Measurement of the Y observable
+    using facilities provided by Pennylane.
+    """
+    # Prepare the state
     qml.Hadamard(wires = 0)
+
+    # Perform the measurement
     return qml.counts(qml.PauliY(0))
 
+@qml.qnode(dev)
+def custom_circuit():
+    """Custom circuit to measure the Y observable.
+    We need to perform a change of basis then
+    do a measurement in the standard basis
+    as by the circuit above.
+    """
+    # Prepare the state
+    qml.Hadamard(wires = 0)
+    
+    # Perform a change of basis
+    qml.adjoint(qml.S(wires = 0))
+    qml.Hadamard(wires = 0)
+
+    # Measure in standard basis
+    return qml.counts(qml.PauliZ(0))
 
 if __name__ == "__main__":
     results = circuit()
     print(results)
 {% endhighlight %}
 <div class='caption'>
-    <span class='caption-label'>Measurement of the $\sigma_y$ observable:</span>
+    <span class='caption-label'>Measurement of the $\sigma^{(y)}$ observable:</span>
     we prepare the state $\ket{\psi} = H\ket{0}$. We note that we obtain
     eigenvalue $+1$ with appromixately $0.5$ probablity and same
     for eigenvalue $-1$. It is easy to verify that this corresponds
-    to theoretical predictions.
+    to theoretical predictions.<br>
+    Also, note that <code>custom_circuit</code> and <code>circuit</code>
+    provide the same results. In the first case, we use the formula derived.
+    In the second case, we let Pennylane do it for us.
 </div>
 </div>
 
-Note that if we prepared eigenvectors of $\sigma_y$
+Note that if we prepared eigenvectors of $\sigma^{(y)}$
 we will obtain eigenvalues with $100\%$ probability.
 That is if we prepare the $\ket{+i} = SH\ket{0}$ state,
 we will obtain eigenvalue $+1$ with $100\%$ probability.<br>
 Equivalently, if we prepare $\ket{-i} = SH\ket{1}$,
 we will obtain eigenvalue $-1$ with $100\%$ probability.
 
-#### Example 2: measurement of $\sigma_x \otimes \sigma_i + \sigma_i \otimes \sigma_z$
+#### Measurement of $\sigma^{(x)}$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
+As with the $\sigma^{(y)}$ observable, we find the eigenvalues
+and eigenvectors.
+
+* **Eigenvalues**:<br>
+{% katexmm %}
+$$
+\begin{align}
+    \det\begin{vmatrix} \sigma^{(x)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
+    \implies
+    \det\begin{vmatrix}
+        \begin{bmatrix}
+        -\lambda & 1 \\
+        1 & -\lambda
+        \end{bmatrix}
+    \end{vmatrix} &= 0 \\
+    \implies \lambda^{2}-1 &= 0 \\
+    \implies \lambda &= \pm 1
+\end{align}
+$$
+{% endkatexmm %}
+
+The eigenvalues of $\sigma^{(x)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
+
+* **Eigenvectors**:<br>
+    * *Eigenvector corresponding to eigenvalue $\lambda_+ = +1$*
+        {% katexmm %}
+        $$
+        \begin{align}
+            \sigma^{(x)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
+            \implies
+            \begin{bmatrix}
+            0 & 1 \\
+            1 & 0
+            \end{bmatrix}
+            \begin{bmatrix}
+            c_0 \\
+            c_1
+            \end{bmatrix}
+            &=
+            \begin{bmatrix}
+            c_0 \\
+            c_1
+            \end{bmatrix} \\
+            \implies
+            \begin{bmatrix}
+            c_1 \\
+            c_0
+            \end{bmatrix}
+            &=
+            \begin{bmatrix}
+            c_0 \\
+            c_1
+            \end{bmatrix} \\
+            \implies
+            \begin{cases}
+            c_1 &= c_0 \\
+            c_0 &= c_1
+            \end{cases}
+        \end{align}
+        $$
+        {% endkatexmm %}
+
+        Using $c_1 = c_0$, we transform $\ket{\lambda_+}$ as follows:
+        $\ket{\lambda_+} = \begin{bmatrix}c_0 & c_0\end{bmatrix}^\intercal$
+
+        Using the normalization condition,
+        we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
+        from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
+        Consequently $c_1 = \dfrac{1}{\sqrt{2}}$.
+
+        Thus $\ket{\lambda_+} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix}$.
+        This eigenvector is also written as $\ket{+} = \ket{\lambda_+}$.
+        Expressed in the $\sigma^{(z)}$ basis, $\ket{+} = \dfrac{1}{\sqrt{2}}(\ket{0} + \ket{1})$.
+    
+    * *Eigenvector corresponding to eigenvalue $\lambda_- = -1$*
+        {% katexmm %}
+        $$
+        \begin{align}
+            \sigma^{(x)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
+            \implies
+            \begin{bmatrix}
+            0 & 1 \\
+            1 & 0
+            \end{bmatrix}
+            \begin{bmatrix}
+            c_0 \\
+            c_1
+            \end{bmatrix}
+            &=
+            \begin{bmatrix}
+            -c_0 \\
+            -c_1
+            \end{bmatrix} \\
+            \implies
+            \begin{bmatrix}
+            c_1 \\
+            c_0
+            \end{bmatrix}
+            &=
+            \begin{bmatrix}
+            -c_0 \\
+            -c_1
+            \end{bmatrix} \\
+            \implies
+            \begin{cases}
+            c_1 &= -c_0 \\
+            c_0 &= -c_1
+            \end{cases}
+        \end{align}
+        $$
+        {% endkatexmm %}
+
+        Using $c_0 = -c_1$, we transform $\ket{\lambda_-}$ as follows:
+        $\ket{\lambda_-} = \begin{bmatrix}c_0 & -c_0\end{bmatrix}^\intercal$
+
+        Using the normalization condition,
+        we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_0|^2=1$
+        from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
+        Consequently $c_1 = -\dfrac{1}{\sqrt{2}}$.
+
+        Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1\end{bmatrix}$.
+        This eigenvector is also written as $\ket{-} = \ket{\lambda_-}$.
+        Expressed in the $\sigma^{(z)}$ basis, $\ket{-} = \dfrac{1}{\sqrt{2}}(\ket{0} - \ket{1})$.
+
+* **Measurement with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$**<br>
+We calculate only the probability of obtaining eigenvalue $+1$ given the state
+$\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$. The calculation for eigenvalue
+$-1$ is similar and left as an exercise.
+
+{% katexmm %}
+$$
+\begin{align}
+    p(+1) &= \lvert\braket{\psi\\|+}\rvert^{2} \\
+    &= \lvert (c_0 \ket{0} + c_1 \ket{1})\ket{+}\rvert^{2} \\
+    &= \lvert c_0 \braket{0\\|+} + c_1 \braket{1\\|+} \rvert^{2} \\
+    &= \left\lvert c_0 \left(\bra{0} \left(\dfrac{1}{\sqrt{2}} (\ket{0} + \ket{1})\right)\right)
+    + c_1 \left(\bra{1} \left(\dfrac{1}{\sqrt{2}} (\ket{0} - \ket{1})\right)\right) \right\rvert^{2} \\
+    &= \left\lvert \dfrac{c_0}{\sqrt{2}}\left( \braket{0\\|0} \right)
+    - \dfrac{c_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
+    &= \left\lvert \dfrac{c_0}{\sqrt{2}} - \dfrac{c_1}{\sqrt{2}} \right\rvert^{2} \\
+    &= \dfrac{1}{2} \lvert c_0 - c_1 \rvert^{2} \\
+    &= \dfrac{1}{2} \left(\sqrt{c_{0}^{2} + c_{1}^{2}}\right)^{2} \\
+    &= \dfrac{c_{0}^{2} + c_{1}^{2}}{2}
+\end{align}
+$$
+{% endkatexmm %}
+
+* **Quantum circuit for performing the measurement**<br>
+The measurement of $+1$ corresponds to the use of the projector
+$P_+ = \ket{+}\bra{+}$. Therefore we have:
+
+{% katexmm %}
+$$
+\begin{align}
+    p(+1) &= \bra{\psi}P_+\ket{\psi} \\
+    &= \braket{\psi\\|+}\braket{+\\|\psi} \\
+    &= \braket{\psi\\|H\\|0}\braket{0\\|H\\|\psi} \\
+    &= \lvert \braket{0\\|H\\|\psi} \rvert^{2} \\
+\end{align}
+$$
+{% endkatexmm %}
+
+Similarly, the measurement of $-1$ corresponds to the use of the projector
+$P_- = \ket{-}\bra{-}$ leading to:
+
+{% katexmm %}
+$$
+\begin{align}
+    p(+1) &= \bra{\psi}P_-\ket{\psi} \\
+    &= \braket{\psi\\|-}\braket{-\\|\psi} \\
+    &= \braket{\psi\\|H\\|1}\braket{1\\|H\\|\psi} \\
+    &= \lvert \braket{1\\|H\\|\psi} \rvert^{2} \\
+\end{align}
+$$
+{% endkatexmm %}
+
+We conclude then that the circuit to perform a measurement
+of the $\sigma^{(x)}$ observable given a state $\psi$ is as follows:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/x-measurement.png'
+         style='width: 30%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Measurement of the $\sigma^{(x)}$ observable:</span>
+        we need to perform a basis change from the $\sigma^{(x)}$ basis to the $\sigma^{(x)}$
+        basis using $H$ then perform a standard measurement in the
+        $\sigma^{(z)}$ basis. We will get eigenvectors in the $\sigma^{(z)}$ basis
+        but the probabilities will correspond to measurements of the
+        eigenvalues of $\sigma^{(x)}$.
+    </div>
+</div>
+
+* **Code for performing the measurement**<br>
+We prepare the state $\ket{\psi} = X\ket{0}$ and measure
+the $\sigma^{(x)}$ observable with respect to that state.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+from pennylane import numpy as np
+
+dev = qml.device(
+    "default.qubit",
+    wires = 1,
+    shots = 10000
+)
+
+@qml.qnode(dev)
+def circuit():
+    """Measurement of the Y observable
+    using facilities provided by Pennylane.
+    """
+    # Prepare the state
+    qml.PauliX(wires = 0)
+
+    # Perform the measurement
+    return qml.counts(qml.PauliX(0))
+
+@qml.qnode(dev)
+def custom_circuit():
+    """Custom circuit to measure the X observable.
+    We need to perform a change of basis then
+    do a measurement in the standard basis
+    as by the circuit above.
+    """
+    # Prepare the state
+    qml.PauliX(wires = 0)
+    
+    # Perform a change of basis
+    qml.Hadamard(wires = 0)
+
+    # Measure in standard basis
+    return qml.counts(qml.PauliZ(0))
+
+if __name__ == "__main__":
+    results = circuit()
+    print(results)
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>Measurement of the $\sigma^{(x)}$ observable:</span>
+    we prepare the state $\ket{\psi} = \sigma^{(x)} \ket{0}$. We note that we obtain
+    eigenvalue $+1$ with appromixately $0.5$ probablity and same
+    for eigenvalue $-1$. It is easy to verify that this corresponds
+    to theoretical predictions.<br>
+    Also, note that <code>circuit</code> and <code>custom_circuit</code>
+    provide the same results. In the first case, we use facilities provided by
+    PennyLane. In the second case, we use the derived circuit.
+</div>
+</div>
+
+Note that if we prepared eigenvectors of $\sigma^{(x)}$
+we will obtain eigenvalues with $100\%$ probability.
+That is if we prepare the $\ket{+} = H\ket{0}$ state,
+we will obtain eigenvalue $+1$ with $100\%$ probability.<br>
+Equivalently, if we prepare $\ket{-} = H\ket{1}$,
+we will obtain eigenvalue $-1$ with $100\%$ probability.
+
+#### Multi-qubits measurement: measurement of $H = \sigma^{(x)} \otimes \sigma^{(z)}$
+In order to perform measurements on multiple qubits,
+we only need to perform a change of basis on each qubit
+individually as dictated by the form of the Hamiltonian.
+
+Let us justify this: we will only consider the case of two qubits
+though the procedure can be proven for an arbitrary number of qubits.
+
+Consider a generic 2-qubits Hamiltonian of the form $H = \sigma^{(m)} \otimes \sigma^{(n)}$,
+where $n, m \in \\{i, x, y, z\\}$.
+We would like to know how to find the probabilities corresponding
+to the eigenvalues of $H$.
+
+First, we find the projectors:
+
+{% katexmm %}
+$$
+\begin{align}
+    H &= \sum_i \lambda^{(m)}_i P^{(m)}_i \otimes \sum_j \lambda^{(n)}_j P^{(n)}_j \\
+    &= \sum_{i,j} \lambda^{(m)}_i \cdot \lambda^{(n)}_j \left(P^{(m)}_i \otimes P^{(n)}_j\right) \\
+    &= \sum_r \lambda_r P_r
+\end{align}
+$$
+{% endkatexmm %}
+
+Where we set $\lambda_r = \lambda^{(m)}_i \cdot \lambda^{(n)}_j$
+and $P_r = P^{(m)}_i \otimes P^{(n)}_j$.
+
+In general, if $H = \bigotimes_{k} \sigma_{k}^{(l)}$ with $l \in \\{i, x, y, z\\}$
+then we have:
+
+{% katexmm %}
+$$
+H = \sum_{r=0}^{2^k-1} \left(\prod_{k} \lambda_r^{(k)} \bigotimes_{k} P^{(k)}_r\right)
+$$
+{% endkatexmm %}
+
+From the equation above, we conclude that the projectors of $H$
+are $\bigotimes_{k} P^{(k)}_r$.
+
+Then, we find the probability of measuring an arbitrary eigenvalue $\lambda_r$.
+Again, we only make the derivation for the 2-qubits case and make a general
+statement for the multiple-qubits case:
+
+{% katexmm %}
+$$
+\begin{align}
+    p(\lambda_r) &= \bra{\psi} P_r \ket{\psi} \\
+    &= \bra{\psi} (P_r^{(m)} \otimes P_r^{(n)}) \ket{\psi} \\
+    &= \bra{\psi} \left(\ket{m}\bra{m} \otimes \ket{n}\bra{n}\right) \ket{\psi} &P_r^{(\star)} = \ket{\star}\bra{\star} \\
+    &= \bra{\psi} \left((\overbrace{G_m\ket{0_m}}^{A}\overbrace{\bra{0_m}G_m^\dagger}^{B}) \otimes
+    (\overbrace{G_n\ket{0_n}}^{C}\overbrace{\bra{0_n}G_n^\dagger}^{D}) \right) \ket{\psi} &\ket{\star}=G_\star\ket{0_\star} \\
+    &= \bra{\psi} \left( (\overbrace{G_m}^{A'}\overbrace{\ket{0_m}}^{B'} \otimes \overbrace{G_n}^{C'}\overbrace{\ket{0_n}}^{D'})
+    (\overbrace{\bra{0_m}}^{A'}\overbrace{G_m^\dagger}^{B'} \otimes \overbrace{\bra{0_n}}^{C'}\overbrace{G_n^\dagger}^{D'}) \right) \ket{\psi}
+    &(AB)\otimes(CD)=(A\otimes C)(B\otimes D) \\
+    &= \Big( \bra{\psi} (G_m \otimes G_n) (\ket{0_m} \otimes \ket{0_n})\Big)\Big((\bra{0_m} \otimes \bra{0_n}) (G_m^\dagger \otimes G_n^\dagger) \ket{\psi} \Big)
+    &(A'B')\otimes(C'D')=(A'\otimes C')(B'\otimes D') \\
+    &= \lvert \bra{0_m0_n} G_m^\dagger \otimes G_n^\dagger \ket{\psi} \rvert^2
+\end{align}
+$$
+{% endkatexmm %}
+
+The choice $\ket{\star} = G_\star \ket{0_ \star}$ is arbitrary.
+It could have been $\ket{\star}=G_\star\ket{1_\star}$ and the result would
+still be similar. In fact, the reader is encouraged to do that calculation.
+
+The main point is that given a 2-qubits state $\ket{\psi}$
+we just need to apply the gate $G_m^\dagger$ to the first qubit
+and the gate $G_n^\dagger$ to the second
+qubit then measure in the standard basis.
+
+In general, given a multi-qubits Hamiltonian with spectral decomposition
+$H = \sum_{r=0}^{2^k-1} \left(\prod_{k} \lambda_r^{(k)} \bigotimes_{k} P^{(k)}_r\right)$
+where $P^{(k)} = G_k\ket{0_k}\bra{0_k}G_k^\dagger$, the probability of measuring
+eigenvalue $\lambda_r = \prod_k \lambda_r^{(k)}$ is given by:
+
+{% katexmm %}
+$$
+p(\lambda_r) = \Bigg\lvert \bra{\star}^{\otimes k} \Big(\bigotimes_k G_k^{\dagger}\Big) \ket{\psi} \Bigg\rvert^2
+$$
+{% endkatexmm %}
+
+Where $\bra{\star} = \bra{0}$ or $\bra{\star} = \bra{1}$.
+
+We therefore conclude that the circuit to perform a measurement
+of the $H = \bigotimes_{k} \sigma_{k}^{(l)}$ observable
+given a state $\ket{\psi}$ is given by the circuit that follows:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/generalized-measurements.png'
+         style='width: 30%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Measurement of the
+        $H= \bigotimes_{k} \sigma_{k}^{(l)}$ observable:</span>
+        even though only three wires/qubits are shown, the state
+        $\ket{\psi}^{\otimes k}$ is built from $k$ qubits,
+        whence the dashed lines.
+    </div>
+</div>
 
 ### Expectation values
 From equation $(2)$ we note that measurements in quantum mechanics are
@@ -818,10 +1205,10 @@ $$
 $$
 {% endkatexmm %}
 
-**Example 1: expectation value of $\sigma_x$ with respect to $\ket{\psi}$**
+**Example 1: expectation value of $\sigma^{(x)}$ with respect to $\ket{\psi}$**
 
 **Example 2: expectation value of**
-**$\sigma_x \otimes \sigma_i + \sigma_i \otimes \sigma_z$**
+**$\sigma^{(x)} \otimes \sigma^{(i)} + \sigma^{(i)} \otimes \sigma^{(z)}$**
 **with respect to $\ket{\psi}$**
 
 ### The variational method
@@ -932,10 +1319,10 @@ Let us work through a couple of examples where we try to find
 their ground state energies. We have calculated those energies
 before, now we use VQE to find the same.
 
-**Example 1: ground state energy of $\sigma_x$**
+**Example 1: ground state energy of $\sigma^{(x)}$**
 
 **Example 2: ground state energy of**
-**$\sigma_x \otimes \sigma_i + \sigma_i \otimes \sigma_z$**
+**$\sigma^{(x)} \otimes \sigma^{(i)} + \sigma^{(i)} \otimes \sigma^{(z)}$**
 
 ## Ansatz design
 
