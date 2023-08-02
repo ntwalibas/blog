@@ -57,6 +57,12 @@ def circuit6():
     # qml.Hadamard(wires = 0)
     return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
 
+@qml.qnode(dev)
+def circuit7():
+    qml.PauliX(wires = 0)
+    qml.PauliX(wires = 1)
+    return qml.counts(qml.PauliZ(0))
+
 if __name__ == "__main__":
-    results = circuit6()
+    results = circuit7()
     print(results)

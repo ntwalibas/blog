@@ -1263,6 +1263,85 @@ if __name__ == "__main__":
 </div>
 </div>
 
+* **Example 2: measurement of $H = \sigma^{(z)} \otimes \sigma^{(i)}$**<br>
+For our second example, we will measure $H = \sigma^{(z)} \otimes \sigma^{(i)}$
+with respect to one of its ground states.
+
+The eigenvalues and eigenvectors are calculated as before and are found to be:
+
+1. Eigenvalue $-1$ has eigenvectors:
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1 & 0 & 0\end{bmatrix}^\intercal$
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal$
+
+2. Eigenvalue $+1$ has eigenvectors:
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & 0 & 0\end{bmatrix}^\intercal$
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 1 & 1\end{bmatrix}^\intercal$
+
+We will prepare $\ket{\psi} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal = \ket{11}$
+and measure $H$ against that state.
+
+The circuit that prepares $\ket{\psi}$ and measures $H$ against that
+state is in the figure that follows:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/zi-groundstate.png'
+         style='width: 45%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Measurement of $H = \sigma^{(z)} \otimes \sigma^{(i)}$
+        against the state $\ket{\psi} = \ket{11}$:</span>
+        we need only measure the first qubit. This is equivalent
+        to measuring both qubits in the standard basis.
+    </div>
+</div>
+
+The code that follows implements the figure above.
+Notice how we don't tensor $\sigma^{(z)}$ with $\sigma^{(i)}$
+in the code. We just perform a measurement on the first qubit.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+from pennylane import numpy as np
+
+dev = qml.device(
+    "default.qubit",
+    wires = 1,
+    shots = 10000
+)
+
+@qml.qnode(dev)
+def circuit():
+    """Measurement of the ZI observable
+    using facilities provided by Pennylane.
+    """
+    # Prepare the state
+    qml.PauliX(wires = 0)
+    qml.PauliX(wires = 1)
+
+    # Perform the measurement
+    return qml.counts(qml.PauliZ(0))
+
+if __name__ == "__main__":
+    print(circuit())
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>Measurement of $H$:</span>
+    We only to measure the first qubit when handed a Hamiltonian
+    where there is a tensor with the identity.
+</div>
+</div>
+
+<div class='figure figure-alert' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Exercise
+    </div>
+    The reader is encouraged to find the circuits that prepare the remaining
+    $3$ eigenvectors and verify that the corresponding eigenvalues
+    are computed with the predicted probability of $100\%$.
+</div>
+</div>
+
 ### Expectation values
 From equation $(2)$ we note that measurements in quantum mechanics are
 inherently probabilistic in nature. That means we need to make multiple
