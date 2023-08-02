@@ -45,6 +45,18 @@ def circuit4():
     qml.CNOT(wires=[0, 1])
     return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
 
+@qml.qnode(dev)
+def circuit5():
+    qml.PauliX(wires = 0)
+    qml.Hadamard(wires = 0)
+    return qml.counts(qml.PauliX(0) @ qml.PauliZ(1))
+
+@qml.qnode(dev)
+def circuit6():
+    qml.PauliX(wires = 0)
+    # qml.Hadamard(wires = 0)
+    return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
+
 if __name__ == "__main__":
-    results = circuit4()
+    results = circuit6()
     print(results)

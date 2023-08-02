@@ -171,7 +171,7 @@ h1 {
   color: #58151c;
 }
 .article .figure .caption {
-  padding-top: 0;
+  padding-top: 10px;
   display: inline-block;
   font-size: 13px;
   line-height: 1.2em;
@@ -195,6 +195,9 @@ h1 {
   margin-left: 0;
   margin-right: 0;
   border-top: 0;
+}
+.article .figure figure.highlight {
+  margin-bottom: 0;
 }
 .article ul {
   padding: 0 15px;

@@ -580,7 +580,7 @@ The eigenvalues of $\sigma^{(y)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
         {% endkatexmm %}
 
         Using $c_1 = i c_0$, we transform $\ket{\lambda_+}$ as follows:
-        $\ket{\lambda_+} = \begin{bmatrix}c_0 & i c_0\end{bmatrix}^\intercal$
+        $\ket{\lambda_+} = \begin{bmatrix}c_0 \\ i c_0\end{bmatrix}$
 
         Using the normalization condition,
         we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
@@ -630,7 +630,7 @@ The eigenvalues of $\sigma^{(y)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
         {% endkatexmm %}
 
         Using $c_0 = i c_1$, we transform $\ket{\lambda_-}$ as follows:
-        $\ket{\lambda_-} = \begin{bmatrix}ic_1 & c_1\end{bmatrix}^\intercal$
+        $\ket{\lambda_-} = \begin{bmatrix}ic_1 \\ c_1\end{bmatrix}$
 
         Using the normalization condition,
         we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_1|^2=1$
@@ -685,7 +685,7 @@ $P_- = \ket{-i}\bra{-i}$ leading to:
 {% katexmm %}
 $$
 \begin{align}
-    p(+1) &= \bra{\psi}P_-\ket{\psi} \\
+    p(-1) &= \bra{\psi}P_-\ket{\psi} \\
     &= \braket{\psi\\|-i}\braket{-i\\|\psi} \\
     &= \braket{\psi\\|SH\\|1}\braket{1\\|HS^\dagger\\|\psi} \\
     &= \lvert \braket{1\\|HS^\dagger\\|\psi} \rvert^{2} \\
@@ -839,7 +839,7 @@ The eigenvalues of $\sigma^{(x)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
         {% endkatexmm %}
 
         Using $c_1 = c_0$, we transform $\ket{\lambda_+}$ as follows:
-        $\ket{\lambda_+} = \begin{bmatrix}c_0 & c_0\end{bmatrix}^\intercal$
+        $\ket{\lambda_+} = \begin{bmatrix}c_0 \\ c_0\end{bmatrix}$
 
         Using the normalization condition,
         we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
@@ -889,7 +889,7 @@ The eigenvalues of $\sigma^{(x)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
         {% endkatexmm %}
 
         Using $c_0 = -c_1$, we transform $\ket{\lambda_-}$ as follows:
-        $\ket{\lambda_-} = \begin{bmatrix}c_0 & -c_0\end{bmatrix}^\intercal$
+        $\ket{\lambda_-} = \begin{bmatrix}c_0 \\ -c_0\end{bmatrix}$
 
         Using the normalization condition,
         we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_0|^2=1$
@@ -944,7 +944,7 @@ $P_- = \ket{-}\bra{-}$ leading to:
 {% katexmm %}
 $$
 \begin{align}
-    p(+1) &= \bra{\psi}P_-\ket{\psi} \\
+    p(-1) &= \bra{\psi}P_-\ket{\psi} \\
     &= \braket{\psi\\|-}\braket{-\\|\psi} \\
     &= \braket{\psi\\|H\\|1}\braket{1\\|H\\|\psi} \\
     &= \lvert \braket{1\\|H\\|\psi} \rvert^{2} \\
@@ -975,7 +975,6 @@ the $\sigma^{(x)}$ observable with respect to that state.
 <div class='figure' markdown='1'>
 {% highlight python %}
 import pennylane as qml
-from pennylane import numpy as np
 
 dev = qml.device(
     "default.qubit",
@@ -1033,7 +1032,7 @@ we will obtain eigenvalue $+1$ with $100\%$ probability.<br>
 Equivalently, if we prepare $\ket{-} = H\ket{1}$,
 we will obtain eigenvalue $-1$ with $100\%$ probability.
 
-#### Multi-qubits measurement: measurement of $H = \sigma^{(x)} \otimes \sigma^{(z)}$
+#### Multi-qubits measurement
 In order to perform measurements on multiple qubits,
 we only need to perform a change of basis on each qubit
 individually as dictated by the form of the Hamiltonian.
@@ -1131,6 +1130,137 @@ given a state $\ket{\psi}$ is given by the circuit that follows:
         $\ket{\psi}^{\otimes k}$ is built from $k$ qubits,
         whence the dashed lines.
     </div>
+</div>
+
+* **Example 1: measurement of $H = \sigma^{(x)} \otimes \sigma^{(z)}$**<br>
+As a first example, we will measure $H = \sigma^{(x)} \otimes \sigma^{(z)}$
+with respect to one of its ground states.
+
+So let's start by finding the eigenvalues and eigenvectors of $H$.
+As the number of qubits increases, it gets difficult to do the calculations
+manually. That's why we will use Numpy to do the calculation for us.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import numpy.linalg as la
+
+if __name__ == "__main__":
+    H = np.matrix([
+        [0,  0,  1,  0],
+        [0,  0,  0, -1],
+        [1,  0,  0,  0],
+        [0, -1,  0,  0]
+    ])
+
+    eigvals, eivecs = la.eig(H)
+    print(eigvals)
+    print(eigvecs)
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Eigenvalues and eigenvectors of $H = \sigma^{(x)} \otimes \sigma^{(z)}$:
+    </span>
+    we find that $H$ has a degenerate ground state energy,
+    that is there are two states with the same ground state energy $-1$.
+</div>
+</div>
+
+We therefore see that $H$ has the following eigenvalues and eigenvectors:
+
+1. Eigenvalue $-1$ has eigenvectors:
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & -1 & 0\end{bmatrix}^\intercal$
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1 & 0 & 1\end{bmatrix}^\intercal$
+
+2. Eigenvalue $+1$ has eigenvectors:
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & 1 & 0\end{bmatrix}^\intercal$
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & -1 & 0 & 1\end{bmatrix}^\intercal$
+
+Therefore, should we prepare the state
+$\ket{\psi} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & -1 & 0\end{bmatrix}^\intercal = \dfrac{1}{\sqrt{2}}(\ket{00}-\ket{10})$,
+we should expect to measure eigenvalue $-1$ with probability $1$.
+The circuit that prepares that state and performs the measurement
+of $H$ against that state follows:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/xz-groundstate.png'
+         style='width: 45%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Measurement of $H = \sigma^{(x)} \otimes \sigma^{(z)}$
+        against the state $\ket{\psi} = \dfrac{1}{\sqrt{2}}(\ket{00}-\ket{10})$:</span>
+        the gates before the zigzag lines correspond to the state preparation.
+        The gates afterwards correspond to the change of basis before
+        performing the measurement in the standard basis.<br>
+        <i>A simplification would result in cancellation of two $H$ gates
+        acting on the first qubits. They are left for the purpose of
+        clarity and completeness.</i>
+    </div>
+</div>
+
+The code that follows implements the circuit above.
+The regular `circuit` function shows the implementation
+using PennyLane facilities.
+The `custom_circuit` does the implementation as per the
+figure above.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+from pennylane import numpy as np
+
+dev = qml.device(
+    "default.qubit",
+    wires = 1,
+    shots = 10000
+)
+
+@qml.qnode(dev)
+def circuit():
+    """Measurement of the XZ observable
+    using facilities provided by Pennylane.
+    """
+    # Prepare the state
+    qml.PauliZ(wires = 0)
+    qml.Hadamard(wires = 0)
+
+    # Perform the measurement
+    # The @ operator calculates the tensor product
+    return qml.counts(qml.PauliX(0) @ qml.PauliZ(1))
+
+@qml.qnode(dev)
+def custom_circuit():
+    """
+    """
+    # Prepare the state
+    qml.PauliZ(wires = 0)
+    qml.Hadamard(wires = 0)
+    
+    # Perform a change of basis
+    qml.Hadamard(wires = 0)
+
+    # Measure in standard basis
+    return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
+
+if __name__ == "__main__":
+    print(circuit())
+    print(custom_circuit())
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>Measurement of $H$:</span>
+    Both <code>circuit</code> and <code>custom_circuit</code>
+    should yield eigenvalue $-1$ with probability $1$.
+</div>
+</div>
+
+<div class='figure figure-alert' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Exercise
+    </div>
+    The reader is encouraged to find the circuits that prepare the remaining
+    $3$ eigenvectors and verify that the corresponding eigenvalues
+    are computed with the predicted probability of $100\%$.
+</div>
 </div>
 
 ### Expectation values
