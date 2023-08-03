@@ -85,7 +85,7 @@ $$
 $$
 {% endkatexmm %}
 
-<div class='figure figure-alert figure-warning' style='margin-top: 10px'>
+<div class='figure figure-alert figure-danger' style='margin-top: 10px'>
 <div class='caption'>
     <div class='caption-label'>
         Different roles of Pauli matrices
@@ -1206,7 +1206,6 @@ figure above.
 <div class='figure' markdown='1'>
 {% highlight python %}
 import pennylane as qml
-from pennylane import numpy as np
 
 dev = qml.device(
     "default.qubit",
@@ -1275,7 +1274,7 @@ The eigenvalues and eigenvectors are calculated as before and are found to be:
 
 2. Eigenvalue $+1$ has eigenvectors:
     - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & 0 & 0\end{bmatrix}^\intercal$
-    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 1 & 1\end{bmatrix}^\intercal$
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 1 & 0\end{bmatrix}^\intercal$
 
 We will prepare $\ket{\psi} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal = \ket{11}$
 and measure $H$ against that state.
@@ -1301,7 +1300,6 @@ in the code. We just perform a measurement on the first qubit.
 <div class='figure' markdown='1'>
 {% highlight python %}
 import pennylane as qml
-from pennylane import numpy as np
 
 dev = qml.device(
     "default.qubit",
@@ -1326,7 +1324,7 @@ if __name__ == "__main__":
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>Measurement of $H$:</span>
-    We only to measure the first qubit when handed a Hamiltonian
+    we only need to measure the first qubit when handed a Hamiltonian
     where there is a tensor with the identity.
 </div>
 </div>
@@ -1414,11 +1412,189 @@ $$
 $$
 {% endkatexmm %}
 
-**Example 1: expectation value of $\sigma^{(x)}$ with respect to $\ket{\psi}$**
+If the observable is of the form $H = \sum_i H_i$ then the expectation value of $H$
+is easily verified to be given by:
 
-**Example 2: expectation value of**
-**$\sigma^{(x)} \otimes \sigma^{(i)} + \sigma^{(i)} \otimes \sigma^{(z)}$**
-**with respect to $\ket{\psi}$**
+{% katexmm %}
+$$
+\braket{H} = \sum_i \braket{H_i} \tag{4}
+$$
+{% endkatexmm %}
+
+#### Example 1: expectation value of $H = \sigma^{(x)}$
+We quickly confirm that if we prepare the ground state
+of $\sigma^{(x)}$, the expectation value will correspond
+to the ground state energy of $\sigma^{(x)}$ since
+we will obtain the ground state energy $-1$ with probability $1$
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+
+dev = qml.device(
+    "default.qubit",
+    wires = 1,
+    shots = 100000
+)
+
+@qml.qnode(dev)
+def expval():
+    qml.PauliX(wires = 0)
+    qml.Hadamard(wires = 0)
+    return qml.expval(qml.PauliX(0))
+
+if __name__ == "__main__":
+    print(expval()) # should print -1
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>Measurement of $H = \sigma^{(x)}$:</span>
+    the circuit prepare the ground state of $H = \sigma^{(x)}$
+    therefore the expectation value will be the ground state
+    energy.
+</div>
+</div>
+
+#### Example 2: expectation value of $H = \dfrac{1}{\sqrt{2}}\left(\sigma^{(x)}+\sigma^{(z)}\right)$
+A quick calculation shows that $H$ has the following eigendecomposition:
+
+1. Eigenvalue $-1$ with eigenvector $\dfrac{1}{\sqrt{4+2\sqrt{2}}} \begin{bmatrix} 1-\sqrt{2} \\ 1\end{bmatrix}$
+1. Eigenvalue $+1$ with eigenvector $\dfrac{1}{\sqrt{4+2\sqrt{2}}} \begin{bmatrix} 1+\sqrt{2} \\ 1\end{bmatrix}$
+
+Unlike the previous examples, it is not clear how to prepare the ground state by inspection.
+So we can't readily generate a circuit and compute the expectation value that
+would result in the ground state energy.
+
+<div class='figure figure-alert figure-info' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        The ground state is generally unkown
+    </div>
+    If we knew the ground state, we would not need VQE because
+    computing the ground state energy would simply amount to
+    preparing the ground state and measuring the expectation
+    value of the Hamiltonian with respect to the prepared
+    state.
+</div>
+</div>
+
+So we will prepare some generic state and measure the expectation value
+with respect to that state. The result is not important, it is how
+we achieve that result that's important.
+
+*Note: PennyLane doesn't exactly make it possible to iterate*
+*through the counts we get upon measurement so it is not easy*
+*for us to manually compute the expectation value according*
+*to equation $(\href{#mjx-eqn:3'}{3'})$.*
+*We will directly use their provided function for computing*
+*the expectation value and do a simple sanity check.*
+
+In the code that follows, we compute the expectation value
+according to equation $(\href{#mjx-eqn:4}{4})$ then ask PennyLane do the same
+calculation for us and compare the result.
+
+The sanity check depends on the fact that PennyLane
+already has our observable $H$ as the $Hadamard$ observable.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+from pennylane import numpy as np
+
+# We fix the seed to make results reproducible
+np.random.seed(1)
+
+dev = qml.device(
+    "default.qubit",
+    wires = 1,
+    # We request the exact expectation value by not setting shots
+    shots = None
+)
+
+@qml.qnode(dev)
+def x_expval(y):
+    qml.RY(y, wires = 0)
+    return qml.expval(qml.PauliX(0))
+
+@qml.qnode(dev)
+def z_expval(y):
+    qml.RY(y, wires = 0)
+    return qml.expval(qml.PauliZ(0))
+
+def h_expval(y):
+    return (1/np.sqrt(2)) * (x_expval(y) + z_expval(y))
+
+@qml.qnode(dev)
+def hadamard_expval(y):
+    qml.RY(y, wires = 0)
+    return qml.expval(qml.Hadamard(0))
+
+if __name__ == "__main__":
+    custom_expval = h_expval(np.pi)
+    builtin_expval = hadamard_expval(np.pi)
+    print(custom_expval)
+    print(builtin_expval)
+    print(custom_expval == builtin_expval) # should print True
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Expectation value of $H = \dfrac{1}{\sqrt{2}}\left(\sigma^{(x)}+\sigma^{(z)}\right)$:
+    </span>
+    we see a confirmation of equation $(\href{#mjx-eqn:4}{4})$ since both
+    <code>custom_expval</code> and <code>builtin_expval</code>
+    contain the same value.
+</div>
+</div>
+
+#### Example 3: expectation value of $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$
+It is easily and quickly verified that $H$ has the following eigendecomposition:
+
+1. Eigenvalue $-2$ has eigenvector $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1 & 0 & 1\end{bmatrix}^\intercal$
+2. Eigenvalue $0$ has two eigenvectors:
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & -1 & 0\end{bmatrix}^\intercal$
+    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & -1 & 0 & 1\end{bmatrix}^\intercal$
+3. Eigenvalue $2$ has eigenvector $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & 1 & 0\end{bmatrix}^\intercal$
+
+Therefore, if we compute the expectation value with respect to the
+state $\ket{\psi} = \dfrac{1}{\sqrt{2}} \left( \ket{01} + \ket{11} \right)$
+we should get the eigenvalue $-2$.
+The code below confirms that.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+
+dev = qml.device(
+    "default.qubit",
+    wires = 2,
+    shots = 100000
+)
+
+@qml.qnode(dev)
+def xz_expval():
+    qml.Hadamard(wires = 0)
+    qml.PauliX(wires = 1)
+    return qml.expval(qml.PauliX(0) @ qml.PauliZ(1))
+
+@qml.qnode(dev)
+def zi_expval():
+    qml.Hadamard(wires = 0)
+    qml.PauliX(wires = 1)
+    return qml.expval(qml.PauliZ(1))
+
+def h_expval():
+    return xz_expval() + zi_expval()
+
+if __name__ == "__main__":
+    print(h_expval()) # should print -2
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Expectation value of $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$:
+    </span>
+    since we prepared the ground state $\ket{\psi} = \ket{+}\ket{0}$
+    the expectation value yields the ground state energy $-2$.
+</div>
+</div>
 
 ### The variational method
 From basic quantum mechanics we know that every system has a lowest
@@ -1449,7 +1625,7 @@ It follows then that:
 
 {% katexmm %}
 $$
-\braket{H} \ge \lambda_0 \tag{4}
+\braket{H} \ge \lambda_0 \tag{5}
 $$
 {% endkatexmm %}
 
