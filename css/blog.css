@@ -139,6 +139,9 @@ h1 {
   padding: 10px;
   border-radius: 3px;
 }
+.article .figure > .algorithm {
+  border-bottom: 1px solid hsla(0, 0%, 0%, 0.2);
+}
 .article .figure.figure-alert > .caption {
   padding-top: 0;
   line-height: 1.27em;

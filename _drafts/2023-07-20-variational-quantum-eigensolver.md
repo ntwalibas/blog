@@ -1284,7 +1284,7 @@ state is in the figure that follows:
 
 <div class='figure'>
     <img src='/assets/images/vqe/zi-groundstate.png'
-         style='width: 45%; height: auto; display: block; margin: 0 auto'/>
+         style='width: 30%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
         <span class='caption-label'>Measurement of $H = \sigma^{(z)} \otimes \sigma^{(i)}$
         against the state $\ket{\psi} = \ket{11}$:</span>
@@ -1591,14 +1591,14 @@ if __name__ == "__main__":
     <span class='caption-label'>
         Expectation value of $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$:
     </span>
-    since we prepared the ground state $\ket{\psi} = \ket{+}\ket{0}$
+    since we prepared the ground state $\ket{\psi} = \ket{+}\ket{1}$
     the expectation value yields the ground state energy $-2$.
 </div>
 </div>
 
 ### The variational method
 From basic quantum mechanics we know that every system has a lowest
-non-negative energy, call it $\lambda_0$.
+energy, call it $\lambda_0$.
 We are generally interested in finding that energy because it corresponds
 to the most stable state of the system.
 
@@ -1653,7 +1653,7 @@ state. Whence the *variational* aspect of the algorithm.
 Let us formaly state the variational problem. This is quite easy:
 find a sequence of parameters $\vec{\theta}$ such that
 $\mathcal{C}(\vec{\theta}) =
-\bra{\psi(\vec{\theta})}H\ket{\psi(\vec{\theta})} \ge \lambda_0$.
+\bra{\psi(\vec{\theta})}H\ket{\psi(\vec{\theta})} \approx \lambda_0$.
 The function $\mathcal{C}(\vec{\theta})$ is usually called the
 *cost function* or the *objective function* and our goal is to minimize it.
 
@@ -1667,8 +1667,8 @@ $$
 $$
 {% endkatexmm %}
 
-That is our goal is to minimize $\mathcal{C}(\vec{\theta})$
-by manipulating $\vec{\theta}$.
+That is our goal is to find parameters $\vec{\theta}$ that minimize
+$\mathcal{C}(\vec{\theta})$.
 
 #### Problem solution
 In general we will start with some arbitrary instance
@@ -1694,20 +1694,183 @@ the optimizer stops and reports the result.
 </div>
 </div>
 
-Each state $\ket{\psi(\vec{\theta})}$ is called an *ansatz*.
+Each state $\ket{\psi(\vec{\theta})}$ where $\vec{\theta}$ is fixed is called an *ansatz*.
 We will use circuits that have arbitrary rotations about some axis
-to construct those ansatze. The circuits used to prepare arbitrary
-ansatze are called *parametrized quantum circuits* ($a.k.a.$ PQCs).
+to construct those ansätze. The circuits used to prepare arbitrary
+ansätze are called *parametrized quantum circuits* ($a.k.a.$ PQCs).
+
+#### The algorithm
+While there will be slight variations in implementations,
+the flow of VQE is quite the same across all implementations.
+We present that flow as an algorithm:
+
+<div class='figure'>
+<div class='algorithm' markdown='1'>
+**Prepare:**  
+$\quad cost(\vec{\theta}) = \bra{\vec{\theta}}H\ket{\vec{\theta}}$  
+$\quad optimizer = Optimizer()$  
+
+**Initialize:**  
+$\quad maxiter > 0$  
+$\quad iter = 0$  
+$\quad \vec{\theta} = rand()$  
+$\quad energy = cost(\vec{\theta})$  
+
+**while** $iter < maxiter$**:**  
+$\qquad \vec{\theta}, energy \gets optimizer(cost, \vec{\theta})$  
+$\qquad iter \gets iter + 1$  
+
+**return** $energy$
+</div>
+<div class='caption'>
+    <span class='caption-label'>
+        VQE algorithm:
+    </span>
+    we prepare the cost function as a circuit that prepares
+    the state $\ket{\psi(\vec{\theta})}$, initialize
+    the parameters $\vec{\theta}$ to some random values
+    and let the optimizer take it from there for a maximum
+    number of iterations after which we report the
+    computed energy.
+</div>
+</div>
 
 ### Examples
 Let us work through a couple of examples where we try to find
 their ground state energies. We have calculated those energies
 before, now we use VQE to find the same.
 
-**Example 1: ground state energy of $\sigma^{(x)}$**
+#### Example 1: ground state energy of $H = \dfrac{1}{\sqrt{2}}\left(\sigma^{(x)}+\sigma^{(z)}\right)$
+We already know from [calculating the expectation value of $H$](#example-2-expectation-value-of-h--dfrac1sqrt2leftsigmaxsigmazright)
+that it has ground state energy $-1$. We just couldn't manually construct
+the ground state itself.
 
-**Example 2: ground state energy of**
-**$\sigma^{(x)} \otimes \sigma^{(i)} + \sigma^{(i)} \otimes \sigma^{(z)}$**
+The code that follows implements VQE as per the algorithm above and it does
+find the ground state energy. We plot the optimization steps in the figure
+that follows the code so we can see the optimizer in action.
+
+*Note: we chose the SPSA optimizer because it works out of the box*
+*without requiring additional knowledge beyond what we have already learned*
+*thus far. When we look at gradient descent, we will seee we require*
+*the ability to find the gradient of the cost function and we haven't learned how.*
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+from pennylane import numpy as np
+import matplotlib.pyplot as plt
+
+dev = qml.device(
+    "default.qubit",
+    wires = 1,
+    shots = 100000
+)
+
+@qml.qnode(dev)
+def hadamard_cost(theta):
+    qml.RY(theta[0], wires = 0)
+    qml.RX(theta[1], wires = 0)
+    qml.RY(theta[2], wires = 0)
+    return qml.expval(qml.Hadamard(0))
+
+def hadamard_vqe(cost, theta, maxiter):
+    optimizer = qml.SPSAOptimizer(maxiter = maxiter)
+    energy = cost(theta)
+    history = [energy]
+
+    for iter in range(maxiter):
+        theta, energy = optimizer.step_and_cost(
+            cost,
+            theta
+        )
+
+        # Print the optimizer progress every 10 steps
+        if iter % 10 == 0:
+            print(f"Step = {iter},  Energy = {history[-1]:.8f}")
+        
+        # Save the full energy optimization history
+        history.append(energy)
+    
+    return energy, history
+
+if __name__ == "__main__":
+    # Initialize theta from the normal distribution with mean 0 and spread np.pi
+    # The last argument is set to 3
+    # because we need to pass 3 parameters to the cost function
+    init_theta = np.random.normal(0, np.pi, 3)
+    
+    # We try 151 iterations
+    maxiter = 151
+
+    # Run VQE
+    energy, history = hadamard_vqe(hadamard_cost, init_theta, maxiter)
+
+    # Print the final energy
+    print(energy)
+
+    # Plot the optimization history
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(maxiter + 1), history, "go", ls = "dashed", label = "Energy")
+    plt.xlabel("Optimization step", fontsize=13)
+    plt.ylabel("Energy", fontsize=13)
+    plt.show()
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Ground state energy of $H = \dfrac{1}{\sqrt{2}}\left(\sigma^{(x)}+\sigma^{(z)}\right)$:
+    </span>
+    while we may not get exactly $-1$, we will get comfortably close to it.
+</div>
+</div>
+
+We can see how the optimizer gets closer to the ground state energy
+even though the initial energy estimation is not too far away from the true
+energy:
+
+<div class='figure' markdown='1'>
+{% highlight text %}
+Step = 0,  Energy = 0.23768000
+Step = 10,  Energy = -0.05880000
+Step = 20,  Energy = -0.31976000
+Step = 30,  Energy = -0.46982000
+Step = 40,  Energy = -0.58450000
+Step = 50,  Energy = -0.65704000
+Step = 60,  Energy = -0.76346000
+Step = 70,  Energy = -0.81800000
+Step = 80,  Energy = -0.85912000
+Step = 90,  Energy = -0.88212000
+Step = 100,  Energy = -0.90480000
+Step = 110,  Energy = -0.91910000
+Step = 120,  Energy = -0.93034000
+Step = 130,  Energy = -0.94036000
+Step = 140,  Energy = -0.94962000
+Step = 150,  Energy = -0.95932000
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Optimization evolution every 10 steps:
+    </span>
+    sometimes we will start close to the true ground state energy,
+    other times not. But we clearly see the optimizer converging
+    towards the true ground state energy.
+</div>
+</div>
+
+The plot generated by the code above should help drive
+home the point of how VQE works:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/h-vqe.png'
+         style='width: 80%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>VQE optimization landscape for
+        $H = \dfrac{1}{\sqrt{2}}\left(\sigma^{(x)}+\sigma^{(z)}\right)$:</span>
+        we can clearly see the optimizer approaching the true ground state energy
+        of our Hamiltonian $H$.
+    </div>
+</div>
+
+#### Example 2: ground state energy of $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$
 
 ## Ansatz design
 
