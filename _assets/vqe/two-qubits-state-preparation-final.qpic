@@ -5,5 +5,5 @@ a G:width=40 $RY(\theta_2)$ b
 b G:width=50 $P(\phi_3-\phi_1)$ a
 b G:width=40 $RY(\theta_2)$ a
 b X
-a G:width=50 $P(\phi_3-\phi_1)$ b
+a G:width=50 $P(\phi_2-\phi_3)$ b
 b X

@@ -2085,7 +2085,7 @@ And thus we have our circuit:
 </div>
 
 #### Two-qubits state preparation
-A two-qubits has the trigonometric parametrization:
+A two-qubits state has the trigonometric parametrization:
 
 {% katexmm %}
 $$
