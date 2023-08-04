@@ -1397,8 +1397,8 @@ For both examples, we rely on arbitrary state preparation circuits.
 This means that starting from fiduciary states $\ket{0}$ and $\ket{00}$,
 we create circuits that allow us to generate arbitrary single-qubit and
 two-qubits states.  
-The PQC for single-qubit systems is derived in [single-qubit PQC](#single-qubit-PQC-derivation).  
-And PQC for two-qubits systems is derived in [two-qubits PQC](#two-qubits-PQC-derivation).  
+The PQC for single-qubit systems is derived in [single-qubit state preparation](#single-qubit-state-preparation).  
+And a PQC for two-qubits systems is derived in [two-qubits state preparation](#two-qubits-state-preparation).  
 
 * **Optimizer selection:**<br>
 We chose the SPSA optimizer because it works out of the box
@@ -1430,8 +1430,8 @@ dev = qml.device(
 
 @qml.qnode(dev)
 def hadamard_cost(theta):
-    qml.PhaseShift(theta[0], wires = 0)
     qml.RY(theta[1], wires = 0)
+    qml.PhaseShift(theta[0], wires = 0)
     return qml.expval(qml.Hadamard(0))
 
 def vqe(cost, theta, maxiter):
@@ -2039,5 +2039,185 @@ The eigenvalues of $\sigma^{(x)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
     Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1\end{bmatrix}$.
     This eigenvector is also written as $\ket{-} = \ket{\lambda_-}$.
     Expressed in the $\sigma^{(z)}$ basis, $\ket{-} = \dfrac{1}{\sqrt{2}}(\ket{0} - \ket{1})$.
+
+### Parametrized quantum circuits via state preparation
+We can use state preparation circuits as a starting point
+for the design of parametrized quantum circuits.
+
+We do derivations for single-qubit and two-qubits states
+though the procedure can be extented to multiple qubits.
+
+*Note: except for the single-qubit case, any circuit*
+*of more than one qubit obtained by the procedure below*
+*will be inefficient depth-wise and CNOT count wise.*
+
+#### Single-qubit state preparation
+A single qubit has the trigonometric parametrization:
+
+{% katexmm %}
+$$
+\begin{align}
+\ket{\psi} = \cos\dfrac{\theta}{2} \ket{0} + {\rm e}^{i\phi} \sin\dfrac{\theta}{2} \ket{1}
+\end{align}
+$$
+{% endkatexmm %}
+
+Our task then is to design a circuit that would prepare such a state
+starting from the state $\ket{0}$.
+
+We begin by noting that
+$RY(\theta)\ket{0} = \cos\dfrac{\theta}{2} \ket{0} + \sin\dfrac{\theta}{2} \ket{1}$.
+We also know that application of the phase shift gate confers
+a phase to a qubit in the $\ket{1}$ but does nothing to the $\ket{0}$ state.
+
+So we it follows that
+$P(\phi)RY(\theta)\ket{0} = \cos\dfrac{\theta}{2} \ket{0} + {\rm e}^{i\phi} \sin\dfrac{\theta}{2} \ket{1}$.
+
+And thus we have our circuit:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/single-qubit-state-preparation.png'
+         style='width: 35%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Preparation of an arbitrary single qubit state:</span>
+        we apply a rotation about Y then a phase shift gate.
+    </div>
+</div>
+
+#### Two-qubits state preparation
+A two-qubits has the trigonometric parametrization:
+
+{% katexmm %}
+$$
+\begin{align}
+\ket{\psi}  &= \cos\dfrac{\theta_1}{2} \ket{00} \\
+            &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
+            &+ {\rm e}^{i\phi_2} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \cos\dfrac{\theta_3}{2}  \ket{10} \\
+            &+ {\rm e}^{i\phi_3} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \sin\dfrac{\theta_3}{2}  \ket{11} \\
+\end{align}
+$$
+{% endkatexmm %}
+
+We design the circuit by following the exact same steps as for the single qubit case,
+starting from the $\ket{00}$ state.
+
+1. Apply $RY(\theta_1)$ to qubit $1$:
+    {% katexmm %}
+    $$
+    \begin{align}
+    \ket{\psi_1} &= RY_{1}(\theta_1) \ket{00} \\
+                &= \cos\dfrac{\theta_1}{2} \ket{00} + \sin\dfrac{\theta_1}{2} \ket{01}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+2. Apply $P(\phi_1)$ to qubit $1$:
+    {% katexmm %}
+    $$
+    \begin{align}
+    \ket{\psi_2} &= P_{1}(\phi_1) \ket{\psi_1} \\
+                &= \cos\dfrac{\theta_1}{2} \ket{00} + {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \ket{01}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+3. Apply controlled-$RY(\phi_{2})$ to qubit $0$ if qubit $1$ is set:
+    {% katexmm %}
+    $$
+    \begin{align}
+    \ket{\psi_3} &= CRY^{1}_{1\to 0}(\theta_2) \ket{\psi_2} \\
+                &= \cos\dfrac{\theta_1}{2} \ket{00} \\
+                &+ \underbrace{ {\rm e}^{i\phi_1} }_{\text{wrong phase}} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
+                &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \ket{11}
+    \end{align}
+    $$
+    {% endkatexmm %}
+    Comparing with the original state $\ket{\psi}$ we are trying to construct,
+    it clear that the term ${\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{11}$
+    in $\ket{\psi_3}$ has the wrong phase; it should be ${\rm e}^{i\phi_3}$ and not ${\rm e}^{i\phi_1}$.
+    We do the correction in the next step.
+
+4. Apply controlled-$P(\phi_3-\phi_1)$ to qubit $1$ if qubit $0$ is set:
+    {% katexmm %}
+    $$
+    \begin{align}
+    \ket{\psi_4} &= CP^{1}_{0\to 1}(\phi_3 - \phi_1) \ket{\psi_3} \\
+                &= \cos\dfrac{\theta_1}{2} \ket{00} \\
+                &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
+                &+ {\rm e}^{i\phi_3} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \ket{11}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+4. Apply controlled-$RY(\theta_3)$ to qubit $1$ if qubit $0$ is set:
+    {% katexmm %}
+    $$
+    \begin{align}
+    \ket{\psi_5} &= CRY^{1}_{0\to 1}(\theta_3) \ket{\psi_4} \\
+                &= \cos\dfrac{\theta_1}{2} \ket{00} \\
+                &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
+                &+ \underbrace{ {\rm e}^{i\phi_3} }_{\text{wrong phase}} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \cos\dfrac{\theta_3}{2} \ket{10} \\
+                &+ {\rm e}^{i\phi_3} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \sin\dfrac{\theta_3}{2} \ket{11} \\
+    \end{align}
+    $$
+    {% endkatexmm %}
+    Again, we see that there is a term with the wrong phase,
+    ${\rm e}^{i\phi_3} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \cos\dfrac{\theta_3}{2} \ket{10}$.
+    It should be ${\rm e}^{i\phi_2}$ and not ${\rm e}^{i\phi_3}$. We correct the phase in the next step.
+
+4. Apply controlled-$P(\phi_2 - \phi_3)$ to qubit $0$ if qubit $1$ is **not** set:
+    {% katexmm %}
+    $$
+    \begin{align}
+    \ket{\psi_6} &= CP^{0}_{0\to 1}(\phi_2 - \phi_2) \ket{\psi_5} \\
+                &= \cos\dfrac{\theta_1}{2} \ket{00} \\
+                &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
+                &+ {\rm e}^{i\phi_2} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \cos\dfrac{\theta_3}{2} \ket{10} \\
+                &+ {\rm e}^{i\phi_3} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \sin\dfrac{\theta_3}{2} \ket{11}
+    \end{align}
+    $$
+    {% endkatexmm %}
+    Notice that the term $\cos\dfrac{\theta_1}{2} \ket{00}$ doesn't acquire any phase.
+    This is because, remember, the target qubit is in the $\ket{0}$ state.
+
+And we have recovered the original state $\ket{\psi}$.
+The circuit corresponding to the gates sequences is presented below:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/two-qubits-state-preparation.png'
+         style='width: 100%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Preparation of an arbitrary two-qubits state:</span>
+        we notice that we have 4 controlled operations which will be quite expensive.
+    </div>
+</div>
+
+The last negated control (change target if control **is not** set)
+can be replaced by a positive control (change target if control **is** set)
+by sandwiching the control between two $X$ gates. This replacement yields
+the following circuit:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/two-qubits-state-preparation-final.png'
+         style='width: 100%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Preparation of an arbitrary two-qubits state:</span>
+        we change the negative control to a positive control so the circuit is easy
+        to work with in PennyLane.
+    </div>
+</div>
+
+<div class='figure figure-alert figure-warning' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        The derived parametrized quantum circuit is inefficient
+    </div>
+    Notice that we require 4 controlled rotations that will amount
+    to 8 controlled CNOTs and 8 single-qubit rotations.
+    <b>This is wildly inefficient.</b><br>
+    This derivation is shown for completeness sake,
+    there are better PQCs!
+</div>
+</div>
 
 ## Conclusion
