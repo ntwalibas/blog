@@ -805,7 +805,7 @@ if __name__ == "__main__":
         [0, -1,  0,  0]
     ])
 
-    eigvals, eivecs = la.eig(H)
+    eigvals, eigvecs = la.eig(H)
     print(eigvals)
     print(eigvecs)
 {% endhighlight %}
