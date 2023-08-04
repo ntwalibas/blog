@@ -110,7 +110,7 @@ We will provide the physical justification of the algorithm and
 explore two simple examples so that we have something to anchor us
 for the remainder of the tutorial.
 
-In the ansatz design section we learn about the different ways ansatze
+In the ansatz design section we learn about the different ways ansätze
 are designed. We will explore some of the challenges that occur with
 particular choices of different designs.
 
@@ -298,123 +298,11 @@ matrices and the identity matrix.<br>
 **Therefore we only need to learn how to measure Pauli matrices.**
 
 #### Measurement of $\sigma^{(z)}$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
-We begin by find the eigenvalues and eigenvectors of $\sigma^{(z)}$
-then use equation $(2)$ to calculate the probabilities.
+The eigenvalues and eigenvectors of $\sigma^{(z)}$ are calculated
+in the [derivations section](#eigenvalues-and-eigenvectors-of-sigmaz) and are found to be:
 
-* **Eigenvalues**:<br>
-{% katexmm %}
-$$
-\begin{align}
-    \det\begin{vmatrix} \sigma^{(z)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
-    \implies
-    \det\begin{vmatrix}
-        \begin{bmatrix}
-        1-\lambda & 0 \\
-        0 & -1-\lambda
-        \end{bmatrix}
-    \end{vmatrix} &= 0 \\
-    \implies (1-\lambda)(-1-\lambda) &= 0 \\
-    \implies \lambda &= \pm 1
-\end{align}
-$$
-{% endkatexmm %}
-
-The eigenvalues of $\sigma^{(z)}$ are $\lambda_0 = +1$ and $\lambda_1 = -1$.
-
-* **Eigenvectors**:<br>
-    * *Eigenvector corresponding to eigenvalue $\lambda_0 = +1$*
-        {% katexmm %}
-        $$
-        \begin{align}
-            \sigma^{(z)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
-            \implies
-            \begin{bmatrix}
-            1 & 0 \\
-            0 & -1
-            \end{bmatrix}
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{bmatrix}
-            c_0 \\
-            -c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{cases}
-            c_0 &= c_0 \\
-            -c_1 &= c_1
-            \end{cases}
-        \end{align}
-        $$
-        {% endkatexmm %}
-
-        In the last step, $c_0 = c_0$ tells us nothing useful.
-        But $-c_1 = c_1$ tells us that $c_1 = 0$. It follows then that
-        $\ket{\lambda_+} = \begin{bmatrix} c_0 \\ 0 \end{bmatrix}$.
-
-        Using the normalization condition,
-        we find that $\braket{\lambda_+|\lambda_+}=1$ implies $|c_0|^2=1$ therefore
-        $c_0 = 1$.
-
-        Thus $\ket{\lambda_+} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$.
-        This eigenvector is also written as $\ket{0} = \ket{\lambda_+}$.
-
-    * *Eigenvector corresponding to eigenvalue $\lambda_1 = -1$*<br>
-        Repeating the same calculations as above:
-        {% katexmm %}
-        $$
-        \begin{align}
-            \sigma^{(z)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
-            \implies
-            \begin{bmatrix}
-            1 & 0 \\
-            0 & -1
-            \end{bmatrix}
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            -c_0 \\
-            -c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{bmatrix}
-            c_0 \\
-            -c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            -c_0 \\
-            -c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{cases}
-            c_0 &= -c_0 \\
-            c_1 &= c_1
-            \end{cases}
-        \end{align}
-        $$
-        {% endkatexmm %}
-
-        Following the same reasoning that we used to calculate $\ket{\lambda_+}$,
-        we find that $c_0 = 0$ and $c_1=1$.
-
-        Thus $\ket{\lambda_-} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
-        This eigenvector is also written as $\ket{1} = \ket{\lambda_-}$.
+1. Eigenvalue $+1$ with eigenvector $\ket{0} = \begin{bmatrix} 1 \\ 0\end{bmatrix}$
+2. Eigenvalue $-1$ with eigenvector $\ket{1} = \begin{bmatrix} 0 \\ 1\end{bmatrix}$
 
 * **Measurement with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$**<br>
 We calculate only the probability of obtaining eigenvalue $+1$ given the state
@@ -517,129 +405,11 @@ Equivalently, if we prepare $\ket{1}$, we will obtain
 eigenvalue $-1$ with $100\%$ probability.
 
 #### Measurement of $\sigma^{(y)}$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
-As with the $\sigma^{(z)}$ observable, we find the eigenvalues
-and eigenvectors.
+The eigenvalues and eigenvectors of $\sigma^{(y)}$ are calculated
+in the [derivations section](#eigenvalues-and-eigenvectors-of-sigmay) and are found to be:
 
-* **Eigenvalues**:<br>
-{% katexmm %}
-$$
-\begin{align}
-    \det\begin{vmatrix} \sigma^{(y)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
-    \implies
-    \det\begin{vmatrix}
-        \begin{bmatrix}
-        -\lambda & -i \\
-        i & -\lambda
-        \end{bmatrix}
-    \end{vmatrix} &= 0 \\
-    \implies \lambda^{2}-1 &= 0 \\
-    \implies \lambda &= \pm 1
-\end{align}
-$$
-{% endkatexmm %}
-
-The eigenvalues of $\sigma^{(y)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
-
-* **Eigenvectors**:<br>
-    * *Eigenvector corresponding to eigenvalue $\lambda_+ = +1$*
-        {% katexmm %}
-        $$
-        \begin{align}
-            \sigma^{(y)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
-            \implies
-            \begin{bmatrix}
-            0 & -i \\
-            i & 0
-            \end{bmatrix}
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{bmatrix}
-            -i c_1 \\
-            i c_0
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{cases}
-            -i c_1 &= c_0 \\
-            i c_0 &= c_1
-            \end{cases}
-        \end{align}
-        $$
-        {% endkatexmm %}
-
-        Using $c_1 = i c_0$, we transform $\ket{\lambda_+}$ as follows:
-        $\ket{\lambda_+} = \begin{bmatrix}c_0 \\ i c_0\end{bmatrix}$
-
-        Using the normalization condition,
-        we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
-        from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
-        Consequently $c_1 = \dfrac{i}{\sqrt{2}}$.
-
-        Thus $\ket{\lambda_+} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ i \end{bmatrix}$.
-        This eigenvector is also written as $\ket{+i} = \ket{\lambda_+}$.
-        Expressed in the $\sigma^{(z)}$ basis, $\ket{+i} = \dfrac{1}{\sqrt{2}}(\ket{0} + i\ket{1})$.
-    
-    * *Eigenvector corresponding to eigenvalue $\lambda_- = -1$*
-        {% katexmm %}
-        $$
-        \begin{align}
-            \sigma^{(y)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
-            \implies
-            \begin{bmatrix}
-            0 & -i \\
-            i & 0
-            \end{bmatrix}
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            -c_0 \\
-            -c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{bmatrix}
-            -i c_1 \\
-            i c_0
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            -c_0 \\
-            -c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{cases}
-            i c_1 &= c_0 \\
-            i c_0 &= -c_1
-            \end{cases}
-        \end{align}
-        $$
-        {% endkatexmm %}
-
-        Using $c_0 = i c_1$, we transform $\ket{\lambda_-}$ as follows:
-        $\ket{\lambda_-} = \begin{bmatrix}ic_1 \\ c_1\end{bmatrix}$
-
-        Using the normalization condition,
-        we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_1|^2=1$
-        from which it follows that $c_1 = \dfrac{1}{\sqrt{2}}$.
-        Consequently $c_1 = -\dfrac{i}{\sqrt{2}}$.
-
-        Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -i \end{bmatrix}$.
-        This eigenvector is also written as $\ket{-i} = \ket{\lambda_-}$.
-        Expressed in the $\sigma^{(z)}$ basis, $\ket{-i} = \dfrac{1}{\sqrt{2}}(\ket{0} - i\ket{1})$.
+1. Eigenvalue $+1$ with eigenvector $\ket{+i} = \dfrac{1}{\sqrt{2}}(\ket{0} + i\ket{1})$
+2. Eigenvalue $-1$ with eigenvector $\ket{-i} = \dfrac{1}{\sqrt{2}}(\ket{0} - i\ket{1})$
 
 * **Measurement with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$**<br>
 We calculate only the probability of obtaining eigenvalue $+1$ given the state
@@ -776,129 +546,11 @@ Equivalently, if we prepare $\ket{-i} = SH\ket{1}$,
 we will obtain eigenvalue $-1$ with $100\%$ probability.
 
 #### Measurement of $\sigma^{(x)}$ with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$
-As with the $\sigma^{(y)}$ observable, we find the eigenvalues
-and eigenvectors.
+The eigenvalues and eigenvectors of $\sigma^{(x)}$ are calculated
+in the [derivations section](#eigenvalues-and-eigenvectors-of-sigmax) and are found to be:
 
-* **Eigenvalues**:<br>
-{% katexmm %}
-$$
-\begin{align}
-    \det\begin{vmatrix} \sigma^{(x)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
-    \implies
-    \det\begin{vmatrix}
-        \begin{bmatrix}
-        -\lambda & 1 \\
-        1 & -\lambda
-        \end{bmatrix}
-    \end{vmatrix} &= 0 \\
-    \implies \lambda^{2}-1 &= 0 \\
-    \implies \lambda &= \pm 1
-\end{align}
-$$
-{% endkatexmm %}
-
-The eigenvalues of $\sigma^{(x)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
-
-* **Eigenvectors**:<br>
-    * *Eigenvector corresponding to eigenvalue $\lambda_+ = +1$*
-        {% katexmm %}
-        $$
-        \begin{align}
-            \sigma^{(x)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
-            \implies
-            \begin{bmatrix}
-            0 & 1 \\
-            1 & 0
-            \end{bmatrix}
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{bmatrix}
-            c_1 \\
-            c_0
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{cases}
-            c_1 &= c_0 \\
-            c_0 &= c_1
-            \end{cases}
-        \end{align}
-        $$
-        {% endkatexmm %}
-
-        Using $c_1 = c_0$, we transform $\ket{\lambda_+}$ as follows:
-        $\ket{\lambda_+} = \begin{bmatrix}c_0 \\ c_0\end{bmatrix}$
-
-        Using the normalization condition,
-        we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
-        from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
-        Consequently $c_1 = \dfrac{1}{\sqrt{2}}$.
-
-        Thus $\ket{\lambda_+} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix}$.
-        This eigenvector is also written as $\ket{+} = \ket{\lambda_+}$.
-        Expressed in the $\sigma^{(z)}$ basis, $\ket{+} = \dfrac{1}{\sqrt{2}}(\ket{0} + \ket{1})$.
-    
-    * *Eigenvector corresponding to eigenvalue $\lambda_- = -1$*
-        {% katexmm %}
-        $$
-        \begin{align}
-            \sigma^{(x)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
-            \implies
-            \begin{bmatrix}
-            0 & 1 \\
-            1 & 0
-            \end{bmatrix}
-            \begin{bmatrix}
-            c_0 \\
-            c_1
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            -c_0 \\
-            -c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{bmatrix}
-            c_1 \\
-            c_0
-            \end{bmatrix}
-            &=
-            \begin{bmatrix}
-            -c_0 \\
-            -c_1
-            \end{bmatrix} \\
-            \implies
-            \begin{cases}
-            c_1 &= -c_0 \\
-            c_0 &= -c_1
-            \end{cases}
-        \end{align}
-        $$
-        {% endkatexmm %}
-
-        Using $c_0 = -c_1$, we transform $\ket{\lambda_-}$ as follows:
-        $\ket{\lambda_-} = \begin{bmatrix}c_0 \\ -c_0\end{bmatrix}$
-
-        Using the normalization condition,
-        we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_0|^2=1$
-        from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
-        Consequently $c_1 = -\dfrac{1}{\sqrt{2}}$.
-
-        Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1\end{bmatrix}$.
-        This eigenvector is also written as $\ket{-} = \ket{\lambda_-}$.
-        Expressed in the $\sigma^{(z)}$ basis, $\ket{-} = \dfrac{1}{\sqrt{2}}(\ket{0} - \ket{1})$.
+1. Eigenvalue $+1$ with eigenvector $\ket{+} = \dfrac{1}{\sqrt{2}}(\ket{0} + \ket{1})$
+2. Eigenvalue $-1$ with eigenvector $\ket{-} = \dfrac{1}{\sqrt{2}}(\ket{0} - \ket{1})$
 
 * **Measurement with respect to $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$**<br>
 We calculate only the probability of obtaining eigenvalue $+1$ given the state
@@ -1412,12 +1064,12 @@ $$
 $$
 {% endkatexmm %}
 
-If the observable is of the form $H = \sum_i H_i$ then the expectation value of $H$
+If the observable is of the form $H = \sum_i h_i H_i$ then the expectation value of $H$
 is easily verified to be given by:
 
 {% katexmm %}
 $$
-\braket{H} = \sum_i \braket{H_i} \tag{4}
+\braket{H} = \sum_i h_i \braket{H_i} \tag{4}
 $$
 {% endkatexmm %}
 
@@ -1458,7 +1110,7 @@ if __name__ == "__main__":
 A quick calculation shows that $H$ has the following eigendecomposition:
 
 1. Eigenvalue $-1$ with eigenvector $\dfrac{1}{\sqrt{4+2\sqrt{2}}} \begin{bmatrix} 1-\sqrt{2} \\ 1\end{bmatrix}$
-1. Eigenvalue $+1$ with eigenvector $\dfrac{1}{\sqrt{4+2\sqrt{2}}} \begin{bmatrix} 1+\sqrt{2} \\ 1\end{bmatrix}$
+2. Eigenvalue $+1$ with eigenvector $\dfrac{1}{\sqrt{4+2\sqrt{2}}} \begin{bmatrix} 1+\sqrt{2} \\ 1\end{bmatrix}$
 
 Unlike the previous examples, it is not clear how to prepare the ground state by inspection.
 So we can't readily generate a circuit and compute the expectation value that
@@ -1740,6 +1392,21 @@ Let us work through a couple of examples where we try to find
 their ground state energies. We have calculated those energies
 before, now we use VQE to find the same.
 
+* **Ansatz design:**<br>
+For both examples, we rely on arbitrary state preparation circuits.
+This means that starting from fiduciary states $\ket{0}$ and $\ket{00}$,
+we create circuits that allow us to generate arbitrary single-qubit and
+two-qubits states.  
+The PQC for single-qubit systems is derived in [single-qubit PQC](#single-qubit-PQC-derivation).  
+And PQC for two-qubits systems is derived in [two-qubits PQC](#two-qubits-PQC-derivation).  
+
+* **Optimizer selection:**<br>
+We chose the SPSA optimizer because it works out of the box
+without requiring additional knowledge beyond what we have already learned
+thus far. When we look at gradient descent, we will seee we require
+the ability to find the gradient of the cost function and we haven't learned how.
+
+
 #### Example 1: ground state energy of $H = \dfrac{1}{\sqrt{2}}\left(\sigma^{(x)}+\sigma^{(z)}\right)$
 We already know from [calculating the expectation value of $H$](#example-2-expectation-value-of-h--dfrac1sqrt2leftsigmaxsigmazright)
 that it has ground state energy $-1$. We just couldn't manually construct
@@ -1749,15 +1416,10 @@ The code that follows implements VQE as per the algorithm above and it does
 find the ground state energy. We plot the optimization steps in the figure
 that follows the code so we can see the optimizer in action.
 
-*Note: we chose the SPSA optimizer because it works out of the box*
-*without requiring additional knowledge beyond what we have already learned*
-*thus far. When we look at gradient descent, we will seee we require*
-*the ability to find the gradient of the cost function and we haven't learned how.*
-
 <div class='figure' markdown='1'>
 {% highlight python %}
 import pennylane as qml
-from pennylane import numpy as np
+import pennylane.numpy as np
 import matplotlib.pyplot as plt
 
 dev = qml.device(
@@ -1768,12 +1430,11 @@ dev = qml.device(
 
 @qml.qnode(dev)
 def hadamard_cost(theta):
-    qml.RY(theta[0], wires = 0)
-    qml.RX(theta[1], wires = 0)
-    qml.RY(theta[2], wires = 0)
+    qml.PhaseShift(theta[0], wires = 0)
+    qml.RY(theta[1], wires = 0)
     return qml.expval(qml.Hadamard(0))
 
-def hadamard_vqe(cost, theta, maxiter):
+def vqe(cost, theta, maxiter):
     optimizer = qml.SPSAOptimizer(maxiter = maxiter)
     energy = cost(theta)
     history = [energy]
@@ -1795,15 +1456,15 @@ def hadamard_vqe(cost, theta, maxiter):
 
 if __name__ == "__main__":
     # Initialize theta from the normal distribution with mean 0 and spread np.pi
-    # The last argument is set to 3
-    # because we need to pass 3 parameters to the cost function
-    init_theta = np.random.normal(0, np.pi, 3)
+    # The last argument is set to 2
+    # because we need to pass 2 parameters to the cost function
+    init_theta = np.random.normal(0, np.pi, 2)
     
     # We try 151 iterations
     maxiter = 151
 
     # Run VQE
-    energy, history = hadamard_vqe(hadamard_cost, init_theta, maxiter)
+    energy, history = vqe(hadamard_cost, init_theta, maxiter)
 
     # Print the final energy
     print(energy)
@@ -1829,22 +1490,22 @@ energy:
 
 <div class='figure' markdown='1'>
 {% highlight text %}
-Step = 0,  Energy = 0.23768000
-Step = 10,  Energy = -0.05880000
-Step = 20,  Energy = -0.31976000
-Step = 30,  Energy = -0.46982000
-Step = 40,  Energy = -0.58450000
-Step = 50,  Energy = -0.65704000
-Step = 60,  Energy = -0.76346000
-Step = 70,  Energy = -0.81800000
-Step = 80,  Energy = -0.85912000
-Step = 90,  Energy = -0.88212000
-Step = 100,  Energy = -0.90480000
-Step = 110,  Energy = -0.91910000
-Step = 120,  Energy = -0.93034000
-Step = 130,  Energy = -0.94036000
-Step = 140,  Energy = -0.94962000
-Step = 150,  Energy = -0.95932000
+Step = 0,  Energy = -0.84014000
+Step = 10,  Energy = -0.92522000
+Step = 20,  Energy = -0.96302000
+Step = 30,  Energy = -0.97982000
+Step = 40,  Energy = -0.98670000
+Step = 50,  Energy = -0.99214000
+Step = 60,  Energy = -0.99522000
+Step = 70,  Energy = -0.99638000
+Step = 80,  Energy = -0.99744000
+Step = 90,  Energy = -0.99860000
+Step = 100,  Energy = -0.99874000
+Step = 110,  Energy = -0.99902000
+Step = 120,  Energy = -0.99922000
+Step = 130,  Energy = -0.99936000
+Step = 140,  Energy = -0.99960000
+Step = 150,  Energy = -0.99970000
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>
@@ -1871,6 +1532,143 @@ home the point of how VQE works:
 </div>
 
 #### Example 2: ground state energy of $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$
+The procedure is pretty much the same as with the Hadamard
+observable, except we will make use of equation $(\href{#mjx-eqn:4}{4})$
+since we will calculate the ground state energies of
+$\sigma^{(x)} \otimes \sigma^{(z)}$ and $\sigma^{(i)} \otimes \sigma^{(z)}$
+separately.
+
+Without further ado, here is the code:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import pennylane as qml
+import pennylane.numpy as np
+
+dev = qml.device(
+    "default.qubit",
+    wires = 2,
+    shots = 100000
+)
+
+def ansatz(params):
+    qml.RY(params[0], wires = 1)
+    qml.PhaseShift(params[3], wires = 1)
+    qml.CRY(params[1], wires = [1, 0])
+    qml.ControlledPhaseShift(params[5] - params[3], wires = [0, 1])
+    qml.CRY(params[2], wires = [0, 1])
+    qml.PauliX(wires = 1)
+    qml.ControlledPhaseShift(params[4] - params[5], wires = [1, 0])
+    qml.PauliX(wires = 1)
+
+@qml.qnode(dev)
+def xz_cost(params):
+    ansatz(params)
+    return qml.expval(qml.PauliX(0) @ qml.PauliZ(1))
+
+@qml.qnode(dev)
+def iz_cost(params):
+    ansatz(params)
+    return qml.expval(qml.PauliZ(1))
+
+def vqe(cost, params, maxiter):
+    optimizer = qml.SPSAOptimizer(maxiter = maxiter)
+    energy = cost(params)
+    history = [energy]
+
+    for iter in range(maxiter):
+        params, energy = optimizer.step_and_cost(
+            cost,
+            params
+        )
+
+        # Print the optimizer progress every 40 steps
+        if iter % 40 == 0:
+            print(f"Step = {iter},  Energy = {history[-1]:.8f}")
+        
+        # Save the full energy optimization history
+        history.append(energy)
+    
+    return energy, history
+
+if __name__ == "__main__":
+    # Initialize params from the normal distribution with mean 0 and variance np.pi
+    init_params = np.random.normal(0, np.pi, 6)
+    
+    # We try 401 iterations
+    maxiter = 401
+
+    # Run VQE
+    print("Optimizer progress for the XZ observable:")
+    xz_energy, _ = vqe(xz_cost, init_params, maxiter)
+    print("\nOptimizer progress for the IZ observable:")
+    iz_energy, _ = vqe(iz_cost, init_params, maxiter)
+
+    # Print the final energy
+    energy = xz_energy + iz_energy
+    print("\nFinal energy:", energy)
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Ground state energy of $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$:
+    </span>
+    we should expect to get an energy close to $-2$.
+</div>
+</div>
+
+And here is a sample run on my machine:
+
+<div class='figure' markdown='1'>
+{% highlight text %}
+Optimizer progress for the XZ observable:
+Step = 0,  Energy = 0.81258000
+Step = 40,  Energy = 0.38758000
+Step = 80,  Energy = 0.04470000
+Step = 120,  Energy = -0.10830000
+Step = 160,  Energy = -0.25992000
+Step = 200,  Energy = -0.51630000
+Step = 240,  Energy = -0.72498000
+Step = 280,  Energy = -0.80484000
+Step = 320,  Energy = -0.88252000
+Step = 360,  Energy = -0.90248000
+Step = 400,  Energy = -0.93032000
+
+Optimizer progress for the IZ observable:
+Step = 0,  Energy = -0.63556000
+Step = 40,  Energy = -0.93758000
+Step = 80,  Energy = -0.97082000
+Step = 120,  Energy = -0.97892000
+Step = 160,  Energy = -0.98604000
+Step = 200,  Energy = -0.98908000
+Step = 240,  Energy = -0.99122000
+Step = 280,  Energy = -0.99288000
+Step = 320,  Energy = -0.99420000
+Step = 360,  Energy = -0.99448000
+Step = 400,  Energy = -0.99518000
+
+Final energy: -1.92782
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Optimization evolution every 40 steps and final energy:
+    </span>
+    while we didn't get exactly $-2$, we got pretty close to it.
+</div>
+</div>
+
+### Next steps
+The reader who just wanted to get the basics and play a little
+should free to stop here.
+
+For the reader that wants to delve a
+little deeper, the sections that follow elaborate on ways
+ansätze are designed, what choices of optimizers we have,
+and what is meant by combining observables that are commuting.
+
+Even the reader who just wanted to get the basics is encouraged
+to read the final section on practical considerations
+so they understand the limitations of VQE, especially
+the *measurement problem*.
 
 ## Ansatz design
 
@@ -1879,5 +1677,367 @@ home the point of how VQE works:
 ## Observable reduction
 
 ## Practical considerations
+
+## Derivations
+
+### Eigenvalues and eigenvectors of $\sigma^{(z)}$
+#### Eigenvalues
+{% katexmm %}
+$$
+\begin{align}
+    \det\begin{vmatrix} \sigma^{(z)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
+    \implies
+    \det\begin{vmatrix}
+        \begin{bmatrix}
+        1-\lambda & 0 \\
+        0 & -1-\lambda
+        \end{bmatrix}
+    \end{vmatrix} &= 0 \\
+    \implies (1-\lambda)(-1-\lambda) &= 0 \\
+    \implies \lambda &= \pm 1
+\end{align}
+$$
+{% endkatexmm %}
+
+The eigenvalues of $\sigma^{(z)}$ are $\lambda_0 = +1$ and $\lambda_1 = -1$.
+
+#### Eigenvectors
+* *Eigenvector corresponding to eigenvalue $\lambda_0 = +1$*
+    {% katexmm %}
+    $$
+    \begin{align}
+        \sigma^{(z)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
+        \implies
+        \begin{bmatrix}
+        1 & 0 \\
+        0 & -1
+        \end{bmatrix}
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{bmatrix}
+        c_0 \\
+        -c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{cases}
+        c_0 &= c_0 \\
+        -c_1 &= c_1
+        \end{cases}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+    In the last step, $c_0 = c_0$ tells us nothing useful.
+    But $-c_1 = c_1$ tells us that $c_1 = 0$. It follows then that
+    $\ket{\lambda_+} = \begin{bmatrix} c_0 \\ 0 \end{bmatrix}$.
+
+    Using the normalization condition,
+    we find that $\braket{\lambda_+|\lambda_+}=1$ implies $|c_0|^2=1$ therefore
+    $c_0 = 1$.
+
+    Thus $\ket{\lambda_+} = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$.
+    This eigenvector is also written as $\ket{0} = \ket{\lambda_+}$.
+
+* *Eigenvector corresponding to eigenvalue $\lambda_1 = -1$*<br>
+    Repeating the same calculations as above:
+    {% katexmm %}
+    $$
+    \begin{align}
+        \sigma^{(z)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
+        \implies
+        \begin{bmatrix}
+        1 & 0 \\
+        0 & -1
+        \end{bmatrix}
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        -c_0 \\
+        -c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{bmatrix}
+        c_0 \\
+        -c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        -c_0 \\
+        -c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{cases}
+        c_0 &= -c_0 \\
+        c_1 &= c_1
+        \end{cases}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+    Following the same reasoning that we used to calculate $\ket{\lambda_+}$,
+    we find that $c_0 = 0$ and $c_1=1$.
+
+    Thus $\ket{\lambda_-} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
+    This eigenvector is also written as $\ket{1} = \ket{\lambda_-}$.
+
+### Eigenvalues and eigenvectors of $\sigma^{(y)}$
+#### Eigenvalues
+{% katexmm %}
+$$
+\begin{align}
+    \det\begin{vmatrix} \sigma^{(y)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
+    \implies
+    \det\begin{vmatrix}
+        \begin{bmatrix}
+        -\lambda & -i \\
+        i & -\lambda
+        \end{bmatrix}
+    \end{vmatrix} &= 0 \\
+    \implies \lambda^{2}-1 &= 0 \\
+    \implies \lambda &= \pm 1
+\end{align}
+$$
+{% endkatexmm %}
+
+The eigenvalues of $\sigma^{(y)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
+
+#### Eigenvectors
+* *Eigenvector corresponding to eigenvalue $\lambda_+ = +1$*
+    {% katexmm %}
+    $$
+    \begin{align}
+        \sigma^{(y)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
+        \implies
+        \begin{bmatrix}
+        0 & -i \\
+        i & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{bmatrix}
+        -i c_1 \\
+        i c_0
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{cases}
+        -i c_1 &= c_0 \\
+        i c_0 &= c_1
+        \end{cases}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+    Using $c_1 = i c_0$, we transform $\ket{\lambda_+}$ as follows:
+    $\ket{\lambda_+} = \begin{bmatrix}c_0 \\ i c_0\end{bmatrix}$
+
+    Using the normalization condition,
+    we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
+    from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
+    Consequently $c_1 = \dfrac{i}{\sqrt{2}}$.
+
+    Thus $\ket{\lambda_+} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ i \end{bmatrix}$.
+    This eigenvector is also written as $\ket{+i} = \ket{\lambda_+}$.
+    Expressed in the $\sigma^{(z)}$ basis, $\ket{+i} = \dfrac{1}{\sqrt{2}}(\ket{0} + i\ket{1})$.
+
+* *Eigenvector corresponding to eigenvalue $\lambda_- = -1$*
+    {% katexmm %}
+    $$
+    \begin{align}
+        \sigma^{(y)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
+        \implies
+        \begin{bmatrix}
+        0 & -i \\
+        i & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        -c_0 \\
+        -c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{bmatrix}
+        -i c_1 \\
+        i c_0
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        -c_0 \\
+        -c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{cases}
+        i c_1 &= c_0 \\
+        i c_0 &= -c_1
+        \end{cases}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+    Using $c_0 = i c_1$, we transform $\ket{\lambda_-}$ as follows:
+    $\ket{\lambda_-} = \begin{bmatrix}ic_1 \\ c_1\end{bmatrix}$
+
+    Using the normalization condition,
+    we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_1|^2=1$
+    from which it follows that $c_1 = \dfrac{1}{\sqrt{2}}$.
+    Consequently $c_1 = -\dfrac{i}{\sqrt{2}}$.
+
+    Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -i \end{bmatrix}$.
+    This eigenvector is also written as $\ket{-i} = \ket{\lambda_-}$.
+    Expressed in the $\sigma^{(z)}$ basis, $\ket{-i} = \dfrac{1}{\sqrt{2}}(\ket{0} - i\ket{1})$.
+
+### Eigenvalues and eigenvectors of $\sigma^{(x)}$
+#### Eigenvalues
+{% katexmm %}
+$$
+\begin{align}
+    \det\begin{vmatrix} \sigma^{(x)} - \lambda \sigma^{(i)} \end{vmatrix} &= 0 \\
+    \implies
+    \det\begin{vmatrix}
+        \begin{bmatrix}
+        -\lambda & 1 \\
+        1 & -\lambda
+        \end{bmatrix}
+    \end{vmatrix} &= 0 \\
+    \implies \lambda^{2}-1 &= 0 \\
+    \implies \lambda &= \pm 1
+\end{align}
+$$
+{% endkatexmm %}
+
+The eigenvalues of $\sigma^{(x)}$ are $\lambda_+ = +1$ and $\lambda_- = -1$.
+
+#### Eigenvectors
+* *Eigenvector corresponding to eigenvalue $\lambda_+ = +1$*
+    {% katexmm %}
+    $$
+    \begin{align}
+        \sigma^{(x)} \ket{\lambda_+} &= +1 \ket{\lambda_+} \\
+        \implies
+        \begin{bmatrix}
+        0 & 1 \\
+        1 & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{bmatrix}
+        c_1 \\
+        c_0
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{cases}
+        c_1 &= c_0 \\
+        c_0 &= c_1
+        \end{cases}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+    Using $c_1 = c_0$, we transform $\ket{\lambda_+}$ as follows:
+    $\ket{\lambda_+} = \begin{bmatrix}c_0 \\ c_0\end{bmatrix}$
+
+    Using the normalization condition,
+    we find that $\braket{\lambda_+|\lambda_+}=1$ implies $2|c_0|^2=1$
+    from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
+    Consequently $c_1 = \dfrac{1}{\sqrt{2}}$.
+
+    Thus $\ket{\lambda_+} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix}$.
+    This eigenvector is also written as $\ket{+} = \ket{\lambda_+}$.
+    Expressed in the $\sigma^{(z)}$ basis, $\ket{+} = \dfrac{1}{\sqrt{2}}(\ket{0} + \ket{1})$.
+
+* *Eigenvector corresponding to eigenvalue $\lambda_- = -1$*
+    {% katexmm %}
+    $$
+    \begin{align}
+        \sigma^{(x)} \ket{\lambda_-} &= -1 \ket{\lambda_-} \\
+        \implies
+        \begin{bmatrix}
+        0 & 1 \\
+        1 & 0
+        \end{bmatrix}
+        \begin{bmatrix}
+        c_0 \\
+        c_1
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        -c_0 \\
+        -c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{bmatrix}
+        c_1 \\
+        c_0
+        \end{bmatrix}
+        &=
+        \begin{bmatrix}
+        -c_0 \\
+        -c_1
+        \end{bmatrix} \\
+        \implies
+        \begin{cases}
+        c_1 &= -c_0 \\
+        c_0 &= -c_1
+        \end{cases}
+    \end{align}
+    $$
+    {% endkatexmm %}
+
+    Using $c_0 = -c_1$, we transform $\ket{\lambda_-}$ as follows:
+    $\ket{\lambda_-} = \begin{bmatrix}c_0 \\ -c_0\end{bmatrix}$
+
+    Using the normalization condition,
+    we find that $\braket{\lambda_-|\lambda_-}=1$ implies $2|c_0|^2=1$
+    from which it follows that $c_0 = \dfrac{1}{\sqrt{2}}$.
+    Consequently $c_1 = -\dfrac{1}{\sqrt{2}}$.
+
+    Thus $\ket{\lambda_-} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1\end{bmatrix}$.
+    This eigenvector is also written as $\ket{-} = \ket{\lambda_-}$.
+    Expressed in the $\sigma^{(z)}$ basis, $\ket{-} = \dfrac{1}{\sqrt{2}}(\ket{0} - \ket{1})$.
 
 ## Conclusion
