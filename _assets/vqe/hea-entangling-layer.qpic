@@ -1,0 +1,8 @@
+WIREPAD 5
+
+a W |q_0\rangle
+b W |q_1\rangle
+c W |q_2\rangle
+
++b a
++c a

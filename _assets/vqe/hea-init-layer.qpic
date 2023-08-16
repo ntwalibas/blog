@@ -1,0 +1,13 @@
+WIREPAD 5
+
+a W |q_0\rangle
+b W |q_1\rangle
+c W |q_2\rangle
+
+a G:width=45 height=15 $RX_{0}(\theta_{00})$
+b G:width=45 height=15 $RX_{1}(\theta_{10})$
+c G:width=45 height=15 $RX_{2}(\theta_{21})$
+
+a G:width=45 height=15 $RY_{0}(\theta_{01})$
+b G:width=45 height=15 $RY_{1}(\theta_{11})$
+c G:width=45 height=15 $RY_{2}(\theta_{20})$

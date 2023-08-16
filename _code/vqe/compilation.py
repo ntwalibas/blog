@@ -45,14 +45,26 @@ def two_qubits_2(theta_1, theta_2, theta_3, phi_1, phi_2, phi_3):
 
     return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
 
+def crx_circuit(theta_1, phi_1, theta_2, phi_2):
+    # qml.RY(theta_1, wires = [1])
+    # qml.PhaseShift(phi_1, wires = [1])
+    qml.CRX(theta_2, wires = [1, 0])
+    # qml.ControlledPhaseShift(phi_2, wires = [0, 1])
+    return qml.counts(qml.PauliX(0) @ qml.PauliZ(1))
+
 if __name__ == "__main__":
-    angles = np.random.normal(0, np.pi, 6)
+    # angles = np.random.normal(0, np.pi, 6)
+    # compiled_circuit = qml.compile(
+    #     basis_set = ["CNOT", "RY", "RZ"],
+    #     num_passes = 5
+    # )(two_qubits_2)
 
     compiled_circuit = qml.compile(
-        basis_set = ["CNOT", "RY", "RZ"],
+        basis_set = ["CNOT", "RX", "RZ"],
         num_passes = 5
-    )(two_qubits_2)
-    qnode = qml.QNode(compiled_circuit, dev)
+    )(crx_circuit)
+    angles = np.random.normal(0, np.pi, 4)
 
+    qnode = qml.QNode(compiled_circuit, dev)
     qml.draw_mpl(qnode, decimals = 1, style = "sketch")(*angles)
     plt.show()

@@ -10,8 +10,8 @@ dev = qml.device(
 
 @qml.qnode(dev)
 def hadamard_cost(theta):
-    qml.PhaseShift(theta[0], wires = 0)
     qml.RY(theta[1], wires = 0)
+    qml.PhaseShift(theta[0], wires = 0)
     return qml.expval(qml.Hadamard(0))
 
 def vqe(cost, theta, maxiter):

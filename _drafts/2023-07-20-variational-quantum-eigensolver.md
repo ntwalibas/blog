@@ -779,7 +779,7 @@ given a state $\ket{\psi}$ is given by the circuit that follows:
         <span class='caption-label'>Measurement of the
         $H= \bigotimes_{k} \sigma_{k}^{(l)}$ observable:</span>
         even though only three wires/qubits are shown, the state
-        $\ket{\psi}^{\otimes k}$ is built from $k$ qubits,
+        $\ket{\psi}$ is built from $k$ qubits,
         whence the dashed lines.
     </div>
 </div>
@@ -1671,6 +1671,212 @@ so they understand the limitations of VQE, especially
 the *measurement problem*.
 
 ## Ansatz design
+Designing an ansatz is certainly no easy task.
+Building up on the work already done, ansätze can be classified
+into fixed structure or adaptive structure ansätze, see {% cite Tilly_2022 %}.
+
+The software engineer will generally experiment with various ansätze
+for a specific problem via educated guessing.  
+And when appropriate build upon existing ansätze.
+
+Fixed structure ansätze are those where the circuit structure doesn't change
+between optimization phases. In adaptive strucutre ansätze, the circuit
+structure changes as the circuit structure is adapted to the problem
+being solved.
+
+Since this article is meant to serve as an introduction to VQE,
+we won't bother about adaptive structure ansätze;
+we discuss only fixed structure ansätze.  
+Moreover, even in fixed structure ansätze, we will try
+to restrict ourselves to ansätze that a software engineer can tackle.
+
+In fixed structure ansätze, *I* do the following classification:
+1. Physics inspired ansätze.
+2. Hardware inspired ansätze.
+3. Mathematics inspired ansätze.
+
+### Physics inspired ansätze
+In physics inspired ansätze, we look at the structure of the ansätze
+and decide how best to tailor the circuit such that we can efficiently
+search the Hilbert space.
+
+There are two ansätze that have featured prominently with applications
+in quantum chemistry and condensed matter physics.
+
+Since we are software engineers,
+it is not worth our while to study these ansätze in detail,
+it is sufficient to know they exist.
+
+#### Unitary coupled cluster (UCC) ansatz
+This is the ansatz that was used in the original work on VQE {% cite Peruzzo_2014 %}.
+It comes from [coupled cluster theory](https://en.wikipedia.org/wiki/Coupled_cluster)
+for studying many-body systems and has found many uses in *ab initio* quantum
+chemistry.
+
+#### Hamiltonian variational ansatz (HVA)
+The Hamiltonian variational ansatz builds upon the Hamiltonian
+to be studied. The circuit is built by taking the exponential
+of non-commuting terms in the Hamiltonian.
+That procedure gives us unitaries that can be decomposed
+into gates.
+
+The paper that proposed this ansatz, {% cite Wecker_2015 %}
+shows that the ansatz doesn't perform very well in quantum chemistry
+applications but does well on the Hubbard model, a condensed
+matter physics problem.
+
+Since condensed matter physics is one of the fields
+where we expect quantum computing to help, if faced
+with a problem from condensed matter physics,
+HVA is a good ansatz to try out.
+
+### Hardware inspired ansätze 
+The basic idea of hardware inspired ansätze is that
+we create a circuit that closely matches the structure
+of the hardware, most importantly the native gateset,
+and if possible the topology of the device.
+
+This type of ansätze came from {% cite Kandala_2017 %}
+and the original is called hardware-efficient ansatz (HEA).
+There are many variants of it now but this one
+is sufficient to get start.
+
+#### Hardware-efficient ansatz (HEA)
+The fundemental structure of the hardware-efficient ansatz
+is to start with a layer of rotations gates acting individualy
+on each qubit as in the figure that follows:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/hea-init-layer.png'
+         style='width: 40%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Possible rotation block of HEA:</span>
+        we have chosen $RX$ and $RY$ as
+        our rotation gates.
+    </div>
+</div>
+
+Then we follow that initialization step with a layer of entangling gates.
+We will generally want the entangling layer to reflect the topology of the
+device so we can avoid introducing additional $SWAP$ gates to account for
+qubits that are not connected directly on the device.
+This layer will look something like what follows in the figure below:
+
+<div class='figure'>
+    <img src='/assets/images/vqe/hea-entangling-layer.png'
+         style='width: 20%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Possible entangling block of HEA:</span>
+        we have chosen $CNOT$ gates as our entanglers.
+    </div>
+</div>
+
+The parametrized quantum circuit for HEA will have a general
+structure as per the formula that follows:
+
+{% katexmm %}
+$$
+\begin{align}
+    \ket{\psi(\vec{\theta})} &= \prod_{q=1}^{N} \left[ U^{q,d}(\vec{\theta}) \right] \times U_{ENT} \\
+    &\times \prod_{q=1}^{N} \left[ U^{q,d-1}(\vec{\theta}) \right] \times U_{ENT} \\
+    &\times \cdots \times \\
+    &\times \prod_{q=1}^{N} \left[ U^{q,0}(\vec{\theta}) \right] \ket{00\dots0}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $q$ is the qubit index up to $N$ qubits and $d$ is number of layers
+since we are allowed to repeat the various rotation and entangling blocks.
+$U^{q,l}(\vec{\theta})$ is the block of rotations acting on $q$ qubits
+in the $d^{th}$ block. Note that if a block in a layer has $M$ rotation gates
+per qubits acting on $N$ qubits, we will need $M \times N$ parameters per block.
+
+<div class='figure figure-alert' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Exercise
+    </div>
+    The reader is encouraged to use HEA for the two-qubits example(s)
+    we have encounted thus far and explore with changing the number
+    of layers.
+</div>
+</div>
+
+### Mathematics inspired ansätze
+In this class of ansätze, we don't look at the make of the hardware
+nor do we take into consideration the structure of the problem.
+
+The premise is this: how do we prepare arbitrary quantum states?
+There are two ways:
+1. State preparation: start from a know state and ask what circuit
+    would allow us to explore the Hilbert space starting from that state.
+2. Gate synthesis: given an arbitrary starting state, what circuit
+    would allow us to explore the entire Hilbert space?
+
+We have already encountered ansätze based on state preparation
+so there should be no suprise there.
+The gate synthesis problem on the other hand is based
+on create a unitary that prepares an arbitrary quantum state
+then decomposing that unitary into a given gateset
+(that of the device we will run on).
+
+Both approaches fall into the area of quantum compiling
+and this subsection cannot do it justice.
+We will therefore only broach the subject and point
+the reader to a couple of resources.
+
+#### State preparation ansatz
+We learned how to prepare states starting from $\ket{00\dots0}$
+in the previous sections and derived circuits for one and two qubits
+circuits.
+
+But we also learned that the circuits derived are inefficient with
+regard to the number of $CNOT$ gates. This is important because
+$CNOT$ gates are known to be very noisy so they reduce
+the quality of our ansatz.
+
+For two qubits, for instance, it is known that we would not
+need more than a single $CNOT$ gate using the Schmidt decomposition.
+
+The method can be generalized to multiple qubits and is elaborate
+upon in {% cite Murta_2023 %}.
+
+<div class='figure figure-alert' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Exercise
+    </div>
+    The reader is encouraged to read section VII of the paper
+    {% cite Murta_2023 %} and implement the procedure elaborate
+    upon therein.
+</div>
+</div>
+
+#### Gate synthesis ansatz
+In the gate synthesis ansatz, we build a circuit
+that is capable of preparing any quantum state
+irrespective of the starting state.
+
+This may not be as efficient as the Schmidt decomposition
+but it is still a valid procedure to build ourselves
+ansätze. For instance, the gate synthesis for two qubits
+will produce a circuit with 3 $CNOT$ gates.
+
+A circuit for two qubits gate synthesis
+is presented in {% cite Shende_2004 %}.
+
+<div class='figure figure-alert' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Exercise
+    </div>
+    The reader is encouraged to implement a generic circuit
+    for single and two qubits gate synthesis and compare
+    the results and optimizations with other types of ansätze
+    already studied, mainly HEA and state preparation based
+    ansätze.
+</div>
+</div>
 
 ## Optimizer selection
 
@@ -1679,6 +1885,10 @@ the *measurement problem*.
 ## Practical considerations
 
 ## Derivations
+Some derivations were too long without adding to the quick
+understanding of the material presented herein.
+
+This section contains those derivations for interested reader.
 
 ### Eigenvalues and eigenvectors of $\sigma^{(z)}$
 #### Eigenvalues
@@ -2125,15 +2335,15 @@ starting from the $\ket{00}$ state.
     {% katexmm %}
     $$
     \begin{align}
-    \ket{\psi_3} &= CRY^{1}_{1\to 0}(\theta_2) \ket{\psi_2} \\
+    \ket{\psi_3} &= CRY^{(1)}_{1\to 0}(\theta_2) \ket{\psi_2} \\
                 &= \cos\dfrac{\theta_1}{2} \ket{00} \\
-                &+ \underbrace{ {\rm e}^{i\phi_1} }_{\text{wrong phase}} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
-                &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \ket{11}
+                &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
+                &+ \underbrace{ {\rm e}^{i\phi_1} }_{\text{wrong phase}} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \ket{11}
     \end{align}
     $$
     {% endkatexmm %}
     Comparing with the original state $\ket{\psi}$ we are trying to construct,
-    it clear that the term ${\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{11}$
+    it clear that the term ${\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \ket{11}$
     in $\ket{\psi_3}$ has the wrong phase; it should be ${\rm e}^{i\phi_3}$ and not ${\rm e}^{i\phi_1}$.
     We do the correction in the next step.
 
@@ -2141,7 +2351,7 @@ starting from the $\ket{00}$ state.
     {% katexmm %}
     $$
     \begin{align}
-    \ket{\psi_4} &= CP^{1}_{0\to 1}(\phi_3 - \phi_1) \ket{\psi_3} \\
+    \ket{\psi_4} &= CP^{(1)}_{0\to 1}(\phi_3 - \phi_1) \ket{\psi_3} \\
                 &= \cos\dfrac{\theta_1}{2} \ket{00} \\
                 &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
                 &+ {\rm e}^{i\phi_3} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \ket{11}
@@ -2153,7 +2363,7 @@ starting from the $\ket{00}$ state.
     {% katexmm %}
     $$
     \begin{align}
-    \ket{\psi_5} &= CRY^{1}_{0\to 1}(\theta_3) \ket{\psi_4} \\
+    \ket{\psi_5} &= CRY^{(1)}_{0\to 1}(\theta_3) \ket{\psi_4} \\
                 &= \cos\dfrac{\theta_1}{2} \ket{00} \\
                 &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
                 &+ \underbrace{ {\rm e}^{i\phi_3} }_{\text{wrong phase}} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \cos\dfrac{\theta_3}{2} \ket{10} \\
@@ -2169,7 +2379,7 @@ starting from the $\ket{00}$ state.
     {% katexmm %}
     $$
     \begin{align}
-    \ket{\psi_6} &= CP^{0}_{0\to 1}(\phi_2 - \phi_2) \ket{\psi_5} \\
+    \ket{\psi_6} &= CP^{(0)}_{0\to 1}(\phi_2 - \phi_2) \ket{\psi_5} \\
                 &= \cos\dfrac{\theta_1}{2} \ket{00} \\
                 &+ {\rm e}^{i\phi_1} \sin\dfrac{\theta_1}{2} \cos\dfrac{\theta_2}{2} \ket{01} \\
                 &+ {\rm e}^{i\phi_2} \sin\dfrac{\theta_1}{2} \sin\dfrac{\theta_2}{2} \cos\dfrac{\theta_3}{2} \ket{10} \\

@@ -1,3 +1,3 @@
-style=dashed a b c W |\psi\rangle^{\otimes k}<
+style=dashed a b c W |\psi\rangle<
 a b c G:width=15 \rotatebox{90}{$\otimes\limits_{k} G_k^\dagger$}
 a b c M
