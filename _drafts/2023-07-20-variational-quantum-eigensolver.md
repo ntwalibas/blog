@@ -2104,6 +2104,19 @@ the more prone it is to the barren plateau problem.
 So it is important to look for PQCs that are robust
 against barren plateaus.
 
+## Conclusion
+We introduced the variational quantum eigensolver(VQE)
+by doing thorough derivations of the basic components of
+how it works and wrote code that validate the algorithm.
+
+The interested reader is given pointers in refining the
+different components of the algorithm so they can tackle
+more advanced applications.
+
+We finally touched upon some practical considerations
+that highlight the limitations of VQE and where research
+is headed so as to make VQE of practical use.
+
 ## Derivations
 Some derivations were not necessary to follow the main material
 but nonetheless are useful to know for completeness sake.
@@ -2648,5 +2661,3 @@ the following circuit:
     there are better PQCs!
 </div>
 </div>
-
-## Conclusion
