@@ -93,8 +93,8 @@ h1 {
   font-size: 15px;
   line-height: 1.6em;
   color: rgba(0, 0, 0, 0.8);
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 .article blockquote {
   margin: 0;
@@ -222,7 +222,7 @@ h1 {
 }
 #bibliography ol.bibliography {
   padding-left: 15px;
-  padding-top: 30px;
+  padding-top: 10px;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.5);
 }
