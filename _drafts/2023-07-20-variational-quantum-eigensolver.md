@@ -2004,7 +2004,69 @@ While interesting in their own, I won't try to even offer
 much description of them but the reader is encouraged
 to also experiment with them if they are so inclined.
 
-## Observable reduction
+## Measurement reduction
+Quantum computers are a precious resource so we would like
+to make as few measurements as possible so we can solve
+a greater number of problems.
+
+Let us recall that a Hamiltonian will be a linear combination
+of Pauli terms (tensored Pauli matrices): $H = \sum_i h_i H_i$.
+
+There are two easy ways we can already try to reduce
+the number of measurements:
+
+1. Measure commuting observables together.
+2. Allocate more shots to Pauli terms with higher coefficients.
+
+There are some other strategies that have been proposed
+but those two above are quite easy to understand so we will describe them.
+
+#### Grouping qubit-wise commutative Pauli terms
+It is know that observables that do not commute cannot be
+measured simultaneously due to the Heisenberg uncertainty
+principle.
+
+Conversely, if two observables commute they can be measured
+simultaneously.
+
+Qubit-wise commutativity simply means that in a Pauli term
+if each Pauli matrix acting on qubit $i$ commutes with a
+Pauli matrix in another Pauli term then those two
+Pauli terms commute with each other.  
+This will be the case then the Pauli matrix in both terms
+is either itself or the identity.
+
+For instance, in our two-qubits Hamiltonian
+$H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(i)} \otimes \sigma^{(z)}$
+both terms $H_1 = \sigma^{(x)} \otimes \sigma^{(z)}$ and
+$H_2 = \sigma^{(i)} \otimes \sigma^{(z)}$ commute qubit-wise
+because $\sigma^{(x)}$ commutes with $\sigma^{(i)}$
+and $\sigma^{(z)}$ commutes with itself.
+That means that both terms of $H$ can be measured simultaneously.
+
+If instead we had $H = \sigma^{(x)} \otimes \sigma^{(z)} + \sigma^{(z)} \otimes \sigma^{(z)}$
+then we couldn't measure both Pauli terms simultaneously
+because they are not qubit-wise commuting.
+
+The essence of grouping is to find Pauli terms in a Hamiltonian
+that commute and measure them together therefore
+reducing the number of measurements needed to calculate
+the expectation value of the entire Hamiltonian.
+
+#### Weight distribution of measurements
+We recall that the expectation value of $H = \sum_i h_i H_i$
+is given by $\braket{H} = \sum_i h_i \braket{H_i}$.
+It follows that terms with higher coefficients will
+contribute more to the final expectation value than those with
+lower coefficients.
+
+So the basic idea is to weight each Pauli term according
+to its coefficient then distribute shots according to
+the weight of each Pauli term.
+
+In some cases, if some terms have very little weight,
+they might be dropped entirely without affecting much the final
+result.
 
 ## Practical considerations
 
