@@ -139,6 +139,10 @@ The reader is also expected to know the following basic quantum theory:
 A review of the measurement postulate will be provided
 so it is not a prerequisite.
 
+The book Quantum Computation and Quantum Information
+{% cite nielsen_chuang_2010 %} has the necessary background
+that is required for much of this post.
+
 ### Software tools
 We will use Pennylane from Xanadu to run code we write.
 It is an easy to use library and has an excellent documentation
@@ -176,12 +180,6 @@ required to make VQE work in some sort of template and offer a little more
 explanation via a diagram.
 Last, we code a couple of examples to see if simulations match theoretical
 predictions.
-
-<!-- ### The variational method
-We begin by recalling the measurement postulate of quantum mechanics,
-specifically the projective measurement postulate.<br>
-The postulate applies to any observable but we will specialize
-it to Hamiltonians alone. -->
 
 ### The measurement postulate
 Let $H$ be an observable representing the total energy of the
@@ -2021,7 +2019,7 @@ the number of measurements:
 There are some other strategies that have been proposed
 but those two above are quite easy to understand so we will describe them.
 
-#### Grouping qubit-wise commutative Pauli terms
+### Grouping qubit-wise commutative Pauli terms
 It is know that observables that do not commute cannot be
 measured simultaneously due to the Heisenberg uncertainty
 principle.
@@ -2053,7 +2051,7 @@ that commute and measure them together therefore
 reducing the number of measurements needed to calculate
 the expectation value of the entire Hamiltonian.
 
-#### Weight distribution of measurements
+### Weight distribution of measurements
 We recall that the expectation value of $H = \sum_i h_i H_i$
 is given by $\braket{H} = \sum_i h_i \braket{H_i}$.
 It follows that terms with higher coefficients will
@@ -2064,17 +2062,52 @@ So the basic idea is to weight each Pauli term according
 to its coefficient then distribute shots according to
 the weight of each Pauli term.
 
-In some cases, if some terms have very little weight,
+In some cases, if some terms have very little weights,
 they might be dropped entirely without affecting much the final
 result.
 
 ## Practical considerations
+There are a couple of challenges to consider when dealing with VQE:
+
+1. The number of measurements.
+2. Barren plateaus during training.
+
+### The measurement problem
+Compared to training neural networks, VQE sometimes
+require that we keep the optimization look going
+until we have enough samples to calculate the expectation
+value up to precision.
+
+This has proven challenging because it requires a huge
+number of measurements to achieve the need precision.
+{% cite Gonthier_2022 %} show that for quantum chemistry
+applications on relatively simple molecules, a single
+energy evaluation takes days!
+
+This is a major limitation of VQE that's a subject
+of current research.
+
+### Barren plateaus problem
+In order to do optimization, we saw that using gradient-based
+optimization, we need to evaluate the gradient of the
+cost function.
+
+What {% cite McClean_2018 %} showed was that for a large class
+of parametrized quantum circuits the gradient will become
+zero and thus the optimization will not progress.
+
+This is the trainability problem of VQE.
+What's worse, the more expressive an a PQC
+(meaning the more it can explore the Hilbert space),
+the more prone it is to the barren plateau problem.
+
+So it is important to look for PQCs that are robust
+against barren plateaus.
 
 ## Derivations
-Some derivations were too long without adding to the quick
-understanding of the material presented herein.
-
-This section contains those derivations for interested reader.
+Some derivations were not necessary to follow the main material
+but nonetheless are useful to know for completeness sake.
+This section contains those derivations for interested readers.
 
 ### Eigenvalues and eigenvectors of $\sigma^{(z)}$
 #### Eigenvalues
