@@ -1,5 +1,5 @@
 ---
-title: "[Tutorial] Variational Quantum Eigensolver"
+title: "Variational Quantum Eigensolver"
 subtitle: "We explore the main components that make the variational
 quantum eigensolver work: the ansatz, the optimizer, and the observable
 of interest. Our main objective is to look at how the different components
@@ -1403,7 +1403,7 @@ And a PQC for two-qubits systems is derived in [two-qubits state preparation](#t
 * **Optimizer selection:**<br>
 We chose the SPSA optimizer because it works out of the box
 without requiring additional knowledge beyond what we have already learned
-thus far. When we look at gradient descent, we will seee we require
+thus far. When we look at gradient descent, we will see we require
 the ability to find the gradient of the cost function and we haven't learned how.
 
 
@@ -1777,8 +1777,8 @@ structure as per the formula that follows:
 {% katexmm %}
 $$
 \begin{align}
-    \ket{\psi(\vec{\theta})} &= \prod_{q=1}^{N} \left[ U^{q,d}(\vec{\theta}) \right] \times U_{ENT} \\
-    &\times \prod_{q=1}^{N} \left[ U^{q,d-1}(\vec{\theta}) \right] \times U_{ENT} \\
+    \ket{\psi(\vec{\theta})} &= \prod_{q=1}^{N} \left[ U^{q,d-1}(\vec{\theta}) \right] \times U_{ENT} \\
+    &\times \prod_{q=1}^{N} \left[ U^{q,d-2}(\vec{\theta}) \right] \times U_{ENT} \\
     &\times \cdots \times \\
     &\times \prod_{q=1}^{N} \left[ U^{q,0}(\vec{\theta}) \right] \ket{00\dots0}
 \end{align}
@@ -1879,6 +1879,130 @@ is presented in {% cite Shende_2004 %}.
 </div>
 
 ## Optimizer selection
+Optimizers are generally classified into two groups:
+1. Gradient-based optimizers: these require computing or
+    approximating the gradient of the objective function.
+2. Gradient-free optimizers: no need to compute or
+    approximate the gradient of the objective function.
+
+The choice of an optimizer will generally depend on
+how fast it converges to the solution, how many measurements
+it needs, and the quality of the solution obtained.
+
+If exploring optimizers is not your goal, SPSA is good
+starting point {% cite Bonet_Monroig_2023 %}.
+
+### Gradient-based methods
+Gradient-based methods require computing the gradient
+directly or approximating it in some form.
+
+For optimization by direct gradient computation,
+we discuss gradient-descent. For optimization
+for gradient approximation, we discuss SPSA.
+
+#### Gradient-descent
+The idea of gradient-descent is very simple:
+given a cost function, we calculate its gradient
+then use the it to find the new set of parameters.
+The update rule is given by the following equation:
+
+{% katexmm %}
+$$
+\begin{align}
+    \vec{\theta_{k+1}} = \vec{\theta_k} - \eta \nabla C(\vec{\theta_k})
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\eta$ is the learning rate or step size.
+It tells us how big a step to take towards finding the minimum.
+
+At step $n = 0$, we might start with random parameters,
+calculate the gradient with respect to those parameters
+then compute the next set of parameters $n = 1$.
+
+The reader might wander how exactly the gradient of
+the expectation value is calculated; that is finding:
+
+{% katexmm %}
+$$
+\begin{align}
+    \nabla C(\vec{\theta_k}) = \nabla(\bra{\psi(\vec{\theta})} H \ket{\psi(\vec{\theta})})
+    = \bra{0\dots00} \nabla U^{\dagger}(\vec{\theta}) H \nabla U(\vec{\theta}) \ket{00\dots0}
+\end{align}
+$$
+{% endkatexmm %}
+
+This problem is solved using a method called parameter-shift rule,
+introduced in {% cite Mitarai_2018 %}.
+We won't elaborate on the details, the interested reader
+can get a quick introduction from [PennyLane](https://pennylane.ai/qml/glossary/parameter_shift).
+
+Gradient-descent has many variants, so it is really
+interesting to play with them using different Hamiltonians
+and different PQCs.
+The book *Algorithms for Optimization* {% cite 10.5555/3351864 %} has a plethora of such
+algorithms for the interested to play with.
+
+#### Simultaneous perturbation stochastic approximation (SPSA)
+The idea with SPSA is to replace direct gradient evaluation
+with gradient approximation, that is replacing
+$\nabla C(\vec{\theta_k})$ with an estimator $g_{k}(\vec{\theta_k})$.
+The new update rule is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \vec{\theta_{k+1}} = \vec{\theta_k} - a_k g_{k}(\vec{\theta_k})
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $a_k$ is a positive number and $g_{k}(\vec{\theta_k})$
+is obviously the gradient estimator.
+
+The estimator $g_{k}(\vec{\theta_k})$, being a vector, will have its
+$i^{th}$ component computed as follows:
+
+{% katexmm %}
+$$
+\begin{align}
+    (g_{k}(\vec{\theta_k}))_i = \frac{C(\theta_k + c_k \Delta_k) - C(\theta_k - c_k \Delta_k)}{2c_k(\Delta_{k})_i}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $c_k$ is a user-supplied positive number and
+$\Delta_k = \begin{bmatrix} \Delta_{k_1} & \Delta_{k_2} & \cdots & \Delta_{k_p} \end{bmatrix}^\intercal$
+is a random perturbation vector with $p$ entries corresponding to the
+number of parameters in the PQC.
+
+The advantage of SPSA to gradient descent is that it evaluates the objective
+function only twice compared to GD that evaluates it $p$ times.
+
+<div class='figure figure-alert' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Exercise
+    </div>
+    The reader is encouraged to run GD and SPSA on some problems
+    and compare their convergence rates.
+    The PennyLane tutorial on
+    <a href="https://pennylane.ai/qml/demos/tutorial_spsa">SPSA</a>
+    is a good starting point.
+</div>
+</div>
+
+### Gradient-free methods
+In gradient-free methods, not only we do not compute
+the gradient directly, we don't even try to approximate it.
+
+There are many such algorithms such as Nelder-Mead, Powell,
+Quantum analytic descent, etc.
+
+While interesting in their own, I won't try to even offer
+much description of them but the reader is encouraged
+to also experiment with them if they are so inclined.
 
 ## Observable reduction
 
