@@ -1,3 +1,9 @@
+WIREPAD 5
+
 style=dashed a b c W |\psi\rangle<
-a b c G:width=15 \rotatebox{90}{$\otimes\limits_{k} G_k^\dagger$}
+
+a G:width=20 height=15 $G_m^\dagger$
+b G:width=20 height=15 $G_n^\dagger$
+c G:width=20 height=15 $G_o^\dagger$
+
 a b c M

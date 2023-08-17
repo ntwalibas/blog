@@ -1,12 +1,12 @@
 ---
-title: "Variational Quantum Eigensolver"
+title: "Introduction to the Variational Quantum Eigensolver"
 subtitle: "We explore the main components that make the variational
-quantum eigensolver work: the ansatz, the optimizer, and the observable
-of interest. Our main objective is to look at how the different components
-can be tailored to solve practical problems."
+quantum eigensolver (VQE) work: the ansatz, the optimizer, and the observable
+of interest. The main objective is to understand the basics and chart
+a path to learning more about VQE."
 layout: default
 date: 2023-07-20
-keywords: vqe, ansatz, optimizer, gradient descent, spsa
+keywords: vqe, ansatz, optimizer, gradient descent, spsa, NISQ
 toc: true
 published: false
 ---
@@ -14,17 +14,17 @@ published: false
 ## Introduction
 The variational quantum eigensolver (VQE) is a hybrid quantum-classical
 algorithm that performs the hard computation on a quantum computer then
-uses a classical computer to process the measurement result from
+uses a classical computer to process the measurement results from
 the quantum computer.
 
 The idea is quite simple: the premise of quantum computers is that the Hilbert
 space is so huge that we can't reasonably explore it efficiently on a classical
 computer (under certain conditions - see
 [clifford circuits](https://en.wikipedia.org/wiki/Clifford_gates)) so we use
-a quantum computer to do the exploration. <br>
+a quantum computer to do the exploration.  
 But once we have the result from the quantum computer, we use a classical
-optimizer to drive us towards the state of interest, which in our case
-is the ground state.
+optimizer to drive us towards the solution, which in our case
+is the ground state of the system we are studying.
 
 The sections that follow are all about making sense of the two paragraphs above
 and seeing VQE in action.
@@ -35,6 +35,11 @@ That is the reader knows what a circuit is, and what gates and qubits are.
 In the tooling section, [theoretical tools](#theoretical-tools) subsection
 we list the necessary theoretical tools needed to make fruitful use of this
 tutorial.
+
+This tutorial is very much practical oriented. I do not try
+to help build any intuition about VQE. The reader is encouraged
+to read Michał Stęchły's [blog post on VQE](https://www.mustythoughts.com/variational-quantum-eigensolver-explained)
+for a more intuitive explanation.
 
 ### Notation
 We will work mostly with Pauli matrices.
@@ -101,50 +106,107 @@ $$
 </div>
 </div>
 
+In addition to Pauli matrices, we will make use of the following
+quantum gates:
+
+- Hadamard gate:
+{% katexmm %}
+$$
+H =
+\dfrac{1}{\sqrt{2}}\begin{bmatrix}
+1 & 1 \\
+1 & -1
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Phase gate:
+{% katexmm %}
+$$
+S =
+\begin{bmatrix}
+1 & 0 \\
+0 & i
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Phase shift gate:
+{% katexmm %}
+$$
+P(\phi) =
+\begin{bmatrix}
+1 & 0 \\
+0 & {\rm e}^{i\phi}
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Rotation about x-axis:
+{% katexmm %}
+$$
+RX(\theta) =
+\begin{bmatrix}
+\cos\frac{\theta}{2} & -i\sin\frac{\theta}{2} \\
+-i\sin\frac{\theta}{2} & \cos\frac{\theta}{2}
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Rotation about y-axis:
+{% katexmm %}
+$$
+RY(\theta) =
+\begin{bmatrix}
+\cos\frac{\theta}{2} & -\sin\frac{\theta}{2} \\
+\sin\frac{\theta}{2} & \cos\frac{\theta}{2}
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+
 ### Organization of the tutorial
 In the next section we introduce the tools (theoretical and practical)
 needed to understand and implement VQE.
 
 In the basic theory section, we justify why VQE works and how it works.
 We will provide the physical justification of the algorithm and
-explore two simple examples so that we have something to anchor us
-for the remainder of the tutorial.
+explore two simple examples from which we can build up more complicated
+examples.
 
 In the ansatz design section we learn about the different ways ansätze
 are designed. We will explore some of the challenges that occur with
 particular choices of different designs.
 
-In the optimizer selection section we study two optimizers and
-how they behave.
+In the optimizer selection section we talk about the different optimizers
+that are available so the reader can play with them.
 
-In the observable reduction section we touch upon the fact that
-we can combine commuting obervables into one so that we can
-speed up calculations.
+In the measurement reduction section we show that it is possible
+to reduce the number of measurements so we can obtain results faster.
 
 And last in the practical considerations section we think about the limitations
-of VQE and think about the implication of those limitations and how they affect
-the current quantum computing landscape.
+of VQE.
 
 ## Tooling
 ### Theoretical tools
 The reader is expected to know the following mathematics:
-1. Finding the eigenvalues and eigenvectors of an operator.
+1. Finding the eigenvalues and eigenvectors of a matrix.
 2. Basic operations on matrices.
 3. Kronecker product, especially using the mixed-product property.
 
-The reader is also expected to know the following basic quantum theory:
+The reader is also expected to know the following basic quantum computation theory:
 1. Quantum states as rays in Hilbert space.
-2. Quantum gates that evolve quantum states.
+2. Quantum gates as evolution operators of quantum states.
 
 A review of the measurement postulate will be provided
 so it is not a prerequisite.
 
-The book Quantum Computation and Quantum Information
+The book *Quantum Computation and Quantum Information*
 {% cite nielsen_chuang_2010 %} has the necessary background
 that is required for much of this post.
 
 ### Software tools
-We will use Pennylane from Xanadu to run code we write.
+We will use PennyLane from Xanadu to run code we write.
 It is an easy to use library and has an excellent documentation
 which includes demos, tutorials and reference documentation.
 
@@ -159,7 +221,7 @@ The installation instructions can be found at
 ## Basic theory
 In physics, if we know the Hamiltonian of a system
 then we know the dynamics of the system.
-This can be easily seen by looking at Schrodinger's equation.
+This can be easily seen by looking at Schrödinger's equation.
 Therefore, we will first need to have our problem encoded in
 a Hamiltonian.
 
@@ -168,21 +230,20 @@ this is very hard work --- but we will assume that they are given to us.
 Our goal will simply be finding the ground state energy (zero-point energy)
 of the given Hamiltonian.
 
-We care about the ground state energy because in nature the most
-stable state of a physical system will be its ground state.
+We care about the ground state energy because it corresponds
+to the energy of any system close to absolute zero.
 It is true that sometimes we care about excited states of
 a system but in this tutorial we won't worry about that.
 
-We begin by justifying why VQE works. Then justify we why a classical
-optimizer is necessary to find the ground state.
+We begin by justifying why VQE works. Then we see why a classical
+optimizer is necessary to find the ground state energy.
 Having grounded ourselves -- pun intended -- we tie all the different parts
-required to make VQE work in some sort of template and offer a little more
-explanation via a diagram.
+required to make VQE work in some sort of template.
 Last, we code a couple of examples to see if simulations match theoretical
 predictions.
 
 ### The measurement postulate
-Let $H$ be an observable representing the total energy of the
+Let $H$, the Hamiltonian, be the observable representing the total energy of the
 system. By the spectral theorem $H$ has spectral decomposition:
 
 {% katexmm %}
@@ -196,9 +257,9 @@ onto the eigenspace of $H$ with corresponding eigenvalue $\lambda_i$.
 That simply means that $P_{i}^{2} = P_i$
 and $P_i = \ket{\lambda_i} \bra{\lambda_i}$
 where $\\{ \ket{\lambda_i} \\}$ is the eigenspace of $H$
-with each $\ket{\lambda_i}$ associated to eigenvalue $\lambda_i$.
+with each eigenvector $\ket{\lambda_i}$ associated to eigenvalue $\lambda_i$.
 
-We can therefore write equation $(1)$ as:
+We can therefore write equation $(\href{#mjx-eqn:1}{1})$ as:
 
 {% katexmm %}
 $$
@@ -239,9 +300,7 @@ probabilities but not much else beside that.
     we are being asked to find the probabilities of measuring its eigenvalues
     given some state.<br>
     In practice though we will see the eigenvectors appearing with a certain
-    frequency. So we will calculated the probability from those frequencies
-    and associated the probability of each eigenvector to the corresponding
-    eigenvalue.
+    frequency. So we will calculate the probability from those frequencies.
 </div>
 </div>
 
@@ -257,8 +316,8 @@ probabilities but not much else beside that.
     any state in the corresponding space as a linear combination
     of the eigenvectors of that Hermitian operator.<br>
     For example the $\sigma^{(z)}$ observable, being a Hermitian operator,
-    has eigenvectors $\ket{0} = \begin{bmatrix}0\\1\end{bmatrix}$ and
-    $\ket{1} = \begin{bmatrix}1\\0\end{bmatrix}$.<br>
+    has eigenvectors $\ket{0} = \begin{bmatrix}1\\0\end{bmatrix}$ and
+    $\ket{1} = \begin{bmatrix}0\\1\end{bmatrix}$.<br>
     Consequently every one qubit state can be written as
     $\ket{\psi} = c_0 \ket{0} + c_1 \ket{1}$.
     States written using the eigenvectors of $\sigma^{(z)}$ are said to be
@@ -355,7 +414,7 @@ of the $\sigma^{(z)}$ observable given a state $\psi$ is as follows:
          style='width: 20%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
         <span class='caption-label'>Measurement of the $\sigma^{(z)}$ observable:</span>
-        since the identity $I$ acts on the state $\ket{\psi}$ we need not do
+        since the identity $I$ action on the state $\ket{\psi}$ is a no-op we need not do
         anything, we just measure directly.
     </div>
 </div>
@@ -363,7 +422,7 @@ of the $\sigma^{(z)}$ observable given a state $\psi$ is as follows:
 * **Code for performing the measurement**<br>
 We prepare the state $\ket{\psi} = RY(^\pi/_2)\ket{0}$ and measure
 the $\sigma^{(z)}$ observable with respect to that state.
-$RY$ is a rotation about the $Y$ axis.
+$RY$ is a rotation about the y-axis.
 
 <div class='figure' markdown='1'>
 {% highlight python %}
@@ -377,7 +436,7 @@ dev = qml.device(
 )
 
 @qml.qnode(dev)
-def circuit(y: float):
+def measure(y: float):
     # Prepare the state against which to measure
     qml.RY(y, wires = 0)
 
@@ -385,8 +444,7 @@ def circuit(y: float):
     return qml.counts(qml.PauliZ(0))
 
 if __name__ == "__main__":
-    results = circuit(np.pi / 2)
-    print(results)
+    print(measure(np.pi / 2))
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>Measurent of the $\sigma^{(z)}$ observable:</span>
@@ -493,9 +551,9 @@ dev = qml.device(
 )
 
 @qml.qnode(dev)
-def circuit():
+def measure():
     """Measurement of the Y observable
-    using facilities provided by Pennylane.
+    using facilities provided by PennyLane.
     """
     # Prepare the state
     qml.Hadamard(wires = 0)
@@ -504,7 +562,7 @@ def circuit():
     return qml.counts(qml.PauliY(0))
 
 @qml.qnode(dev)
-def custom_circuit():
+def custom_measure():
     """Custom circuit to measure the Y observable.
     We need to perform a change of basis then
     do a measurement in the standard basis
@@ -521,8 +579,8 @@ def custom_circuit():
     return qml.counts(qml.PauliZ(0))
 
 if __name__ == "__main__":
-    results = circuit()
-    print(results)
+    print(measure())
+    print(custom_measure())
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>Measurement of the $\sigma^{(y)}$ observable:</span>
@@ -530,9 +588,9 @@ if __name__ == "__main__":
     eigenvalue $+1$ with appromixately $0.5$ probablity and same
     for eigenvalue $-1$. It is easy to verify that this corresponds
     to theoretical predictions.<br>
-    Also, note that <code>custom_circuit</code> and <code>circuit</code>
-    provide the same results. In the first case, we use the formula derived.
-    In the second case, we let Pennylane do it for us.
+    Also, note that <code>measure()</code> and <code>custom_measure()</code>
+    provide the same results. In the first case, we use facilities provided by PennyLane.
+    In the second case, we use the formula derived.
 </div>
 </div>
 
@@ -562,11 +620,11 @@ $$
     &= \lvert (c_0 \ket{0} + c_1 \ket{1})\ket{+}\rvert^{2} \\
     &= \lvert c_0 \braket{0\\|+} + c_1 \braket{1\\|+} \rvert^{2} \\
     &= \left\lvert c_0 \left(\bra{0} \left(\dfrac{1}{\sqrt{2}} (\ket{0} + \ket{1})\right)\right)
-    + c_1 \left(\bra{1} \left(\dfrac{1}{\sqrt{2}} (\ket{0} - \ket{1})\right)\right) \right\rvert^{2} \\
+    + c_1 \left(\bra{1} \left(\dfrac{1}{\sqrt{2}} (\ket{0} + \ket{1})\right)\right) \right\rvert^{2} \\
     &= \left\lvert \dfrac{c_0}{\sqrt{2}}\left( \braket{0\\|0} \right)
-    - \dfrac{c_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
-    &= \left\lvert \dfrac{c_0}{\sqrt{2}} - \dfrac{c_1}{\sqrt{2}} \right\rvert^{2} \\
-    &= \dfrac{1}{2} \lvert c_0 - c_1 \rvert^{2} \\
+    + \dfrac{c_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
+    &= \left\lvert \dfrac{c_0}{\sqrt{2}} + \dfrac{c_1}{\sqrt{2}} \right\rvert^{2} \\
+    &= \dfrac{1}{2} \lvert c_0 + c_1 \rvert^{2} \\
     &= \dfrac{1}{2} \left(\sqrt{c_{0}^{2} + c_{1}^{2}}\right)^{2} \\
     &= \dfrac{c_{0}^{2} + c_{1}^{2}}{2}
 \end{align}
@@ -610,7 +668,7 @@ of the $\sigma^{(x)}$ observable given a state $\psi$ is as follows:
          style='width: 30%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
         <span class='caption-label'>Measurement of the $\sigma^{(x)}$ observable:</span>
-        we need to perform a basis change from the $\sigma^{(x)}$ basis to the $\sigma^{(x)}$
+        we need to perform a basis change from the $\sigma^{(z)}$ basis to the $\sigma^{(x)}$
         basis using $H$ then perform a standard measurement in the
         $\sigma^{(z)}$ basis. We will get eigenvectors in the $\sigma^{(z)}$ basis
         but the probabilities will correspond to measurements of the
@@ -633,9 +691,9 @@ dev = qml.device(
 )
 
 @qml.qnode(dev)
-def circuit():
+def measure():
     """Measurement of the Y observable
-    using facilities provided by Pennylane.
+    using facilities provided by PennyLane.
     """
     # Prepare the state
     qml.PauliX(wires = 0)
@@ -644,7 +702,7 @@ def circuit():
     return qml.counts(qml.PauliX(0))
 
 @qml.qnode(dev)
-def custom_circuit():
+def custom_measure():
     """Custom circuit to measure the X observable.
     We need to perform a change of basis then
     do a measurement in the standard basis
@@ -660,22 +718,22 @@ def custom_circuit():
     return qml.counts(qml.PauliZ(0))
 
 if __name__ == "__main__":
-    results = circuit()
-    print(results)
+    print(measure())
+    print(custom_measure())
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>Measurement of the $\sigma^{(x)}$ observable:</span>
-    we prepare the state $\ket{\psi} = \sigma^{(x)} \ket{0}$. We note that we obtain
+    we prepare the state $\ket{\psi} = X\ket{0}$. We note that we obtain
     eigenvalue $+1$ with appromixately $0.5$ probablity and same
     for eigenvalue $-1$. It is easy to verify that this corresponds
     to theoretical predictions.<br>
-    Also, note that <code>circuit</code> and <code>custom_circuit</code>
+    Also, note that <code>measure()</code> and <code>custom_measure()</code>
     provide the same results. In the first case, we use facilities provided by
     PennyLane. In the second case, we use the derived circuit.
 </div>
 </div>
 
-Note that if we prepared eigenvectors of $\sigma^{(x)}$
+Note that if we prepared the eigenvectors of $\sigma^{(x)}$
 we will obtain eigenvalues with $100\%$ probability.
 That is if we prepare the $\ket{+} = H\ket{0}$ state,
 we will obtain eigenvalue $+1$ with $100\%$ probability.<br>
@@ -710,7 +768,7 @@ $$
 Where we set $\lambda_r = \lambda^{(m)}_i \cdot \lambda^{(n)}_j$
 and $P_r = P^{(m)}_i \otimes P^{(n)}_j$.
 
-In general, if $H = \bigotimes_{k} \sigma_{k}^{(l)}$ with $l \in \\{i, x, y, z\\}$
+<!-- In general, if $H = \bigotimes_{k} \sigma_{k}^{(l)}$ with $l \in \\{i, x, y, z\\}$
 then we have:
 
 {% katexmm %}
@@ -720,7 +778,7 @@ $$
 {% endkatexmm %}
 
 From the equation above, we conclude that the projectors of $H$
-are $\bigotimes_{k} P^{(k)}_r$.
+are $\bigotimes_{k} P^{(k)}_r$. -->
 
 Then, we find the probability of measuring an arbitrary eigenvalue $\lambda_r$.
 Again, we only make the derivation for the 2-qubits case and make a general
@@ -730,30 +788,33 @@ statement for the multiple-qubits case:
 $$
 \begin{align}
     p(\lambda_r) &= \bra{\psi} P_r \ket{\psi} \\
-    &= \bra{\psi} (P_r^{(m)} \otimes P_r^{(n)}) \ket{\psi} \\
-    &= \bra{\psi} \left(\ket{m}\bra{m} \otimes \ket{n}\bra{n}\right) \ket{\psi} &P_r^{(\star)} = \ket{\star}\bra{\star} \\
-    &= \bra{\psi} \left((\overbrace{G_m\ket{0_m}}^{A}\overbrace{\bra{0_m}G_m^\dagger}^{B}) \otimes
-    (\overbrace{G_n\ket{0_n}}^{C}\overbrace{\bra{0_n}G_n^\dagger}^{D}) \right) \ket{\psi} &\ket{\star}=G_\star\ket{0_\star} \\
-    &= \bra{\psi} \left( (\overbrace{G_m}^{A'}\overbrace{\ket{0_m}}^{B'} \otimes \overbrace{G_n}^{C'}\overbrace{\ket{0_n}}^{D'})
-    (\overbrace{\bra{0_m}}^{A'}\overbrace{G_m^\dagger}^{B'} \otimes \overbrace{\bra{0_n}}^{C'}\overbrace{G_n^\dagger}^{D'}) \right) \ket{\psi}
+    &= \bra{\psi} (P_i^{(m)} \otimes P_j^{(n)}) \ket{\psi} \\
+    &= \bra{\psi} \left(\ket{m}\bra{m} \otimes \ket{n}\bra{n}\right) \ket{\psi} &P^{(\star)} = \ket{\star}\bra{\star} \\
+    &= \bra{\psi} \left((\overbrace{G_m\ket{0}}^{A}\overbrace{\bra{0}G_m^\dagger}^{B}) \otimes
+    (\overbrace{G_n\ket{0}}^{C}\overbrace{\bra{0}G_n^\dagger}^{D}) \right) \ket{\psi} &\ket{\star}=G_\star\ket{0} \\
+    &= \bra{\psi} \left( (\overbrace{G_m}^{A'}\overbrace{\ket{0}}^{B'} \otimes \overbrace{G_n}^{C'}\overbrace{\ket{0}}^{D'})
+    (\overbrace{\bra{0}}^{A'}\overbrace{G_m^\dagger}^{B'} \otimes \overbrace{\bra{0}}^{C'}\overbrace{G_n^\dagger}^{D'}) \right) \ket{\psi}
     &(AB)\otimes(CD)=(A\otimes C)(B\otimes D) \\
-    &= \Big( \bra{\psi} (G_m \otimes G_n) (\ket{0_m} \otimes \ket{0_n})\Big)\Big((\bra{0_m} \otimes \bra{0_n}) (G_m^\dagger \otimes G_n^\dagger) \ket{\psi} \Big)
+    &= \Big( \bra{\psi} (G_m \otimes G_n) (\ket{0} \otimes \ket{0})\Big)\Big((\bra{0} \otimes \bra{0}) (G_m^\dagger \otimes G_n^\dagger) \ket{\psi} \Big)
     &(A'B')\otimes(C'D')=(A'\otimes C')(B'\otimes D') \\
-    &= \lvert \bra{0_m0_n} G_m^\dagger \otimes G_n^\dagger \ket{\psi} \rvert^2
+    &= \lvert \bra{00} G_m^\dagger \otimes G_n^\dagger \ket{\psi} \rvert^2
 \end{align}
 $$
 {% endkatexmm %}
 
-The choice $\ket{\star} = G_\star \ket{0_ \star}$ is arbitrary.
-It could have been $\ket{\star}=G_\star\ket{1_\star}$ and the result would
-still be similar. In fact, the reader is encouraged to do that calculation.
+The choice $\ket{\star} = G_\star \ket{0}$ is arbitrary.
+It could have been $\ket{\star}=G_\star\ket{1}$ and the result would
+still be similar.
 
 The main point is that given a 2-qubits state $\ket{\psi}$
 we just need to apply the gate $G_m^\dagger$ to the first qubit
 and the gate $G_n^\dagger$ to the second
 qubit then measure in the standard basis.
+If we had 3 qubits with $\sigma^{(o)}$ as the third observable acting
+on the third qubit, then we would apply gate $G_o^\dagger$ to
+the third qubit. And so on.
 
-In general, given a multi-qubits Hamiltonian with spectral decomposition
+<!-- In general, given a multi-qubits Hamiltonian with spectral decomposition
 $H = \sum_{r=0}^{2^k-1} \left(\prod_{k} \lambda_r^{(k)} \bigotimes_{k} P^{(k)}_r\right)$
 where $P^{(k)} = G_k\ket{0_k}\bra{0_k}G_k^\dagger$, the probability of measuring
 eigenvalue $\lambda_r = \prod_k \lambda_r^{(k)}$ is given by:
@@ -768,17 +829,16 @@ Where $\bra{\star} = \bra{0}$ or $\bra{\star} = \bra{1}$.
 
 We therefore conclude that the circuit to perform a measurement
 of the $H = \bigotimes_{k} \sigma_{k}^{(l)}$ observable
-given a state $\ket{\psi}$ is given by the circuit that follows:
+given a state $\ket{\psi}$ is given by the circuit that follows: -->
 
 <div class='figure'>
     <img src='/assets/images/vqe/generalized-measurements.png'
          style='width: 30%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
         <span class='caption-label'>Measurement of the
-        $H= \bigotimes_{k} \sigma_{k}^{(l)}$ observable:</span>
-        even though only three wires/qubits are shown, the state
-        $\ket{\psi}$ is built from $k$ qubits,
-        whence the dashed lines.
+        $H= \sigma^{(m)} \otimes \sigma^{(n)} \otimes \sigma^{(o)}$ observable:</span>
+        we apply the corresponding changing of basis gates to each
+        qubit indexed by the observable.
     </div>
 </div>
 
@@ -848,9 +908,9 @@ of $H$ against that state follows:
 </div>
 
 The code that follows implements the circuit above.
-The regular `circuit` function shows the implementation
+The regular `measure()` function shows the implementation
 using PennyLane facilities.
-The `custom_circuit` does the implementation as per the
+The `custom_measure()` does the implementation as per the
 figure above.
 
 <div class='figure' markdown='1'>
@@ -864,9 +924,9 @@ dev = qml.device(
 )
 
 @qml.qnode(dev)
-def circuit():
+def measure():
     """Measurement of the XZ observable
-    using facilities provided by Pennylane.
+    using facilities provided by PennyLane.
     """
     # Prepare the state
     qml.PauliZ(wires = 0)
@@ -877,7 +937,7 @@ def circuit():
     return qml.counts(qml.PauliX(0) @ qml.PauliZ(1))
 
 @qml.qnode(dev)
-def custom_circuit():
+def custom_measure():
     """
     """
     # Prepare the state
@@ -891,12 +951,12 @@ def custom_circuit():
     return qml.counts(qml.PauliZ(0) @ qml.PauliZ(1))
 
 if __name__ == "__main__":
-    print(circuit())
-    print(custom_circuit())
+    print(measure())
+    print(custom_measure())
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>Measurement of $H$:</span>
-    Both <code>circuit</code> and <code>custom_circuit</code>
+    Both <code>measure()</code> and <code>custom_measure()</code>
     should yield eigenvalue $-1$ with probability $1$.
 </div>
 </div>
@@ -926,7 +986,7 @@ The eigenvalues and eigenvectors are calculated as before and are found to be:
     - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & 0 & 0\end{bmatrix}^\intercal$
     - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 1 & 0\end{bmatrix}^\intercal$
 
-We will prepare $\ket{\psi} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal = \ket{11}$
+We will prepare $\ket{\psi} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal = \dfrac{1}{\sqrt{2}} \ket{11}$
 and measure $H$ against that state.
 
 The circuit that prepares $\ket{\psi}$ and measures $H$ against that
@@ -958,9 +1018,9 @@ dev = qml.device(
 )
 
 @qml.qnode(dev)
-def circuit():
+def measure():
     """Measurement of the ZI observable
-    using facilities provided by Pennylane.
+    using facilities provided by PennyLane.
     """
     # Prepare the state
     qml.PauliX(wires = 0)
@@ -970,7 +1030,7 @@ def circuit():
     return qml.counts(qml.PauliZ(0))
 
 if __name__ == "__main__":
-    print(circuit())
+    print(measure())
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>Measurement of $H$:</span>
@@ -991,7 +1051,7 @@ if __name__ == "__main__":
 </div>
 
 ### Expectation values
-From equation $(2)$ we note that measurements in quantum mechanics are
+From equation $(\href{#mjx-eqn:2}{2})$ we note that measurements in quantum mechanics are
 inherently probabilistic in nature. That means we need to make multiple
 measurements in order to make coherent conclusions.
 
@@ -1249,8 +1309,7 @@ if __name__ == "__main__":
 ### The variational method
 From basic quantum mechanics we know that every system has a lowest
 energy, call it $\lambda_0$.
-We are generally interested in finding that energy because it corresponds
-to the most stable state of the system.
+We are generally interested in finding that energy.
 
 The variational method allows to find an approximation of that energy.
 The idea is very simple: since $\lambda_0 \le \lambda_i, \forall i$,
@@ -1279,13 +1338,15 @@ $$
 $$
 {% endkatexmm %}
 
-Equation $(4)$ is the *essence* of the variational method.
+Equation $(\href{#mjx-eqn:4}{4})$ is the *essence* of the variational method.
 It tells us that we can always try to find some state
 that approximates the ground state.
-Our goal therefore is to keep constructing such a state and
-measure until we can't find any state with lower energy
+Our goal therefore is to keep constructing such some state and
+measure until we can't find a state with a lowest energy
 because we can never find a state with lower energy
 than the ground state energy.
+Then we hope that the state found with lowest energy is
+sufficiently close to the true ground state energy.
 
 ### The variational algorithm
 How then do we find the state $\ket{\psi}$ that approximates
@@ -1294,7 +1355,7 @@ $\ket{\psi}$ and then vary those parameters until a particular
 sequence of parameters leads to a state that appromiximates
 the ground state.
 
-In other words we consider a state $\ket{\psi(\vec{\theta})}$
+In other words we consider a state $\ket{\psi(\vec{\theta})} = U(\vec{\theta})\ket{00\dots0}$
 where $\vec{\theta} = [\theta_{n-1},\theta_{n-2}, \cdots, \theta_0]$
 are the parameters that we will vary until we appromixate the ground
 state. Whence the *variational* aspect of the algorithm.
@@ -1339,7 +1400,7 @@ the optimizer stops and reports the result.
     The description above is a generalization because sometimes
     the optimizer can get stuck in a local minimum of
     $\mathcal{C}(\vec{\theta})$ and won't find a value
-    close to $\lambda_0$ but we will worry about that later.
+    close to $\lambda_0$ but we won't worry about that.
     Our hope though is that we end up with a value close to $\lambda_0$.
 </div>
 </div>
@@ -1348,6 +1409,7 @@ Each state $\ket{\psi(\vec{\theta})}$ where $\vec{\theta}$ is fixed is called an
 We will use circuits that have arbitrary rotations about some axis
 to construct those ansätze. The circuits used to prepare arbitrary
 ansätze are called *parametrized quantum circuits* ($a.k.a.$ PQCs).
+Without loss of generality, we will use PQC and ansatz interchangeably.
 
 #### The algorithm
 While there will be slight variations in implementations,
@@ -1356,11 +1418,11 @@ We present that flow as an algorithm:
 
 <div class='figure'>
 <div class='algorithm' markdown='1'>
-**Prepare:**  
-$\quad cost(\vec{\theta}) = \bra{\vec{\theta}}H\ket{\vec{\theta}}$  
+**_Prepare:_**  
+$\quad cost(\vec{\theta}) = \bra{\psi(\vec{\theta})}H\ket{\psi(\vec{\theta})}$  
 $\quad optimizer = Optimizer()$  
 
-**Initialize:**  
+**_Initialize:_**  
 $\quad maxiter > 0$  
 $\quad iter = 0$  
 $\quad \vec{\theta} = rand()$  
@@ -1376,8 +1438,8 @@ $\qquad iter \gets iter + 1$
     <span class='caption-label'>
         VQE algorithm:
     </span>
-    we prepare the cost function as a circuit that prepares
-    the state $\ket{\psi(\vec{\theta})}$, initialize
+    we prepare the cost function as a circuit that calculates
+    the expectation value w.r.t. $\ket{\psi(\vec{\theta})}$, initialize
     the parameters $\vec{\theta}$ to some random values
     and let the optimizer take it from there for a maximum
     number of iterations after which we report the
@@ -1658,15 +1720,15 @@ Final energy: -1.92782
 The reader who just wanted to get the basics and play a little
 should free to stop here.
 
-For the reader that wants to delve a
-little deeper, the sections that follow elaborate on ways
-ansätze are designed, what choices of optimizers we have,
-and what is meant by combining observables that are commuting.
-
-Even the reader who just wanted to get the basics is encouraged
+Even if the reader just wanted to get the basics, they are encouraged
 to read the final section on practical considerations
 so they understand the limitations of VQE, especially
 the *measurement problem*.
+
+For the reader that wants to delve a
+little deeper, the sections that follow elaborate on ways
+ansätze are designed, what choices of optimizers we have,
+and a few ways we have to reduce the number of measurements.
 
 ## Ansatz design
 Designing an ansatz is certainly no easy task.
@@ -1694,8 +1756,8 @@ In fixed structure ansätze, *I* do the following classification:
 3. Mathematics inspired ansätze.
 
 ### Physics inspired ansätze
-In physics inspired ansätze, we look at the structure of the ansätze
-and decide how best to tailor the circuit such that we can efficiently
+In physics inspired ansätze, we try to use information about the problem
+and decide how best to tailor the ansatz such that we can efficiently
 search the Hilbert space.
 
 There are two ansätze that have featured prominently with applications
@@ -1714,7 +1776,7 @@ chemistry.
 #### Hamiltonian variational ansatz (HVA)
 The Hamiltonian variational ansatz builds upon the Hamiltonian
 to be studied. The circuit is built by taking the exponential
-of non-commuting terms in the Hamiltonian.
+of commuting terms in the Hamiltonian.
 That procedure gives us unitaries that can be decomposed
 into gates.
 
@@ -1732,7 +1794,7 @@ HVA is a good ansatz to try out.
 The basic idea of hardware inspired ansätze is that
 we create a circuit that closely matches the structure
 of the hardware, most importantly the native gateset,
-and if possible the topology of the device.
+and if possible the connectivity of the device.
 
 This type of ansätze came from {% cite Kandala_2017 %}
 and the original is called hardware-efficient ansatz (HEA).
@@ -1748,13 +1810,14 @@ on each qubit as in the figure that follows:
     <img src='/assets/images/vqe/hea-init-layer.png'
          style='width: 40%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
-        <span class='caption-label'>Possible rotation block of HEA:</span>
+        <span class='caption-label'>Possible rotation layer of HEA:</span>
         we have chosen $RX$ and $RY$ as
         our rotation gates.
     </div>
 </div>
 
 Then we follow that initialization step with a layer of entangling gates.
+Then an additional layer of rotations. Then entanglers, etc.
 We will generally want the entangling layer to reflect the topology of the
 device so we can avoid introducing additional $SWAP$ gates to account for
 qubits that are not connected directly on the device.
@@ -1764,7 +1827,7 @@ This layer will look something like what follows in the figure below:
     <img src='/assets/images/vqe/hea-entangling-layer.png'
          style='width: 20%; height: auto; display: block; margin: 0 auto'/>
     <div class='caption'>
-        <span class='caption-label'>Possible entangling block of HEA:</span>
+        <span class='caption-label'>Possible entangling layer of HEA:</span>
         we have chosen $CNOT$ gates as our entanglers.
     </div>
 </div>
@@ -1784,10 +1847,10 @@ $$
 {% endkatexmm %}
 
 Where $q$ is the qubit index up to $N$ qubits and $d$ is number of layers
-since we are allowed to repeat the various rotation and entangling blocks.
-$U^{q,l}(\vec{\theta})$ is the block of rotations acting on $q$ qubits
-in the $d^{th}$ block. Note that if a block in a layer has $M$ rotation gates
-per qubits acting on $N$ qubits, we will need $M \times N$ parameters per block.
+since we are allowed to repeat the various rotation and entangling layers.
+$U^{q,l}(\vec{\theta})$ is the layer of rotations acting on $q$ qubits
+in the $d^{th}$ layer. Note that if a layer in a layer has $M$ rotation gates
+per qubits acting on $N$ qubits, we will need $M \times N$ parameters per layer.
 
 <div class='figure figure-alert' style='margin-top: 10px'>
 <div class='caption'>
@@ -1940,7 +2003,7 @@ Gradient-descent has many variants, so it is really
 interesting to play with them using different Hamiltonians
 and different PQCs.
 The book *Algorithms for Optimization* {% cite 10.5555/3351864 %} has a plethora of such
-algorithms for the interested to play with.
+algorithms for the interested reader to play with.
 
 #### Simultaneous perturbation stochastic approximation (SPSA)
 The idea with SPSA is to replace direct gradient evaluation
@@ -1975,7 +2038,7 @@ $\Delta_k = \begin{bmatrix} \Delta_{k_1} & \Delta_{k_2} & \cdots & \Delta_{k_p} 
 is a random perturbation vector with $p$ entries corresponding to the
 number of parameters in the PQC.
 
-The advantage of SPSA to gradient descent is that it evaluates the objective
+The advantage of SPSA over gradient descent is that it evaluates the objective
 function only twice compared to GD that evaluates it $p$ times.
 
 <div class='figure figure-alert' style='margin-top: 10px'>
@@ -2010,7 +2073,7 @@ a greater number of problems.
 Let us recall that a Hamiltonian will be a linear combination
 of Pauli terms (tensored Pauli matrices): $H = \sum_i h_i H_i$.
 
-There are two easy ways we can already try to reduce
+There are two easy ways we can see in trying to reduce
 the number of measurements:
 
 1. Measure commuting observables together.
@@ -2031,7 +2094,7 @@ Qubit-wise commutativity simply means that in a Pauli term
 if each Pauli matrix acting on qubit $i$ commutes with a
 Pauli matrix in another Pauli term then those two
 Pauli terms commute with each other.  
-This will be the case then the Pauli matrix in both terms
+This will be the case when the Pauli matrix in both terms
 is either itself or the identity.
 
 For instance, in our two-qubits Hamiltonian
@@ -2074,9 +2137,9 @@ There are a couple of challenges to consider when dealing with VQE:
 
 ### The measurement problem
 Compared to training neural networks, VQE sometimes
-require that we keep the optimization look going
+require that we keep the optimization loop going
 until we have enough samples to calculate the expectation
-value up to precision.
+value up to a required precision.
 
 This has proven challenging because it requires a huge
 number of measurements to achieve the need precision.
@@ -2094,10 +2157,10 @@ cost function.
 
 What {% cite McClean_2018 %} showed was that for a large class
 of parametrized quantum circuits the gradient will become
-zero and thus the optimization will not progress.
+zero during optimization and thus the optimization will not progress.
 
 This is the trainability problem of VQE.
-What's worse, the more expressive an a PQC
+What's worse, the more expressive a PQC
 (meaning the more it can explore the Hilbert space),
 the more prone it is to the barren plateau problem.
 
@@ -2510,9 +2573,9 @@ starting from the state $\ket{0}$.
 We begin by noting that
 $RY(\theta)\ket{0} = \cos\dfrac{\theta}{2} \ket{0} + \sin\dfrac{\theta}{2} \ket{1}$.
 We also know that application of the phase shift gate confers
-a phase to a qubit in the $\ket{1}$ but does nothing to the $\ket{0}$ state.
+a phase to a qubit in the $\ket{1}$ state but does nothing to the $\ket{0}$ state.
 
-So we it follows that
+So it follows that
 $P(\phi)RY(\theta)\ket{0} = \cos\dfrac{\theta}{2} \ket{0} + {\rm e}^{i\phi} \sin\dfrac{\theta}{2} \ket{1}$.
 
 And thus we have our circuit:
