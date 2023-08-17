@@ -5,7 +5,7 @@ quantum eigensolver (VQE) work: the ansatz, the optimizer, and the observable
 of interest. The main objective is to understand the basics and chart
 a path to learning more about VQE."
 layout: default
-date: 2023-07-20
+date: 2023-08-17
 keywords: vqe, ansatz, optimizer, gradient descent, spsa, NISQ
 toc: true
 published: false
