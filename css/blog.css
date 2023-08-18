@@ -10,7 +10,7 @@ body {
   margin: 0;
 }
 body .content {
-  margin-bottom: 120px;
+  margin-bottom: 30px;
 }
 a {
   color: rgba(0, 0, 0, 0.8);
@@ -64,7 +64,7 @@ h1 {
   margin-right: 10px;
 }
 .front-matter {
-  padding: 20px 0;
+  padding: 0 0 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
