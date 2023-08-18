@@ -483,9 +483,7 @@ $$
     &= \left\lvert \dfrac{c_0}{\sqrt{2}}\left( \braket{0\\|0} \right)
     + \dfrac{ic_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
     &= \left\lvert \dfrac{c_0}{\sqrt{2}} + \dfrac{ic_1}{\sqrt{2}} \right\rvert^{2} \\
-    &= \dfrac{1}{2} \lvert c_0 + ic_1 \rvert^{2} \\
-    &= \dfrac{1}{2} \left(\sqrt{c_{0}^{2} + c_{1}^{2}}\right)^{2} \\
-    &= \dfrac{c_{0}^{2} + c_{1}^{2}}{2}
+    &= \dfrac{1}{2} \lvert c_0 + ic_1 \rvert^{2}
 \end{align}
 $$
 {% endkatexmm %}
@@ -624,9 +622,7 @@ $$
     &= \left\lvert \dfrac{c_0}{\sqrt{2}}\left( \braket{0\\|0} \right)
     + \dfrac{c_1}{\sqrt{2}}\left( \braket{1\\|1} \right) \right\rvert^{2} \\
     &= \left\lvert \dfrac{c_0}{\sqrt{2}} + \dfrac{c_1}{\sqrt{2}} \right\rvert^{2} \\
-    &= \dfrac{1}{2} \lvert c_0 + c_1 \rvert^{2} \\
-    &= \dfrac{1}{2} \left(\sqrt{c_{0}^{2} + c_{1}^{2}}\right)^{2} \\
-    &= \dfrac{c_{0}^{2} + c_{1}^{2}}{2}
+    &= \dfrac{1}{2} \lvert c_0 + c_1 \rvert^{2}
 \end{align}
 $$
 {% endkatexmm %}
