@@ -975,14 +975,14 @@ with respect to one of its ground states.
 The eigenvalues and eigenvectors are calculated as before and are found to be:
 
 1. Eigenvalue $-1$ has eigenvectors:
-    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1 & 0 & 0\end{bmatrix}^\intercal$
-    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal$
+    - $\begin{bmatrix} 0 & 0 & 1 & 0\end{bmatrix}^\intercal$
+    - $\begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal$
 
 2. Eigenvalue $+1$ has eigenvectors:
-    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 1 & 0 & 0 & 0\end{bmatrix}^\intercal$
-    - $\dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 1 & 0\end{bmatrix}^\intercal$
+    - $\begin{bmatrix} 1 & 0 & 0 & 0\end{bmatrix}^\intercal$
+    - $\begin{bmatrix} 0 & 1 & 0 & 0\end{bmatrix}^\intercal$
 
-We will prepare $\ket{\psi} = \dfrac{1}{\sqrt{2}} \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal = \dfrac{1}{\sqrt{2}} \ket{11}$
+We will prepare $\ket{\psi} = \begin{bmatrix} 0 & 0 & 0 & 1\end{bmatrix}^\intercal = \ket{11}$
 and measure $H$ against that state.
 
 The circuit that prepares $\ket{\psi}$ and measures $H$ against that
@@ -1009,7 +1009,7 @@ import pennylane as qml
 
 dev = qml.device(
     "default.qubit",
-    wires = 1,
+    wires = 2,
     shots = 10000
 )
 
