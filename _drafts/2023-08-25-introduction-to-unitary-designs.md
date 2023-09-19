@@ -3,7 +3,7 @@ title: "Unitary designs: faster averages over unitaries"
 subtitle: "A common task in life is calculating the average
 of some quantities. The average is the most common and intuitive statistic every
 human learns and uses. Unitary designs allow us to compute averages over
-unitaries faster than doing uniform sampling. In this post, we build some intuition
+unitaries faster than doing Monte Carlo integration. In this post, we build some intuition
 about unitary designs and how they relate to integrals over the unitary group."
 layout: default
 date: 2023-08-25
@@ -279,7 +279,7 @@ def monte_carlo_average(f, a, b, sample_size):
     if b - a == 0:
         raise ValueError(f"Cannot compute the average in the interval [{a},{b}].")
 
-    samples = np.random.uniform(-1, 1, sample_size)
+    samples = np.random.uniform(a, b, sample_size)
     total = 0
     for sample in samples:
         total += sample
@@ -971,8 +971,8 @@ using different spherical designs. Given there are duplicate designs
 of same strength, we will choose representative $3$- and $5$-designs.
 
 We will compute the average of the following functions:
-- The function $f(x,y,z) = x^2 + xz + yz + z^2$ has Monte Carlo computed average $\bar{f}\approx 0.6652720819848398$.
-- The function $f(x,y,z) = x^4$ has analytically computed average $\bar{f} = 0.2$.
+- The function $f(x,y,z) = x^2 + xz + yz + z^2$ has analytically computed average $\bar{f} = \dfrac{2}{3} \simeq 0.6666667$.
+- The function $f(x,y,z) = x^4$ has analytically computed average $\bar{f} = \dfrac{1}{5} = 0.2$.
 
 The first function requires at least a $2$-design while the second requires at least
 a $4$-design.

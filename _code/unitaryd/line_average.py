@@ -9,7 +9,7 @@ def monte_carlo_average(f, a, b, sample_size):
     if b - a == 0:
         raise ValueError(f"Cannot compute the average in the interval [{a},{b}].")
 
-    samples = np.random.uniform(-1, 1, sample_size)
+    samples = np.random.uniform(a, b, sample_size)
     total = 0
     for sample in samples:
         total += sample
