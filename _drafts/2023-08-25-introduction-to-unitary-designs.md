@@ -151,13 +151,8 @@ In the next section, we introduce all the tools we need to successfully
 make use of this post.
 
 The section that follows on spherical designs: before we touch upon
-quantum designs, it is fruitful acquaint ourselves with classical designs
-so that we can appreciate the power of designs.  
-
-The section of the Haar measure is introduced before moving to
-quantum designs because integration over states or unitaries
-requires that we take special care of defining how such integrations are
-to be carried out.
+quantum designs, it is fruitful to acquaint ourselves with classical designs
+so that we can appreciate the power of designs.
 
 We follow with states designs as a prelude to unitary designs
 so as to strengthen our intuition about what integration over the Haar
@@ -168,7 +163,7 @@ where the power of unitary designs come to rescue us from computing
 complicated integrals and more importantly from performing expensive computations.
 
 We then talk about what we didn't touch upon and consequently
-what's worth studying more assuming we have to appreciate
+what's worth learning more about assuming we have come to appreciate
 the power of designs.
 
 Last we give some concluding remarks.
@@ -884,7 +879,7 @@ from the sphere:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{sphere}, \, y_{i}^{sphere} \, z_{i}^{sphere})
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{sphere}, \, y_{i}^{sphere}, \, z_{i}^{sphere})
 $$
 {% endkatexmm %}
 
@@ -1087,6 +1082,19 @@ It is possible to define averages over $n$-spheres but we won't bother doing
 so here since we don't use them at all.
 
 ## State designs
+Consider now the Bloch sphere and we want to average some
+function over it. This is where state designs come into play.
+
+If we are dealing with two-qubits states, we will have to average
+over a 7-sphere and that's just way too much work so we will not bother
+about such states.
+
+Moreover, quantum states are created by evolving some fudiciary state
+(such as the $\ket{0}$) towards the desired state.
+It will prove much more convenient to deal with two-qubits states
+via unitary designs than state designs.
+
+
 
 ## Unitary designs
 
