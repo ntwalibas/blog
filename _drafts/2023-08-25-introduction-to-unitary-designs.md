@@ -532,7 +532,7 @@ parametrization {% cite Ozols_2009 %}:
 
 {% katexmm %}
 $$
-\mathbb{S}^1 = \left\{ \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} \cos\theta \\ \sin\theta \end{bmatrix} \Bigg| 0 \le \theta < 2\pi \right\}
+\mathbb{S}^1 = \left\{ \left. \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} \cos\theta \\ \sin\theta \end{bmatrix} \right|\,  0 \le \theta < 2\pi \right\}
 $$
 {% endkatexmm %}
 
@@ -870,7 +870,7 @@ that in subsection $2.2.1$ in {% cite Ozols_2009 %}:
 
 {% katexmm %}
 $$
-\mathbb{S}^2 = \left\{ \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} \sin\phi\cos\theta \\ \sin\phi\sin\theta \\ \cos\phi \end{bmatrix} \Bigg| 0 \le \phi \le \pi; 0 \le \theta < 2\pi \right\}
+\mathbb{S}^2 = \left\{ \left. \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} \sin\phi\cos\theta \\ \sin\phi\sin\theta \\ \cos\phi \end{bmatrix} \right|\, 0 \le \phi \le \pi; 0 \le \theta < 2\pi \right\}
 $$
 {% endkatexmm %}
 
@@ -984,7 +984,7 @@ import numpy.linalg as la
 
 def tetrahedron():
     """The tetrahedron as a spherical 2-design."""
-    polyhedron = np.array([
+    coordinates = np.array([
         [ 1,  0, -1/np.sqrt(2)],
         [-1,  0, -1/np.sqrt(2)],
         [ 0,  1,  1/np.sqrt(2)],
@@ -992,12 +992,12 @@ def tetrahedron():
     ])
     # Normalize so the tetrahedron fits into the unit sphere
     return np.array(
-        [point / la.norm(point) for point in polyhedron]
+        [point / la.norm(point) for point in coordinates]
     )
 
 def cube():
     """The tetrahedron as the representative spherical 3-design."""
-    polyhedron = np.array([
+    coordinates = np.array([
         [ 1,  1,  1], [-1,  1,  1],
         [-1, -1,  1], [-1, -1, -1],
         [ 1,  1, -1], [ 1, -1, -1],
@@ -1005,13 +1005,13 @@ def cube():
     ])
     # Normalize so the cube fits into the unit sphere
     return np.array(
-        [point / la.norm(point) for point in polyhedron]
+        [point / la.norm(point) for point in coordinates]
     )
 
 def icosahedron():
     """The icosahedron as the representative spherical 5-design."""
     g = (1 + np.sqrt(5)) / 2
-    polyhedron = np.array([
+    coordinates = np.array([
         [ 0,  1,  g], [ 0, -1,  g],
         [ 0,  1, -g], [ 0, -1, -g],
 
@@ -1023,7 +1023,7 @@ def icosahedron():
     ])
     # Normalize so the icosahedron fits into the unit sphere
     return np.array(
-        [point / la.norm(point) for point in polyhedron]
+        [point / la.norm(point) for point in coordinates]
     )
 
 def spherical_design_average(f, points):

@@ -3,7 +3,7 @@ import numpy.linalg as la
 
 def tetrahedron():
     """The tetrahedron as a spherical 2-design."""
-    polyhedron = np.array([
+    coordinates = np.array([
         [ 1,  0, -1/np.sqrt(2)],
         [-1,  0, -1/np.sqrt(2)],
         [ 0,  1,  1/np.sqrt(2)],
@@ -11,12 +11,12 @@ def tetrahedron():
     ])
     # Normalize so the tetrahedron fits into the unit sphere
     return np.array(
-        [point / la.norm(point) for point in polyhedron]
+        [point / la.norm(point) for point in coordinates]
     )
 
 def cube():
     """The tetrahedron as the representative spherical 3-design."""
-    polyhedron = np.array([
+    coordinates = np.array([
         [ 1,  1,  1], [-1,  1,  1],
         [-1, -1,  1], [-1, -1, -1],
         [ 1,  1, -1], [ 1, -1, -1],
@@ -24,13 +24,13 @@ def cube():
     ])
     # Normalize so the cube fits into the unit sphere
     return np.array(
-        [point / la.norm(point) for point in polyhedron]
+        [point / la.norm(point) for point in coordinates]
     )
 
 def icosahedron():
     """The icosahedron as the representative spherical 5-design."""
     g = (1 + np.sqrt(5)) / 2
-    polyhedron = np.array([
+    coordinates = np.array([
         [ 0,  1,  g], [ 0, -1,  g],
         [ 0,  1, -g], [ 0, -1, -g],
 
@@ -42,7 +42,7 @@ def icosahedron():
     ])
     # Normalize so the icosahedron fits into the unit sphere
     return np.array(
-        [point / la.norm(point) for point in polyhedron]
+        [point / la.norm(point) for point in coordinates]
     )
 
 def spherical_design_average(f, points):
