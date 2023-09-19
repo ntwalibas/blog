@@ -1082,7 +1082,9 @@ f2 average using 5-design: 0.20000000000000004
 
 From the result above, we have confirmed that polyhedra are spherical $t$-designs.
 
-## The Haar measure
+### Average of a function over $n$-spheres
+It is possible to define averages over $n$-spheres but we won't bother doing
+so here since we don't use them at all.
 
 ## State designs
 
