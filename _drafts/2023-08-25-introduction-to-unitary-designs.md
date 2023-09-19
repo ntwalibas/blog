@@ -309,7 +309,8 @@ designs as we will quickly see in the following subsections.
 
 ### Average of a function over a circle
 As mentioned before, circles are also spheres but we treat
-them separately so that our intuition is built in a smooth way.
+them separately so that our intuition is built in a smooth way,
+starting with something very simple.
 
 Integration over the circle exhibits all the necessary
 aspects that will allow us to introduce designs
@@ -597,7 +598,7 @@ We start by defining what a circular design is:
 > $t$-design if:
 > {% katexmm %}
 > $$
-> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{1}{2\pi} \int_{0}^{2\pi} f(\theta; R) \,d\theta
+> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{1}{\pi R^2} \int_{0}^{2\pi} \int_{0}^R f_t(\theta, r) r\,dr\,d\theta
 > $$
 > {% endkatexmm %}
 > holds for all possible $f_t$.
@@ -638,7 +639,6 @@ the average of $f(x,y) = x^8 + x^5\,y^3 + x\,y^7$ using circular t-designs.
 <div class='figure' markdown='1'>
 {% highlight python %}
 import numpy as np
-import numpy.linalg as la
 
 def circular_design_average(f, t):
     """Computes the average of a function `f` using circular
@@ -725,13 +725,362 @@ So what have we learned from the result above?
     increase or stay the same.
 
 And that's pretty much the essence of using designs: approximate
-function averaging over some set.  
+function averaging over some set using as few function evaluations as possible.  
 In the sections that follow, we wil simply introduce new measures and
 new designs to tackle different problems.
 
 ### Average of a function over a sphere
-#### Average of a function over the unit 2-sphere
+Averaging over a $2$-sphere is pretty much the same as averaging over
+the circle. So we won't go through the exact same motions and just
+state the results and perform some simple calculations.
+Then we introduce the designs that work for the $2$-sphere.
+
+Moving forward, we will refer to the $2$-sphere simply as sphere
+even if mathematically a sphere generally refer to the $n$-sphere.
+
+#### Volume of a sphere
+The move from cartesian coordinates to spherical coordinates is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    x &= r\sin\phi\cos\theta \\
+    y &= r\sin\phi\sin\theta \\
+    z &= r\cos\phi
+\end{align}
+$$
+{% endkatexmm %}
+
+The region of integration is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    0 &\le r \le R \\
+    0 &\le \phi \le \pi \\
+    0 &\le \theta \le 2\pi
+\end{align}
+$$
+{% endkatexmm %}
+
+The Jacobian determinant of a sphere is given by:
+
+{% katexmm %}
+$$
+\det J = r^2\sin\theta
+$$
+{% endkatexmm %}
+
+To find the volume of a sphere is therefore calculated as:
+
+{% katexmm %}
+$$
+\begin{align}
+    V &= \int_0^{2\pi} \int_0^{\pi} \int_0^{R} r^2\sin\phi \,dr\,d\phi\,d\theta \\
+    &= \dfrac{R^3}{3} \int_0^{2\pi} \int_0^{\pi} \sin\phi \,d\phi\,d\theta \\
+    &= \dfrac{2}{3} R^3 \int_0^{2\pi} \,d\theta \\
+    &= \dfrac{4}{3} \pi R^3
+\end{align}
+$$
+{% endkatexmm %}
+
+Again, we can appreciated the importance of using the correct measure
+obtained from the Jacobian determinant allowing us to compute
+the correct volume of a sphere of radius $R$.
+
+#### Average of a function over a sphere
+Averaging over a sphere is very similar to averaging over a circle.
+The only change will be the use of a different measure obtained
+from the Jacobian determinant. Because of that, we will use the volume
+of the sphere, not its surface area in the general formula.
+
+In general, the average of a function $f(x, y, z)$ over a sphere
+of unknown radius is given by:
+
+{% katexmm %}
+$$
+\bar{f} = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\phi,\theta) \,r^2\sin\phi \,dr\,d\phi\,d\theta
+$$
+{% endkatexmm %}
+
+As an example, let us find the average of $f(x,y,z)=x^4$ over a sphere
+of unknown radius $R$.  
+Moving from cartesian coordinates to spherical coordinates, $f$ is now given by
+$f(r,\phi,\theta)=R^4\sin^4\phi\cos^4\theta$.
+
+Evaluating the integral above, we get:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \dfrac{3}{4\pi \cancel{R^3}} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} R^{\cancel{4}}\sin^4\phi\cos^4\theta \,r^2\sin\phi \,dr\,d\phi\,d\theta \\
+    &= \dfrac{3}{4\pi R} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} r^2\sin^5\phi\cos^4\theta \,dr\,d\phi\,d\theta \\
+    &= \dfrac{3}{4\pi \cancel{R}} \times \dfrac{R^{\cancel{3}}}{3} \int_0^{2\pi} \int_0^{\pi} \sin^5\phi\cos^4\theta \,d\phi\,d\theta \\
+    &= \dfrac{R^2}{4\pi} \times \dfrac{16}{15} \int_0^{2\pi} cos^4 \,d\theta \\
+    &= \dfrac{4R^2}{15\pi} \times \dfrac{3\pi}{4} \\
+    &= \dfrac{R^2}{5}
+\end{align}
+$$
+{% endkatexmm %}
+
+#### Average of a function over the unit sphere
+Same as with the circle, we can make a simplification of the averaging
+formula if the radius is a known constant.
+The function to average will therefore have a dependence
+only on $\phi$ and $\theta$ and is given as $f(\phi,\theta;R)$.
+
+The average of a sphere of known radius is therefore given by:
+
+{% katexmm %}
+$$
+\bar{f} = \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi}f(\phi,\theta;R) \,\sin\phi \,d\phi\,d\theta
+$$
+{% endkatexmm %}
+
+It is straightforward to verify that the average of $f(x,y,z) = x^4$
+over the unit sphere is given by $\bar{f}=\dfrac{1^2}{5}=\dfrac{1}{5}=0.2$:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi} \sin^4\phi\cos^4\theta \sin\phi \,d\phi\,d\theta \\
+    &= \dfrac{1}{4\pi} \times \dfrac{16}{15} \int_0^{2\pi} \cos^4\theta\,d\theta \\
+    &= \dfrac{1}{4\pi} \times \dfrac{16}{15} \times \dfrac{3\pi}{4} \\
+    &= \dfrac{1}{5}
+\end{align}
+$$
+{% endkatexmm %}
+
+Again, nothing fancy, just mundane integration.
+The only thing that has changed thus far is that dimensions increased
+and the Jacobian determinant has accounted for this change.
+
+<div class='figure figure-alert figure-info' style='margin-top: 10px'>
+<div class='caption'>
+    Recall that the Bloch sphere is a unit sphere.
+    So when we will need to integrate over single-qubit states,
+    the formula above will be quite useful so it is important to remember it.
+</div>
+</div>
+
+#### Average of a function over the unit sphere using a computer
+As before, we do Monte Carlo integration but this time we need to sample
+over the sphere. The uniform sampling procedure we will use is based on
+that in subsection $2.2.1$ in {% cite Ozols_2009 %}:
+
+{% katexmm %}
+$$
+\mathbb{S}^2 = \left\{ \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} \sin\phi\cos\theta \\ \sin\phi\sin\theta \\ \cos\phi \end{bmatrix} \Bigg| 0 \le \phi \le \pi; 0 \le \theta < 2\pi \right\}
+$$
+{% endkatexmm %}
+
+Where $\mathbb{S}^2$ is the sphere. To sample uniformly from a sphere,
+we sample $\theta$ uniformly in the interval $[0,2\pi]$
+and we sample $p \in [-1,1]$ uniformly then calculate $\phi$ from $p$
+using $\phi = \arccos p$.
+
+The formula stays the same as with the circle, we just now sample uniformly
+from the sphere:
+
+{% katexmm %}
+$$
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{sphere}, \, y_{i}^{sphere} \, z_{i}^{sphere})
+$$
+{% endkatexmm %}
+
+Where $x_{i}^{sphere}$ ($y_{i}^{sphere}$, $z_{i}^{sphere}$)
+means that each $x_i$ ($y_i$, $z_i$) is sampled uniformly from the sphere.
+
+Here follows the code that calculates the average of $f(x,y,z) = x^4$
+using the procedure just described above:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+
+def monte_carlo_average(f, sample_size):
+    """Compute the average of a function `f` over the unit sphere
+    """
+    def sample(size):
+        theta = np.random.uniform(0, 2 * np.pi, size)
+        p = np.random.uniform(-1, 1, size)
+        phi = np.arccos(p)
+        return zip(
+            np.sin(phi) * np.cos(theta),
+            np.sin(phi) * np.cos(theta),
+            np.cos(phi)
+        )
+
+    samples = sample(sample_size)
+    total = 0
+    for sample in samples:
+        total += f(*sample)
+    return total / sample_size
+
+if __name__ == "__main__":
+    f = lambda x, y, z: x**4
+    print(monte_carlo_average(f, 100_000))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average of $f(x, y, z) = x^4$ over the unit sphere:
+    </span>
+    as we increase the number of samples, we get closer to
+    the true value of $0.2$.
+</div>
+</div>
+
+Now that we have validated that Monte Carlo integration helps
+us compute the average, let's do the same using the far better
+tool of designs.
+
 #### Spherical designs
+Computing the average over a sphere using designs is pretty much the same
+as computing averages over a circle.
+The crucial difference is how we choose the points: unsuprisingly,
+instead of polygons, we use polyhedra.
+
+Let us define spherical designs, the same way we defined circular designs:
+
+> **Definition:**
+> let $f_t: \mathcal{S}(\mathbb{R}^3) \rightarrow \mathbb{R}$ be a polynomial in $3$ variables
+> homogeneous in degree at most $t$.
+> A set $X = \{ x \vert x \in \mathcal{S}(\mathbb{R}^3) \}$ is a spherical
+> $t$-design if:
+> {% katexmm %}
+> $$
+> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\phi,\theta) \,r^2\sin\phi \,dr\,d\phi\,d\theta
+> $$
+> {% endkatexmm %}
+> holds for all possible $f_t$.
+> Moreover a spherical $t$-design is also a spherical $s$-design for all $0 < s < t$.
+
+The exact same comments we made about circular designs apply.
+
+The following polyhedra correspond to the respective spherical $t$-designs
+{% cite 10.1016/j.ejc.2008.11.007 %}. We limit ourselves to platonic solids:
+- The regular [tetrahedron](https://en.wikipedia.org/wiki/Tetrahedron) is a $2$-design.
+- The [cube](https://en.wikipedia.org/wiki/Cube) is a $3$-design.
+- The regular [octahedron](https://en.wikipedia.org/wiki/Octahedron) is a $3$-design.
+- The regular [icosahedron](https://en.wikipedia.org/wiki/Regular_icosahedron) is a $5$-design.
+- The regular [dodecahedron](https://en.wikipedia.org/wiki/Regular_dodecahedron) is a $5$-design.
+
+For practice, let's us compute the average of two functions
+using different spherical designs. Given there are duplicate designs
+of same strength, we will choose representative $3$- and $5$-designs.
+
+We will compute the average of the following functions:
+- The function $f(x,y,z) = x^2 + xz + yz + z^2$ has Monte Carlo computed average $\bar{f}\approx 0.6652720819848398$.
+- The function $f(x,y,z) = x^4$ has analytically computed average $\bar{f} = 0.2$.
+
+The first function requires at least a $2$-design while the second requires at least
+a $4$-design.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import numpy.linalg as la
+
+def tetrahedron():
+    """The tetrahedron as a spherical 2-design."""
+    polyhedron = np.array([
+        [ 1,  0, -1/np.sqrt(2)],
+        [-1,  0, -1/np.sqrt(2)],
+        [ 0,  1,  1/np.sqrt(2)],
+        [ 0, -1,  1/np.sqrt(2)],
+    ])
+    # Normalize so the tetrahedron fits into the unit sphere
+    return np.array(
+        [point / la.norm(point) for point in polyhedron]
+    )
+
+def cube():
+    """The tetrahedron as the representative spherical 3-design."""
+    polyhedron = np.array([
+        [ 1,  1,  1], [-1,  1,  1],
+        [-1, -1,  1], [-1, -1, -1],
+        [ 1,  1, -1], [ 1, -1, -1],
+        [-1,  1, -1], [ 1, -1,  1],
+    ])
+    # Normalize so the cube fits into the unit sphere
+    return np.array(
+        [point / la.norm(point) for point in polyhedron]
+    )
+
+def icosahedron():
+    """The icosahedron as the representative spherical 5-design."""
+    g = (1 + np.sqrt(5)) / 2
+    polyhedron = np.array([
+        [ 0,  1,  g], [ 0, -1,  g],
+        [ 0,  1, -g], [ 0, -1, -g],
+
+        [ 1,  g,  0], [-1,  g,  0],
+        [ 1, -g,  0], [-1, -g,  0],
+
+        [ g,  0,  1], [ g,  0, -1],
+        [-g,  0,  1], [-g,  0, -1],
+    ])
+    # Normalize so the icosahedron fits into the unit sphere
+    return np.array(
+        [point / la.norm(point) for point in polyhedron]
+    )
+
+def spherical_design_average(f, points):
+    """Computes the average of a function `f` using the spherical
+    t-design provided as points, specifically polyhedra.
+    """
+    return np.mean([f(*point) for point in points])
+
+if __name__ == "__main__":
+    f1 = lambda x, y, z: x**2 + x*z + y*z + z**2
+    print("We expect all designs to provide the average:")
+    print(f"f1 average using 2-design: {spherical_design_average(f1, tetrahedron())}")
+    print(f"f1 average using 3-design: {spherical_design_average(f1, cube())}")
+    print(f"f1 average using 5-design: {spherical_design_average(f1, icosahedron())}")
+
+    f2 = lambda x, y, z: x**4
+    print("\nWe expect the average to work only for the icosahedron:")
+    print(f"f2 average using 2-design: {spherical_design_average(f2, tetrahedron())}")
+    print(f"f2 average using 3-design: {spherical_design_average(f2, cube())}")
+    print(f"f2 average using 5-design: {spherical_design_average(f2, icosahedron())}")
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Averages of $f(x, y, z) = x^2 + xz + yz + z^2$ and $f(x, y, z) = x^4$
+        over the unit sphere using spherical $t$-designs:
+    </span>
+    as before, we note that for polynomials of degree $t$,
+    any $s$-design with $s < t$ yields unreliable averages.
+</div>
+</div>
+
+The output of my run is:
+
+<div class='figure' markdown='1'>
+{% highlight text %}
+We expect all designs to provide the average:
+f1 average using 2-design: 0.6666666666666667
+f1 average using 3-design: 0.6666666666666667
+f1 average using 5-design: 0.6666666666666666
+
+We expect the average to work only for the icosahedron:
+f2 average using 2-design: 0.22222222222222235
+f2 average using 3-design: 0.11111111111111117
+f2 average using 5-design: 0.20000000000000004
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Averages of $f(x, y, z) = x^2 + xz + yz + z^2$ and $f(x, y, z) = x^4$ for different $t$-designs:
+    </span>
+    as expected, for <code>f1</code> we get the correct value for all $t$-designs.
+    And as expected, for <code>f2</code> only the icosahedron works.
+</div>
+</div>
+
+From the result above, we have confirmed that polyhedra are spherical $t$-designs.
 
 ## The Haar measure
 

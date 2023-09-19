@@ -16,4 +16,4 @@ def monte_carlo_average(f, sample_size):
 
 if __name__ == "__main__":
     f = lambda x, y: x**2
-    print(average(f, 100_000))
+    print(monte_carlo_average(f, 100_000))

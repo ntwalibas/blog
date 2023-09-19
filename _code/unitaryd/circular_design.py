@@ -1,5 +1,4 @@
 import numpy as np
-import numpy.linalg as la
 
 def circular_design_average(f, t):
     """Computes the average of a function `f` using circular
