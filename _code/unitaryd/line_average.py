@@ -9,11 +9,7 @@ def monte_carlo_average(f, a, b, sample_size):
     if b - a == 0:
         raise ValueError(f"Cannot compute the average in the interval [{a},{b}].")
 
-    samples = np.random.uniform(a, b, sample_size)
-    total = 0
-    for sample in samples:
-        total += sample
-    return total / len(samples)
+    return np.mean(np.random.uniform(a, b, sample_size))
 
 if __name__ == "__main__":
     f = lambda x: 4 - x**2

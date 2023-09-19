@@ -274,11 +274,7 @@ def monte_carlo_average(f, a, b, sample_size):
     if b - a == 0:
         raise ValueError(f"Cannot compute the average in the interval [{a},{b}].")
 
-    samples = np.random.uniform(a, b, sample_size)
-    total = 0
-    for sample in samples:
-        total += sample
-    return total / len(samples)
+    return np.mean(np.random.uniform(a, b, sample_size))
 
 if __name__ == "__main__":
     f = lambda x: 4 - x**2
@@ -547,13 +543,12 @@ def monte_carlo_average(f, sample_size):
     def sample_from_circle(size):
         x_samples = np.random.uniform(0, 2 * np.pi, size)
         y_samples = np.random.uniform(0, 2 * np.pi, size)
-        return zip(np.cos(x_samples), np.sin(y_samples))
+        return zip(
+            np.cos(x_samples),
+            np.sin(y_samples)
+        )
 
-    samples = sample_from_circle(sample_size)
-    total = 0
-    for sample in samples:
-        total += f(*sample)
-    return total / sample_size
+    return np.mean([f(*sample) for sample in sample_from_circle(sample_size)])
 
 if __name__ == "__main__":
     f = lambda x, y: x**2
@@ -624,7 +619,7 @@ is a $2$-design and so on.
 So we have a polynomial of degree $5$, we should use a $6$-gon (hegaxon) as
 our $5$-design.
 
-What then are the points we will need to evaluate the polynomial
+What then are the points will we need to evaluate the polynomial
 $f(x,y)$ at in order to compute the average we seek?
 Those are simply the points corresponding to the vertex corners of the polygon.
 
@@ -766,7 +761,7 @@ $$
 $$
 {% endkatexmm %}
 
-To find the volume of a sphere is therefore calculated as:
+The volume of a sphere is therefore calculated as:
 
 {% katexmm %}
 $$
@@ -896,7 +891,7 @@ import numpy as np
 def monte_carlo_average(f, sample_size):
     """Compute the average of a function `f` over the unit sphere
     """
-    def sample(size):
+    def sample_from_sphere(size):
         theta = np.random.uniform(0, 2 * np.pi, size)
         p = np.random.uniform(-1, 1, size)
         phi = np.arccos(p)
@@ -906,11 +901,7 @@ def monte_carlo_average(f, sample_size):
             np.cos(phi)
         )
 
-    samples = sample(sample_size)
-    total = 0
-    for sample in samples:
-        total += f(*sample)
-    return total / sample_size
+    return np.mean([f(*sample) for sample in sample_from_sphere(sample_size)])
 
 if __name__ == "__main__":
     f = lambda x, y, z: x**4
