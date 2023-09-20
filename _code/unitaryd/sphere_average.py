@@ -9,7 +9,7 @@ def monte_carlo_average(f, sample_size):
         phi = np.arccos(p)
         return zip(
             np.sin(phi) * np.cos(theta),
-            np.sin(phi) * np.cos(theta),
+            np.sin(phi) * np.sin(theta),
             np.cos(phi)
         )
 

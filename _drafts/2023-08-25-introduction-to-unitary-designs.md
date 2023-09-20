@@ -600,7 +600,7 @@ Let's first understand the definition before finding what our circular $t$-desig
     This means the sum of all the degrees of the terms in the polynomial is the same and it is $t$.
 3. The set $X$ is finite otherwise calculating $\dfrac{1}{\lvert X \rvert}$ is not possible.
 4. Given $s < t$, wherever an $s$-design works, so will a $t$-design.
-5. **To accurately compute the average of polynomial of degree $t$, we must use a $t$-design.**
+5. **To accurately compute the average of a polynomial of degree $t$, we must use a $t$-design.**
 
 Here are a few examples to help understand the definition:
 - $f(x,y) = x^2$ is a homgeneous polynomial of degree $2$.
@@ -897,7 +897,7 @@ def monte_carlo_average(f, sample_size):
         phi = np.arccos(p)
         return zip(
             np.sin(phi) * np.cos(theta),
-            np.sin(phi) * np.cos(theta),
+            np.sin(phi) * np.sin(theta),
             np.cos(phi)
         )
 
@@ -1073,7 +1073,7 @@ It is possible to define averages over $n$-spheres but we won't bother doing
 so here since we don't use them at all.
 
 ## State designs
-Consider now the Bloch sphere and we want to average some
+Consider now the Bloch sphere and say we want to average some
 function over it. This is where state designs come into play.
 
 If we are dealing with two-qubits states, we will have to average
@@ -1081,7 +1081,7 @@ over a 7-sphere and that's just way too much work so we will not bother
 about such states.
 
 Moreover, quantum states are created by evolving some fudiciary state
-(such as the $\ket{0}$) towards the desired state.
+(such as the $\ket{00}$) towards the desired state.
 It will prove much more convenient to deal with two-qubits states
 via unitary designs than state designs.
 
