@@ -1227,7 +1227,7 @@ interpretation which coincides with our preliminary interpretation
 of $f$: $\bar{f}$ is the probability that the output state
 $\mathcal{E}(\ket{\psi}\bra{\psi})$ passes the test of being the input
 state $\ket{\psi}$, averaged over all input states.  
-(Note that the P. M. & R. Horodecki call $\bar{f}$ *fidelity* but in
+(Note that P. M. & R. Horodecki call $\bar{f}$ *fidelity* but in
 current literature it has the more appropriate name of *average fidelity*
 and we will stick to this current nomenclature {% cite Nielsen_2002 %}.)
 
