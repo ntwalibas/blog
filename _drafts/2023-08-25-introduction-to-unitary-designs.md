@@ -1091,9 +1091,13 @@ what functions of quantum states are. It is not terribly complicated
 even if seeing them the first time can pose some problems
 wrapping our heads around. It gets easier once one
 sees a bunch of them and remembers that quantum states are just
-vectors.  
+vectors.
+
 We will introduce one function that we will use as running example
-for the rest of this section and that was introduced in {% cite horodecki1999general %}.
+for the rest of this section. Down the line, we will introduce
+another function that is an extension of the previous one
+and that's more practical for quantum information: computing
+the average fidelity of a quantum channel.
 
 After we have introduced the function in question, we will give it
 an operational meaning as given in {% cite horodecki1999general %}
@@ -1176,7 +1180,7 @@ Where $\mathcal{S}(\mathbb{C}^n)$ correspond to "points" from the complex $n$-sp
 and $d_{\mu}\ket{\psi}$ is the appropriate measure.
 
 To understand what the former sentence means, let's place it in the context
-of computing the integral above over the Block sphere:
+of computing the integral above over the Bloch sphere:
 - $\mathcal{S}(\mathbb{C}^n)$ correspond to "points" from the complex $n$-sphere:
     for single qubits, the sphere in the Bloch sphere. So the "points" are going to be
     single-qubit states taken from the Bloch sphere such as $\ket{0}$,
@@ -1230,6 +1234,8 @@ And if it is $0$, then the channel doesn't preserve quantum states.
 ### Average of a function over the Bloch sphere: Monte Carlo integration
 
 ### Average of a function over the Bloch sphere: state designs
+
+### Application: quantum gate fidelity
 
 ## Unitary designs
 
