@@ -13,16 +13,181 @@ published: false
 ---
 
 ## Introduction
+Current quantum computers are very noisy, that is short qubit lifetimes
+and imperfect quantum gates. Mathematically, this means that given
+the current error correction codes, we can't do error correction on them.
+
+Nonetheless we are able to use them using heuristic algorithms
+such as variational quantum eigensolver (VQE), variational quantum simulation (VQS),
+and a host of other algorithms that don't rely on error correction.
+
+For instance, in the case of VQE, our goal is to find the ground state
+energy of some Hamiltonian of interest. Still, the presence of noise
+does affect our ability to accurately compute the ground state energy.
+
+Error mitigation comes to the rescue. Instead of trying to correct
+for errors, we try to counter their effects.  
+Zero-noise extrapolation (ZNE) is one such technique where we amplify the
+noise in the circuit of interest then try to estimate what the
+ground state would be if there was no noise.
+
+The goal of this post is to build some intuition about ZNE by via very simple
+examples and introduce the tools that allow us to use ZNE professionally.
+
+This post came about as I'm taking part of a graduate-level course
+on error mitigation offer by [QWorld](https://qworld.net/qcourse551-1/),
+an initiave by the [University of Latvia](https://www.df.lu.lv/en/),
+faculty of Computing in collaboration with [Classiq](https://www.classiq.io/)
+an Israeli quantum software company.
+
+This post brings nothing new to the table, in fact it is based
+on the paper *Digital zero noise extrapolation for quantum error mitigation*
+{% cite Giurgica_Tiron_2020 %} from the [Unitary Fund](https://unitary.fund/).
+
+Our goal is to present the aforementioned paper in manner that's
+much easier for (quantum) software developers to quickly understand.
+That means, where relevant, we do all the calculations and interpretations,
+and more important we write some code to validate the technique via concrete
+results.
+
 ### Prerequisites
+I assume that the reader can do simple linear algebra
+and can program in Python.
+
+Given that error mitigation is all about compensating for the presence
+of errors in the execution of quantum programs, the reader is expected
+to have a basic understanding of quantum computation in open systems.
+Essentially, what are density matrices and quantum channels.
+
 ### Notation
+We will make use of the following quantum gates:
+
+- Identity $I$ matrix:
+{% katexmm %}
+$$
+I =
+\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Pauli $X$ matrix:
+{% katexmm %}
+$$
+X =
+\begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Pauli $Y$ matrix:
+{% katexmm %}
+$$
+Y =
+\begin{bmatrix}
+0 & -i \\
+i & 0
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Pauli $Z$ matrix:
+{% katexmm %}
+$$
+Z =
+\begin{bmatrix}
+1 & 0 \\
+0 & -1
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+And of matrices that generate the Clifford group:
+
+- Hadamard gate:
+{% katexmm %}
+$$
+H =
+\dfrac{1}{\sqrt{2}}\begin{bmatrix}
+1 & 1 \\
+1 & -1
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
+- Phase gate:
+{% katexmm %}
+$$
+S =
+\begin{bmatrix}
+1 & 0 \\
+0 & i
+\end{bmatrix}
+$$
+{% endkatexmm %}
+
 ### Organization of the post
+In the tooling section we introduce the tools necessary to
+follow along with the tutorial.
+The reader is encouraged to install the necessary software tools
+and to brush up on the necessary theory.
+
+The section that follows, we formulate ZNE as an estimation problem.
+First we justify via a simple example why we can parametrize
+the calculation of the expectation value of some observable
+with some real number that represents the "amount" of noise
+in the system. Then introduce the ZNE estimation problem.
+
+The section on noise amplification shows how to amplify
+noise in a quantum circuit so we can later extrapolate
+from that amplification what the expectation value would be
+in the absence of noise.
+
+How we can apply ZNE differs when we are dealing with incoherent
+errors versus when we are dealing with coherent errors.
+The section that follows noise amplification shows that
+strategies for applying under such different noise models.
+
+Then in the section that follows we elaborate on the different
+ways to do estimation procedures.
+
+Last, we use [Mitiq](https://github.com/unitaryfund/mitiq) to do
+error mitigation using ZNE using the Classiq platform
+and using PennyLane.
 
 ## Tooling
+It is assumed that the reader can program in Python and can use
+Numpy and Scipy.
+
+Of course, since we are doing quantum computation, it is necessary
+to know some linear algebra.
+
 ### Theoretical tools
+On theory side of things, it is important to know:
+- How to calculate the expectation of an observable given some density matrix.
+- Understanding of the depolarizing channel.
+
 ### Software tools
+I have a tendency to use [PennyLane](https://pennylane.ai/install/)
+to validate some ideas so please go ahead and install it.
+
+While we will write much code about ZNE from "scratch",
+the reader should have [Mitiq](https://github.com/unitaryfund/mitiq)
+installed since professionally, you will probably be using it
+and not something written from scratch.
+
+But the goal of this post is to use Mitiq on the Classiq platform,
+please go ahead and register for an account on the
+[Classiq platform](https://platform.classiq.io/registration) and download the
+[Classiq Python SDK](https://docs.classiq.io/latest/getting-started/python-sdk/).
 
 ## Zero-noise extrapolation as an estimation problem
-### Expectation value calculation as an estimation problem
+
+
 ### Expectation value as a function of noise
 ### Noise-parametrized expectation value as an estimation problem
 
@@ -38,7 +203,7 @@ published: false
 ### Non-adaptive estimation
 ### Adaptive estimation
 
-## ZNE using Mitiq
+## Zero-noise extrapolation using Mitiq
 ### Using Mitiq with PennyLane
 ### Using Mitiq with Classiq
 
