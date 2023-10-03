@@ -1262,5 +1262,3 @@ And if it is $0$, then the channel doesn't preserve quantum states.
 ## Next steps
 
 ## Conclusion
-
-## Derivations

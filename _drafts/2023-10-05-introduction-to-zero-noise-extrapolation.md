@@ -23,7 +23,7 @@ published: false
 
 ## Zero-noise extrapolation as an estimation problem
 ### Expectation value calculation as an estimation problem
-### Parametrization of the expectation value as a function of noise
+### Expectation value as a function of noise
 ### Noise-parametrized expectation value as an estimation problem
 
 ## Noise amplification
@@ -43,5 +43,3 @@ published: false
 ### Using Mitiq with Classiq
 
 ## Conclusion
-
-## Derivations
