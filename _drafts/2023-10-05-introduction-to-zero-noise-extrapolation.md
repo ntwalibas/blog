@@ -186,7 +186,54 @@ please go ahead and register for an account on the
 [Classiq Python SDK](https://docs.classiq.io/latest/getting-started/python-sdk/).
 
 ## Zero-noise extrapolation as an estimation problem
+ZNE was introduced in 2016 simultaenously in {% cite Li_2017 %}
+and {% cite Temme_2017 %} as technique for "active" error
+minimization.
 
+In fact, our justification for computing the expectation
+value as a function the strength of noise is based on {% cite Li_2017 %}.
+
+So what does it mean to say that ZNE is an estimation problem?
+Let's recall that calculating the expectation value of some
+observable is equivalent to computing the average of measuring
+the eigenvalues of the observable of interest:
+
+{% katexmm %}
+$$
+    \hat{\mathbb{E}}(H) = \sum_{i}^N \lambda_i p(\lambda_i)
+$$
+{% endkatexmm %}
+
+Where $N$ is the number of samples.  
+We are essentially trying to estimate the "true" expectation
+value via a limited number of samples by using the sample mean
+as an estimator the population mean.
+
+*Moving forward, instead of writing $\hat{\mathbb{E}}(H)$, we will write*
+*$\hat{\mathbb{E}}$ where it is understood that we are calculating the*
+*expectation value of some given observable.*
+
+Let $\hat{\mathbb{E}}$ be the sample average as calculated
+by the formula above and $\mathbb{E}$ be the actual population average,
+that is the average in the infinite sample size.
+
+We can express the sample average as the population average with some
+fluctuation about the population average as follows:
+
+{% katexmm %}
+$$
+    \hat{\mathbb{E}}(H) = \mathbb{E} + \hat{\delta}
+$$
+{% endkatexmm %}
+
+Where $\hat{\delta}$ is a random variable that represents the fact
+that the computed expectation value varies about the true expectation value.
+Note that even the true expectation would still be computed
+in the presence of noise.
+
+Nonetheless, we already have the necessary ingredient to undersand
+ZNE: once we parametrize the computed expectation value with the strength
+of the noise we are dealing with, the equation will be quite similar.
 
 ### Expectation value as a function of noise
 ### Noise-parametrized expectation value as an estimation problem
