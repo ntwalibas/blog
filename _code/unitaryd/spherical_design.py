@@ -15,11 +15,11 @@ def tetrahedron():
     )
 
 def cube():
-    """The tetrahedron as the representative spherical 3-design."""
+    """The cube as the representative spherical 3-design."""
     coordinates = np.array([
-        [ 1,  1,  1], [-1,  1,  1],
-        [-1, -1,  1], [-1, -1, -1],
-        [ 1,  1, -1], [ 1, -1, -1],
+        [ 1,  1,  1], [-1, -1, -1],
+        [-1, -1,  1], [ 1,  1, -1],
+        [ 1, -1, -1], [-1,  1,  1],
         [-1,  1, -1], [ 1, -1,  1],
     ])
     # Normalize so the cube fits into the unit sphere
@@ -46,8 +46,8 @@ def icosahedron():
     )
 
 def spherical_design_average(f, points):
-    """Computes the average of a function `f` using a spherical
-    t-designs, specifically polyhedra.
+    """Computes the average of a function `f` using the spherical
+    t-design provided as `points`, specifically polyhedra vertex corners.
     """
     return np.mean([f(*point) for point in points])
 

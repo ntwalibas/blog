@@ -1,5 +1,5 @@
 ---
-title: "Unitary designs: faster averages over unitaries"
+title: "Quantum designs: faster averaging over quantum states and unitaries"
 subtitle: "A common task in life is calculating the average
 of some quantities. The average is the most common and intuitive statistic every
 human learns and uses. Unitary designs allow us to compute averages over
@@ -541,11 +541,10 @@ def monte_carlo_average(f, sample_size):
     """Compute the average of a function `f` over the unit circle.
     """
     def sample_from_circle(size):
-        x_samples = np.random.uniform(0, 2 * np.pi, size)
-        y_samples = np.random.uniform(0, 2 * np.pi, size)
+        theta = np.random.uniform(0, 2 * np.pi, size)
         return zip(
-            np.cos(x_samples),
-            np.sin(y_samples)
+            np.cos(theta),
+            np.sin(theta)
         )
 
     return np.mean([f(*sample) for sample in sample_from_circle(sample_size)])
@@ -584,7 +583,7 @@ We start by defining what a circular design is:
 > **Definition:**
 > let $f_t: \mathcal{S}(\mathbb{R}^2) \rightarrow \mathbb{R}$ be a polynomial in $2$ variables
 > homogeneous in degree at most $t$.
-> A set $X = \{ x \vert x \in \mathcal{S}(\mathbb{R}^2) \}$ is a circular
+> A set $X = \\{ x \vert x \in \mathcal{S}(\mathbb{R}^2) \\}$ is a circular
 > $t$-design if:
 > {% katexmm %}
 > $$
@@ -614,12 +613,13 @@ specifically the $(t+1)$-gon is a circular $t$-design.
 
 As examples we have that the [digon](https://en.wikipedia.org/wiki/Digon)
 is a $1$-design, the [triangle](https://en.wikipedia.org/wiki/Triangle)
-is a $2$-design and so on.
+is a $2$-design, the [square](https://en.wikipedia.org/wiki/Square) a $3$-design,
+and so on.
 
-So we have a polynomial of degree $5$, we should use a $6$-gon (hegaxon) as
+Thus if we have a polynomial of degree $5$, we should use a $6$-gon (hexagon) as
 our $5$-design.
 
-What then are the points will we need to evaluate the polynomial
+What then are the points we will need to evaluate the polynomial
 $f(x,y)$ at in order to compute the average we seek?
 Those are simply the points corresponding to the vertex corners of the polygon.
 
@@ -707,17 +707,17 @@ So what have we learned from the result above?
     Using a circular $9$-design, we required only $9$ evaluation of the function.
     Moreover, because Monte Carlo relies on random sampling, we will not
     get the same exact result with each run.
-3. While we may get the correct result using an $s$-design for $s \le 8$
-    (e.g.: $s = 5$), we can't rely on that. Notice that for $s = 6$ right after
-    we got the wrong result.  
+3. While we may get the correct result using a $t$-design $t < 9$
+    (e.g.: $t = 5$), we can't rely on that. Notice that for $t = 6$, we got
+    the wrong result even though the result was correct for $t = 5$.  
     But notice how the result remains pretty consistent for $t \ge 9$.
     And that makes sense: we are just using more points so accuracy should either
     increase or stay the same.
 
-And that's pretty much the essence of using designs: approximate
-function averaging over some set using as few function evaluations as possible.  
-In the sections that follow, we wil simply introduce new measures and
-new designs to tackle different problems.
+And that's pretty much the essence of using designs: *approximate*
+*function averaging over some set using as few function evaluations as possible.*  
+In the sections that follow, we wil simply introduce new sets over which to measure
+and new designs to tackle different problems.
 
 ### Average of a function over a sphere
 Averaging over a $2$-sphere is pretty much the same as averaging over
@@ -860,7 +860,7 @@ that in subsection $2.2.1$ in {% cite Ozols_2009 %}:
 
 {% katexmm %}
 $$
-\mathbb{S}^2 = \left\{ \left. \begin{bmatrix} x \\ y \\ z \end{bmatrix} = \begin{bmatrix} \sin\phi\cos\theta \\ \sin\phi\sin\theta \\ \cos\phi \end{bmatrix} \right|\, 0 \le \phi \le \pi; 0 \le \theta < 2\pi \right\}
+\mathbb{S}^2 = \left\{ \left. \begin{bmatrix}x \\ y \\ z\end{bmatrix} = \begin{bmatrix} \sin\phi\cos\theta \\ \sin\phi\sin\theta \\ \cos\phi \end{bmatrix} \right|\, 0 \le \phi \le \pi; 0 \le \theta < 2\pi \right\}
 $$
 {% endkatexmm %}
 
@@ -932,7 +932,7 @@ Let us define spherical designs, the same way we defined circular designs:
 > **Definition:**
 > let $f_t: \mathcal{S}(\mathbb{R}^3) \rightarrow \mathbb{R}$ be a polynomial in $3$ variables
 > homogeneous in degree at most $t$.
-> A set $X = \{ x \vert x \in \mathcal{S}(\mathbb{R}^3) \}$ is a spherical
+> A set $X = \\{ x \vert x \in \mathcal{S}(\mathbb{R}^3) \\}$ is a spherical
 > $t$-design if:
 > {% katexmm %}
 > $$
@@ -952,7 +952,7 @@ The following polyhedra correspond to the respective spherical $t$-designs
 - The regular [icosahedron](https://en.wikipedia.org/wiki/Regular_icosahedron) is a $5$-design.
 - The regular [dodecahedron](https://en.wikipedia.org/wiki/Regular_dodecahedron) is a $5$-design.
 
-For practice, let's us compute the average of two functions
+For practice, let's compute the average of two functions
 using different spherical designs. Given there are duplicate designs
 of same strength, we will choose representative $3$- and $5$-designs.
 
@@ -982,11 +982,11 @@ def tetrahedron():
     )
 
 def cube():
-    """The tetrahedron as the representative spherical 3-design."""
+    """The cube as the representative spherical 3-design."""
     coordinates = np.array([
-        [ 1,  1,  1], [-1,  1,  1],
-        [-1, -1,  1], [-1, -1, -1],
-        [ 1,  1, -1], [ 1, -1, -1],
+        [ 1,  1,  1], [-1, -1, -1],
+        [-1, -1,  1], [ 1,  1, -1],
+        [ 1, -1, -1], [-1,  1,  1],
         [-1,  1, -1], [ 1, -1,  1],
     ])
     # Normalize so the cube fits into the unit sphere
@@ -1014,7 +1014,7 @@ def icosahedron():
 
 def spherical_design_average(f, points):
     """Computes the average of a function `f` using the spherical
-    t-design provided as points, specifically polyhedra.
+    t-design provided as `points`, specifically polyhedra vertex corners.
     """
     return np.mean([f(*point) for point in points])
 
@@ -1066,7 +1066,7 @@ f2 average using 5-design: 0.20000000000000004
 </div>
 </div>
 
-From the result above, we have confirmed that polyhedra are spherical $t$-designs.
+From the result above, we have (numerically) confirmed that polyhedra are spherical $t$-designs.
 
 ### Average of a function over $n$-spheres
 It is possible to define averages over $n$-spheres but we won't bother doing
@@ -1085,7 +1085,151 @@ Moreover, quantum states are created by evolving some fudiciary state
 It will prove much more convenient to deal with two-qubits states
 via unitary designs than state designs.
 
+### Functions of a quantum state and their average
+The first thing we want to do is understand (at least loosely)
+what functions of quantum states are. It is not terribly complicated
+even if seeing them the first time can pose some problems
+wrapping our heads around. It gets easier once one
+sees a bunch of them and remembers that quantum states are just
+vectors.  
+We will introduce one function that we will use as running example
+for the rest of this section and that was introduced in {% cite horodecki1999general %}.
 
+After we have introduced the function in question, we will give it
+an operational meaning as given in {% cite horodecki1999general %}
+when averaging over all states.
+
+#### Function of a quantum state
+A function of a quantum state is pretty much like any other function
+but its domain will be over quantum states.
+The range can be quantum states, matrices, complex number, etc.
+
+For example, here is a function we will work with in the following
+subsection:
+
+{% katexmm %}
+$$
+\begin{align}
+f : \mathbb{C}^n &\rightarrow \mathbb{R} \\
+\ket{\psi} &\mapsto \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\mathcal{E}$ is a channel.
+
+Of course, functions we work will need to have some meaning
+that allows us to interpret the output of their "execution".
+
+In the case of the function above, let's assume that the channel
+$\mathcal{E}$ is a unitary channel. Then it follows that:
+
+{% katexmm %}
+$$
+\mathcal{E}(\ket{\psi}\bra{\psi}) = \mathcal{E} \ket{\psi}\bra{\psi} \mathcal{E}^\dagger
+$$
+{% endkatexmm %}
+
+Consequently $f$ can be rewritten as:
+
+{% katexmm %}
+$$
+\begin{align}
+f : \mathbb{C}^n &\rightarrow \mathbb{R} \\
+\ket{\psi} &\mapsto \bra{\psi}\mathcal{E} \ket{\psi}\bra{\psi} \mathcal{E}^\dagger\ket{\psi} \\
+&\mapsto \lvert \bra{\psi}\mathcal{E} \ket{\psi} \rvert^2
+\end{align}
+$$
+{% endkatexmm %}
+
+This form is easily amenable to interpretation: $f$ measures
+how close the states $\ket{\psi}$ and $\mathcal{E} \ket{\psi}$ are.
+This is something we can compute with the [SWAP test](https://en.wikipedia.org/wiki/Swap_test).
+
+What's truly important to know about this function is to note
+that since $\mathcal{E}$ is fixed but $\ket{\psi}$ varies, the function $f$
+actually tells us something about $\mathcal{E}$: it tells how close
+states created by $\mathcal{E}$ are close to the input state $\ket{\psi}$.
+
+Hence $f$ calculates the so-called *fidelity* of the channel $\mathcal{E}$:
+that is how well the channel $\mathcal{E}$ preserves its input state.
+If $\ket{\psi}$ remained unchanged then $f = 1$, otherwise $f < 1$.
+
+#### Average of a function of quantum states
+Given our running example using the function $f$,
+it is reasonable to ask how to choose the representative
+inputs for $f$. Of course, we randomly sample uniformly
+the input states then average over all of them.
+
+The average is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+\bar{f} &= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} f(\ket{\psi}) d_{\mu}\ket{\psi} \\
+&= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\mathcal{S}(\mathbb{C}^n)$ correspond to "points" from the complex $n$-sphere
+and $d_{\mu}\ket{\psi}$ is the appropriate measure.
+
+To understand what the former sentence means, let's place it in the context
+of computing the integral above over the Block sphere:
+- $\mathcal{S}(\mathbb{C}^n)$ correspond to "points" from the complex $n$-sphere:
+    for single qubits, the sphere in the Bloch sphere. So the "points" are going to be
+    single-qubit states taken from the Bloch sphere such as $\ket{0}$,
+    $\ket{+}$, $\ket{+i}$, etc.
+- $d_{\mu}\ket{\psi}$ is the appropriate measure:
+    for single-qubit states "living" on the Bloch sphere,
+    the measure is exactly as calculated for regular spheres.
+    (For two-qubit states, we are dealing with a $7$-sphere {% cite Mosseri_2001 %}.
+    That's just too much to bother about so we will not elaborate on them.)
+
+And of course, we always need to make sure to normalize
+our integral by dividing the result by the volume of the sphere
+$Vol(\mathcal{S}(\mathbb{C}^n))$.
+In the case of the Bloch sphere, it is exactly the same as before
+when we learned about regular spheres.  
+*It is normal to see the normalization factor omitted but it is always assumed*
+*present. A generous author will let you know that the measure is normalized*
+*to remind you of that normalization factor.*
+
+Now back to the integral above: since we are averaging over all states,
+$\bar{f}$ is called the *average fidelity* of the channel $\mathcal{E}$.
+{% cite horodecki1999general %} give it the following operational
+interpretation which coincides with our preliminary interpretation
+of $f$: $\bar{f}$ is the probability that the output state
+$\mathcal{E}(\ket{\psi}\bra{\psi})$ passes the test of being the input
+state $\ket{\psi}$, averaged over all input states.  
+(Note that the **Horodecki**s call $\bar{f}$ *fidelity* but in
+current literature it has the more appropriate name of *average fidelity*
+and we will stick to this current nomenclature {% cite Nielsen_2002 %}.)
+
+Since we are averaging over all states, $\bar{f}$ depends on the channel
+$\mathcal{E}$ and not on the states:
+
+{% katexmm %}
+$$
+\begin{align}
+\bar{f}: \, &\mathbb{C}^{n \times n} \rightarrow \mathbb{R} \\
+&\mathcal{E} \mapsto \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+Based on our previous interpretation of $f$, $\bar{f}$ quantifies how
+well $\mathcal{E}$ preserves quantum states: if it equal to $1$
+then $\mathcal{E}$ perfectly preserves quantum states. This will be
+the case if $\mathcal{E} = \mathbb{1}_n$, that is the identity matrix.
+And if it is $0$, then the channel doesn't preserve quantum states.
+
+### Average of a function over the Bloch sphere: analytic solution
+
+### Average of a function over the Bloch sphere: Monte Carlo integration
+
+### Average of a function over the Bloch sphere: state designs
 
 ## Unitary designs
 
