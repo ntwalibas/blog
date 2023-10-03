@@ -45,9 +45,8 @@ and code.
 It is assumed the reader can do basic integral calculations
 and can program in Python.
 
-The reader is also assumed to know basics of quantum computation,
-up to a basic ability to describe quantum channels in terms
-of Kraus operators though this figure only once.
+The reader is also assumed to know basics of quantum computation.
+We won't use anything fancy but simple quantum circuits
 
 ### Notation
 Quantum states can be written in a variety of ways but for computational
