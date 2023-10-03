@@ -1195,10 +1195,30 @@ And of course, we always need to make sure to normalize
 our integral by dividing the result by the volume of the sphere
 $Vol(\mathcal{S}(\mathbb{C}^n))$.
 In the case of the Bloch sphere, it is exactly the same as before
-when we learned about regular spheres.  
-*It is normal to see the normalization factor omitted but it is always assumed*
-*present. A generous author will let you know that the measure is normalized*
-*to remind you of that normalization factor.*
+when we learned about regular spheres.
+
+<div class='figure figure-alert figure-info' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Uniform Haar measure and normalization
+    </div>
+    It is normal to see the normalization factor omitted but it is always assumed
+    present. A generous author will let you know that the measure is normalized
+    to remind you of that normalization factor.
+
+    We can see this by noting that:
+
+    {% katexmm %}
+    $$
+    \int_{\mathcal{S}(\mathbb{C}^n)} d_{\mu}\ket{\psi} = Vol(\mathcal{S}(\mathbb{C}^n))
+    $$
+    {% endkatexmm %}
+
+    Therefore division by the volume ensures that all states in the integral
+    are weighted uniformly. The measure $d_{\mu}\ket{\psi}$ is called the <b>uniform Haar measure</b>.
+    As applied to quantum states, one will see it also referred to as the <b>Fubini-Study measure</b>.
+</div>
+</div>
 
 Now back to the integral above: since we are averaging over all states,
 $\bar{f}$ is called the *average fidelity* of the channel $\mathcal{E}$.
