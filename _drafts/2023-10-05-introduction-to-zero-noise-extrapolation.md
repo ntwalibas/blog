@@ -195,8 +195,8 @@ value as a function the strength of noise is based on {% cite Li_2017 %}.
 
 So what does it mean to say that ZNE is an estimation problem?
 Let's recall that calculating the expectation value of some
-observable is equivalent to computing the average of measuring
-the eigenvalues of the observable of interest:
+observable is equivalent to computing the average of measured
+eigenvalues of the observable of interest:
 
 {% katexmm %}
 $$
@@ -243,7 +243,7 @@ $U = U_N \cdots U_n \cdots U_1$, where $U_n$ is the $n^{th}$
 gate being applied to the initial state $\ket{\bar{0}}\bra{\bar{0}}$.
 
 The operation $U$ is ideal, there are exactly zero errors that
-occured after it completes. Let's denote the final state as:
+occured after it completed. Let's denote the final state as:
 
 {% katexmm %}
 $$
@@ -293,7 +293,7 @@ $$
 
 We need to expand $\mathcal{\Lambda} U = \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1$
 in order to find a better representation. Given the many terms to multiply
-we limit ourselves to expanding two terms two terms and "extrapolate"
+we limit ourselves to expanding two terms and "extrapolate"
 the form of the entire expression $\mathcal{\Lambda} U$.
 
 Our goal now is to expand $\mathcal{\Lambda}_2U_2 \mathcal{\Lambda}_1U_1$.
@@ -363,8 +363,8 @@ $$
     \mathcal{\Lambda} U &= \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1 \\
     &= U_N \cdots U_i \cdots U_1 \\
     &- (\epsilon_N + \cdots + \epsilon_i + \cdots + \epsilon_1) U_N \cdots U_i \cdots U_1 \\
-    &+ \epsilon_N (\mathcal{E}_N U_N \cdots U_i \cdots U_1) + \epsilon_i (U_N \cdots \mathcal{E}_i U_i \cdots U_1) 
-    + \epsilon_1 (U_N \cdots U_i \cdots \mathcal{E}_1 U_1) \\
+    &+ \epsilon_N (\mathcal{E}_N U_N \cdots U_i \cdots U_1) + \cdots + \epsilon_i (U_N \cdots \mathcal{E}_i U_i \cdots U_1) 
+    + \cdots + \epsilon_1 (U_N \cdots U_i \cdots \mathcal{E}_1 U_1) \\
     &+ \mathcal{O}(\epsilon_1\epsilon_2)
 \end{align}
 $$
