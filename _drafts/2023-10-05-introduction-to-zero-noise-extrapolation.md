@@ -293,7 +293,7 @@ $$
 
 We need to expand $\mathcal{\Lambda} U = \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1$
 in order to find a better representation. Given the many terms to multiply
-we limit ourselves to two terms to expanding two terms and "extrapolate"
+we limit ourselves to expanding two terms two terms and "extrapolate"
 the form of the entire expression $\mathcal{\Lambda} U$.
 
 Our goal now is to expand $\mathcal{\Lambda}_2U_2 \mathcal{\Lambda}_1U_1$.
@@ -339,8 +339,10 @@ $$
 $$
 {% endkatexmm %}
 
-Recalling that $\epsilon_1, \epsilon_2 < 1$, it follows then that $\epsilon_1\epsilon_2 \ll 1$.
-We can therefore ignore then higher order terms:
+Recalling that $\epsilon_1, \epsilon_2 < 1$
+(if $\epsilon_i = 1$ then the system is riddled with noise and unusable),
+it follows that $\epsilon_1\epsilon_2 \ll 1$.
+We can therefore ignore the higher order terms:
 
 {% katexmm %}
 $$
@@ -361,8 +363,8 @@ $$
     \mathcal{\Lambda} U &= \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1 \\
     &= U_N \cdots U_i \cdots U_1 \\
     &- (\epsilon_N + \cdots + \epsilon_i + \cdots + \epsilon_1) U_N \cdots U_i \cdots U_1 \\
-    &+ (\epsilon_N \mathcal{E}_N U_n \cdots U_i \cdots U_1) + (U_n \cdots \epsilon_i \mathcal{E}_i U_i \cdots U_1) 
-    + (U_n \cdots U_i \cdots \epsilon_1 \mathcal{E}_1 U_1) \\
+    &+ \epsilon_N (\mathcal{E}_N U_N \cdots U_i \cdots U_1) + \epsilon_i (U_N \cdots \mathcal{E}_i U_i \cdots U_1) 
+    + \epsilon_1 (U_N \cdots U_i \cdots \mathcal{E}_1 U_1) \\
     &+ \mathcal{O}(\epsilon_1\epsilon_2)
 \end{align}
 $$
@@ -375,7 +377,7 @@ $$
 \begin{align}
     \mathcal{\Lambda} U &= U_N \cdots U_i \cdots U_1 \\
     &- (\sum_i^N \epsilon_i) U_N \cdots U_i \cdots U_1 \\
-    &+ \sum_i^N \epsilon_i U_n \cdots \mathcal{E}_i U_i \cdots U_1 \\
+    &+ \sum_i^N \epsilon_i U_N \cdots \mathcal{E}_i U_i \cdots U_1 \\
     &+ \mathcal{O}(\epsilon_1\epsilon_2)
 \end{align}
 $$
@@ -389,7 +391,7 @@ $$
 \begin{align}
     \mathcal{\Lambda} U &= U_N \cdots U_i \cdots U_1 \\
     &- \lambda(\sum_i^N \epsilon'_i) U_N \cdots U_i \cdots U_1 \\
-    &+ \lambda \sum_i^N \epsilon'_i U_n \cdots \mathcal{E}_i U_i \cdots U_1 \\
+    &+ \lambda \sum_i^N \epsilon'_i U_N \cdots \mathcal{E}_i U_i \cdots U_1 \\
     &+ \mathcal{O}(\lambda^2)
 \end{align}
 $$
@@ -404,21 +406,21 @@ $$
     &= \text{Tr}[H(\mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
     &= \text{Tr}[H(U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
     &- \text{Tr}[H(\lambda(\sum_i^N \epsilon'_i) U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
-    &+ \text{Tr}[H(\lambda \sum_i^N \epsilon'_i U_n \cdots \mathcal{E}_i U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
+    &+ \text{Tr}[H(\lambda \sum_i^N \epsilon'_i U_N \cdots \mathcal{E}_i U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
     &+ \mathcal{O}(\lambda^2)
 \end{align}
 $$
 {% endkatexmm %}
 
 Let us recall that $\rho^{(0)} = U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}})$
-and let us define $\rho^{(1)} = \lambda \sum_i^N \epsilon'_i U_n \cdots \mathcal{E}_i U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}})$.
+and let us define $\rho^{(1)} = \lambda \sum_i^N \epsilon'_i U_N \cdots \mathcal{E}_i U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}})$.
 The expectation value can be rewritten as:
 
 {% katexmm %}
 $$
 \begin{align}
     \hat{\braket{H}} &= \text{Tr}[H\rho^{(0)}] \\
-    &- \lambda \text{Tr}[H\sum_i^N \epsilon'_i \rho^{(0)}] \\
+    &- \left(\lambda \sum_i^N \epsilon'_i\right) \text{Tr}[H\rho^{(0)}] \\
     &+ \lambda \text{Tr}[H\rho^{(1)}] \\
     &+ \mathcal{O}(\lambda^2)
 \end{align}
@@ -433,14 +435,14 @@ So our final expression of the expectation value is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \hat{\braket{H}}(\lambda) &= \left(1 - \lambda \sum_i^N \epsilon'_i \right) \braket{H}^{(0)} + \lambda \braket{H}^{(1)} + \mathcal{O}(\lambda^2) \tag{2}
+    \hat{\braket{H}}(\lambda) &= \left(1 - \lambda \sum_i^N \epsilon'_i \right) \hat{\braket{H}}^{(0)} + \lambda \hat{\braket{H}}^{(1)} + \mathcal{O}(\lambda^2) \tag{2}
 \end{align}
 $$
 {% endkatexmm %}
 
-Where $\braket{H}^{(0)} = \text{Tr}[H\rho^{(0)}]$ is the expectation value
-when there is no noise in the system and $\braket{H}^{(0)} = \text{Tr}[H\rho^{(1)}]$
-that takes into account noise $\mathcal{E}_i$ affecting each gate $U_i$.
+Where $\hat{\braket{H}}^{(0)} = \text{Tr}[H\rho^{(0)}]$ is the expectation value
+when there is no noise in the system and $\hat{\braket{H}}^{(1)} = \text{Tr}[H\rho^{(1)}]$
+which takes into account noise $\mathcal{E}_i$ affecting each gate $U_i$.
 
 ### Noise-parametrized expectation value as an estimation problem
 
