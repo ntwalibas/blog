@@ -200,42 +200,248 @@ the eigenvalues of the observable of interest:
 
 {% katexmm %}
 $$
-    \hat{\mathbb{E}}(H) = \sum_{i}^N \lambda_i p(\lambda_i)
+    \hat{\mathbb{E}}(H) = \hat{\braket{H}} = \sum_{i}^N h_i \, p(h_i)
 $$
 {% endkatexmm %}
 
-Where $N$ is the number of samples.  
+Where $N$ is the number of samples and $h_i$ is
+the $i^{th}$ eigenvalue of $H$.  
 We are essentially trying to estimate the "true" expectation
 value via a limited number of samples by using the sample mean
 as an estimator the population mean.
 
-*Moving forward, instead of writing $\hat{\mathbb{E}}(H)$, we will write*
-*$\hat{\mathbb{E}}$ where it is understood that we are calculating the*
-*expectation value of some given observable.*
-
-Let $\hat{\mathbb{E}}$ be the sample average as calculated
-by the formula above and $\mathbb{E}$ be the actual population average,
-that is the average in the infinite sample size.
-
-We can express the sample average as the population average with some
-fluctuation about the population average as follows:
+Let $\hat{\braket{H}}$ be the sample average as calculated
+by the formula above and $\braket{H}$ be the actual population average,
+that is the average in the infinite sample size.  
+We can express the sample average as the population average plus/minus some
+fluctuation as follows:
 
 {% katexmm %}
 $$
-    \hat{\mathbb{E}}(H) = \mathbb{E} + \hat{\delta}
+    \hat{\braket{H}} = \braket{H} + \hat{\delta} \tag{1}
 $$
 {% endkatexmm %}
 
 Where $\hat{\delta}$ is a random variable that represents the fact
 that the computed expectation value varies about the true expectation value.
-Note that even the true expectation would still be computed
-in the presence of noise.
+*Note that even the true expectation is still be computed*
+*in the presence of noise.*
 
 Nonetheless, we already have the necessary ingredient to undersand
 ZNE: once we parametrize the computed expectation value with the strength
 of the noise we are dealing with, the equation will be quite similar.
 
 ### Expectation value as a function of noise
+(This subsection is based on subsection VII.A of {% cite Li_2017 %}.)
+
+Let us assume that we are starting with an ideal state
+$\ket{\bar{0}} = \ket{00\dots0}$ with the corresponding density
+matrix given by $\ket{\bar{0}}\bra{\bar{0}}$.
+
+We then evolve this state using a unitary operator
+$U = U_N \cdots U_n \cdots U_1$, where $U_n$ is the $n^{th}$
+gate being applied to the initial state $\ket{\bar{0}}\bra{\bar{0}}$.
+
+The operation $U$ is ideal, there are exactly zero errors that
+occured after it completes. Let's denote the final state as:
+
+{% katexmm %}
+$$
+\begin{align}
+    \rho^{(0)} &= U(\ket{\bar{0}}\bra{\bar{0}}) \\
+    &= U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}})
+\end{align}
+$$
+{% endkatexmm %}
+
+Assume now that operation $U$ is not implemented perfectly
+but in fact each individual gate $U_i$ is subject to noise
+of the form $\mathcal{\Lambda}_i = (1-\epsilon_i)\mathbb{1} + \epsilon_i \mathcal{E}_i$
+where with probability $1-\epsilon_i$ the operation $U_i$ is applied
+and with probability $\epsilon_i$ errors $\mathcal{E}_i$ are introduced.
+
+Therefore, under noise, the quantum operation of interest is given by:
+
+{% katexmm %}
+$$
+    \mathcal{\Lambda}U = \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1
+$$
+{% endkatexmm %}
+
+The final density matrix $\rho$ under the action of $\mathcal{\Lambda}U$
+is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \rho &= \mathcal{\Lambda}U(\ket{\bar{0}}\bra{\bar{0}}) \\
+    & = \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1(\ket{\bar{0}}\bra{\bar{0}})
+\end{align}
+$$
+{% endkatexmm %}
+
+Given the state $\rho$, the expectation value of $H$ is:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}} &= \text{Tr}[H\rho] \\
+    &= \text{Tr}[H(\mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1(\ket{\bar{0}}\bra{\bar{0}}))]
+\end{align}
+$$
+{% endkatexmm %}
+
+We need to expand $\mathcal{\Lambda} U = \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1$
+in order to find a better representation. Given the many terms to multiply
+we limit ourselves to two terms to expanding two terms and "extrapolate"
+the form of the entire expression $\mathcal{\Lambda} U$.
+
+Our goal now is to expand $\mathcal{\Lambda}_2U_2 \mathcal{\Lambda}_1U_1$.
+
+We have:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda}_i &= (1-\epsilon_i)\mathbb{1} + \epsilon_i \mathcal{E}_i \\
+    &= \mathbb{1} -\epsilon_i \mathbb{1} + \epsilon_i \mathcal{E}_i
+\end{align}
+$$
+{% endkatexmm %}
+
+
+It follows then that:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda}_2 U_2 &= U_2 -\epsilon_2 U_2 + \epsilon_2 \mathcal{E}_2 \\
+    \mathcal{\Lambda}_1 U_1 &= U_1 -\epsilon_1 U_1 + \epsilon_1 \mathcal{E}_1
+\end{align}
+$$
+{% endkatexmm %}
+
+Consequently:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda}_2 U_2 \mathcal{\Lambda}_1 U_1 &= (U_2 -\epsilon_2 U_2 + \epsilon_2 \mathcal{E}_2) \times (U_1 -\epsilon_1 U_1 + \epsilon_1 \mathcal{E}_1) \\ \\
+    &= U_2U_1 \\
+    &- \epsilon_1 U_2U_1 - \epsilon_2U_2U_1 + \epsilon_1U_2\mathcal{E}_1U_1 + \epsilon_2\mathcal{E}_2U_2U_1 \\
+    &- \epsilon_1\epsilon_2U_2\mathcal{E}_1U_1 + \epsilon_1\epsilon_2U_2U_1 - \epsilon_1\epsilon_2\mathcal{E}_2U_2U_1
+    + \epsilon_1\epsilon_2\mathcal{E}_2U_2\mathcal{E}_1U_1 \\ \\
+    &= U_2U_1 \\
+    &- (\epsilon_1 + \epsilon_2) U_2U_1 \\
+    &+\epsilon_1U_2\mathcal{E}_1U_1 + \epsilon_2\mathcal{E}_2U_2U_1 \\
+    &+ \epsilon_1\epsilon_2(U_2U_1 - \mathcal{E}_2U_2U_1 - U_2\mathcal{E}_1U_1 + \mathcal{E}_2U_2\mathcal{E}_1U_1)
+\end{align}
+$$
+{% endkatexmm %}
+
+Recalling that $\epsilon_1, \epsilon_2 < 1$, it follows then that $\epsilon_1\epsilon_2 \ll 1$.
+We can therefore ignore then higher order terms:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda}_2 U_2 \mathcal{\Lambda}_1 U_1 &= U_2U_1 \\
+    &- (\epsilon_1 + \epsilon_2) U_2U_1 \\
+    &+\epsilon_1U_2\mathcal{E}_1U_1 + \epsilon_2\mathcal{E}_2U_2U_1 \\
+    &+ \mathcal{O}(\epsilon_1\epsilon_2)
+\end{align}
+$$
+{% endkatexmm %}
+
+Extrapolating to the sample size $N$, we have:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda} U &= \mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1 \\
+    &= U_N \cdots U_i \cdots U_1 \\
+    &- (\epsilon_N + \cdots + \epsilon_i + \cdots + \epsilon_1) U_N \cdots U_i \cdots U_1 \\
+    &+ (\epsilon_N \mathcal{E}_N U_n \cdots U_i \cdots U_1) + (U_n \cdots \epsilon_i \mathcal{E}_i U_i \cdots U_1) 
+    + (U_n \cdots U_i \cdots \epsilon_1 \mathcal{E}_1 U_1) \\
+    &+ \mathcal{O}(\epsilon_1\epsilon_2)
+\end{align}
+$$
+{% endkatexmm %}
+
+In condensed form:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda} U &= U_N \cdots U_i \cdots U_1 \\
+    &- (\sum_i^N \epsilon_i) U_N \cdots U_i \cdots U_1 \\
+    &+ \sum_i^N \epsilon_i U_n \cdots \mathcal{E}_i U_i \cdots U_1 \\
+    &+ \mathcal{O}(\epsilon_1\epsilon_2)
+\end{align}
+$$
+{% endkatexmm %}
+
+Let's rewrite the noise strength $\epsilon_i$ as $\epsilon_i = \lambda \epsilon'_i$.
+The expression above becomes:
+
+{% katexmm %}
+$$
+\begin{align}
+    \mathcal{\Lambda} U &= U_N \cdots U_i \cdots U_1 \\
+    &- \lambda(\sum_i^N \epsilon'_i) U_N \cdots U_i \cdots U_1 \\
+    &+ \lambda \sum_i^N \epsilon'_i U_n \cdots \mathcal{E}_i U_i \cdots U_1 \\
+    &+ \mathcal{O}(\lambda^2)
+\end{align}
+$$
+{% endkatexmm %}
+
+We can now complete the calculation of the expectation value:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}} &= \text{Tr}[H\rho] \\
+    &= \text{Tr}[H(\mathcal{\Lambda}_N U_N \cdots \mathcal{\Lambda}_i U_i \cdots \mathcal{\Lambda}_1 U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
+    &= \text{Tr}[H(U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
+    &- \text{Tr}[H(\lambda(\sum_i^N \epsilon'_i) U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
+    &+ \text{Tr}[H(\lambda \sum_i^N \epsilon'_i U_n \cdots \mathcal{E}_i U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}}))] \\
+    &+ \mathcal{O}(\lambda^2)
+\end{align}
+$$
+{% endkatexmm %}
+
+Let us recall that $\rho^{(0)} = U_N \cdots U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}})$
+and let us define $\rho^{(1)} = \lambda \sum_i^N \epsilon'_i U_n \cdots \mathcal{E}_i U_i \cdots U_1(\ket{\bar{0}}\bra{\bar{0}})$.
+The expectation value can be rewritten as:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}} &= \text{Tr}[H\rho^{(0)}] \\
+    &- \lambda \text{Tr}[H\sum_i^N \epsilon'_i \rho^{(0)}] \\
+    &+ \lambda \text{Tr}[H\rho^{(1)}] \\
+    &+ \mathcal{O}(\lambda^2)
+\end{align}
+$$
+{% endkatexmm %}
+
+We can now see that $\hat{\braket{H}}$ depends on the factor $\lambda$ that
+depends on the strength of the noise in the circuit!
+
+So our final expression of the expectation value is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}}(\lambda) &= \left(1 - \lambda \sum_i^N \epsilon'_i \right) \braket{H}^{(0)} + \lambda \braket{H}^{(1)} + \mathcal{O}(\lambda^2) \tag{2}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\braket{H}^{(0)} = \text{Tr}[H\rho^{(0)}]$ is the expectation value
+when there is no noise in the system and $\braket{H}^{(0)} = \text{Tr}[H\rho^{(1)}]$
+that takes into account noise $\mathcal{E}_i$ affecting each gate $U_i$.
+
 ### Noise-parametrized expectation value as an estimation problem
 
 ## Noise amplification
