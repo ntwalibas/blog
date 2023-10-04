@@ -445,6 +445,95 @@ when there is no noise in the system and $\hat{\braket{H}}^{(1)} = \text{Tr}[H\r
 which takes into account noise $\mathcal{E}_i$ affecting each gate $U_i$.
 
 ### Noise-parametrized expectation value as an estimation problem
+We now know that it is possible to express the calculation of the expectation
+value as a function of a noise parameter $\lambda$.
+
+Our goal is to figure out the expectation if there was no noise in the system.
+Starting from equation $(1)$, we can now write the estimation of the expectation
+value as:
+
+{% katexmm %}
+$$
+    \hat{\braket{H}}(\lambda) = \braket{H}(\lambda) + \hat{\delta}
+$$
+{% endkatexmm %}
+
+Where $\hat{\delta}$ is a random variable.
+
+If $\lambda = 1$ then we are just working with the machine noise,
+that is $\hat{\braket{H}} = \text{Tr}[H(\mathcal{\Lambda}U(\ket{\bar{0}}\bra{\bar{0}}))]$.
+
+On the other hand if $\lambda = 0$, then there is no noise in the system
+as can be inferred from Equation $(2)$: $\hat{\braket{H}} = \hat{\braket{H}}^{(0)}$.
+
+The main idea behind ZNE is the following:  
+*We calculate the expectation value for $\lambda = 1$ then artificially increase*
+*the noise in the system by increasing $\lambda$. We then fit a curve about the*
+*different points of $\hat{\braket{H}}(\lambda)$ then extrapolate the value*
+*of $\hat{\braket{H}}(\lambda)$ at $\lambda = 0$*.
+
+Therefore ZNE is an estimation problem of the following form:
+
+{% katexmm %}
+$$
+    \hat{\braket{H}}(0) = \braket{H}(0) + \hat{\delta} \tag{3}
+$$
+{% endkatexmm %}
+
+The issue now is to figure out what curve to use to fit the data points
+then extrapolate from there. In other words what will be our estimator function?
+
+Much of time spent using ZNE will be choosing what is the best estimator for a given
+problem. For instance {% cite Temme_2017 %} found that under certain assumption
+one can use Richardson's extrapolation, a polynomial extrapolation.
+On the other hand {% cite Endo_2018 %} found that using an exponential extrapolation
+has some advantage accuracy-wise in certain circumstances.
+It depends on error models assumed and empirical data.
+
+In our case, we will explore estimation under the assumption of the depolarizing noise
+model. This noise model is very simplistic so it is perfect for understanding.
+
+How then do we know that ZNE worked?
+We do this by calculating the *mean squared error (MSE)*:
+
+{% katexmm %}
+$$
+\begin{align}
+    MSE(\hat{\braket{H}}(0)) &= \mathbb{E}(\hat{\braket{H}}(0) - \braket{H}(0)) \\
+    &= Var(\hat{\braket{H}}(0)) + Bias(\hat{\braket{H}}(0))^2
+\end{align}
+$$
+{% endkatexmm %}
+
+When we work through a simple example with the depolarizing noise model,
+we will also compute the expectation value without noise then compute
+the MSE and consequently evaluate the success of ZNE.
+
+Note that there is a [bias-variance tradeoff](https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff)
+involved in the estimation procedure. This issue is expounded upon in
+{% cite cai2023quantum %} so we won't delve on it, the interested reader
+can (and should) read about in the given reference.
+
+In practice though, what we will want to do is compare the performance
+of a particular estimation/extrapolation strategy with the unmitigated
+case (or with another estimation strategy).  
+In this case, {% cite Giurgica_Tiron_2020 %} propose using
+the ratio of absolute errors of the mitigated expectation and
+the unmitigated expectation (or a mitigated result using a different estimator).
+
+Let $E_m$ be the mitigated expectation value using some estimation strategy.
+Let $E_r$ be the reference expectation value such as the unmitigated
+expectation value or an expectation value obtained using a different estimation
+strategy.
+
+Then the absolute error for the mitigated expectation value is given by
+$R_m = \lvert E_m - E(0) \rvert$ where $E(0)$ is the expectation value
+in the noiseless regime.  
+Equivalently the absolute error for reference expectation value is given by
+$R_r = \lvert E_r - E(0) \rvert$.
+
+The performance of the mitigated result with respect to the reference
+result is given by $p = R_r / R_m$.
 
 ## Noise amplification
 ### Digital noise amplification
