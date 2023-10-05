@@ -239,7 +239,7 @@ $\ket{\bar{0}} = \ket{00\dots0}$ with the corresponding density
 matrix given by $\ket{\bar{0}}\bra{\bar{0}}$.
 
 We then evolve this state using a unitary operator
-$U = U_N \cdots U_n \cdots U_1$, where $U_n$ is the $n^{th}$
+$U = U_N \cdots U_i \cdots U_1$, where $U_i$ is the $i^{th}$
 gate being applied to the initial state $\ket{\bar{0}}\bra{\bar{0}}$.
 
 The operation $U$ is ideal, there are exactly zero errors that
@@ -536,8 +536,207 @@ The performance of the mitigated result with respect to the reference
 result is given by $p = R_r / R_m$.
 
 ## Noise amplification
-### Digital noise amplification
-### Digital noise amplification algorithm
+In the previous section, we made a case for ZNE: since we can parametrized
+the expectation value as a function of the noise strength, using some extrapolation
+strategy, we should be able to estimate the expectation in the noiseless regime.
+
+But this relies on the ability to actually increase the noise in the system by varying
+the strength $\lambda$.  
+There are two ways we can go about that:
+- Stretch pulses that implement our quantum gates so that interaction with the environment
+    has time to take hold thereby corrupting our system.
+- Add identity (or identity-equivalent) gates into our circuits so that the circuit's
+    meaning stays the same but it takes longer to complete thereby also increasing
+    the chances of corruption.
+
+The first option is generally not favored because most hardware providers
+do not provide pulse-level access, and even if they did most quantum software developers
+do not have the skillset necessary to deal with pulses.
+
+The second approach is favored and it is the one expounded upon in our reference paper.
+We will therefore deal only with the insertion of identity-equivalent gates.
+
+### Digital noise amplification using unitary folding
+Unitary folding is a technique where we take some unitary
+in the circuit (could be gate or a layer or entire circuit) and the Hermitian transpose
+of that unitary then appending their product to the circuit.
+
+Since the product of a unitary and its Hermitian transpose
+is the identity, the original circuit's meaning remains unchanged.
+
+Unitary folding is given by the following replacement rule:
+
+{% katexmm %}
+$$
+    U \rightarrow U(UU^\dagger)^n \tag{4}
+$$
+{% endkatexmm %}
+
+Where $n$ is a positive integer representing the number
+of times we repeat the identity-equivalent unitary $(UU^\dagger)$.
+
+Where $U$ is either a gate or a layer in the circuit.
+
+{% cite Giurgica_Tiron_2020 %} introduce circuit folding
+and gate folding as different ways to do unitary folding.
+The principle is the same, only differing with respect
+to small technical details.
+
+We will elaborate on circuit folding and leave the reader
+to explore gate folding on their own.
+
+Let $U$ be a circuit that can be broken into layers $L$
+and it has $d$ such layers.
+
+{% katexmm %}
+$$
+    U = L_d\dots L_2L_1
+$$
+{% endkatexmm %}
+
+Where $U$ is the entire circuit and each $L_i$ is either a gate or
+a layer in the circuit depending on the circuit representation.
+
+In circuit folding, we fold the entire circuit $n$ times
+as in Equation $4$. This gives a scaling by $2n + 1$.
+
+In other words, let $d$ be the current circuit's depth and
+$d'$ be the new folded circuit depth. Then the following is true:
+
+{% katexmm %}
+$$
+    d' = d(2n + 1)
+$$
+{% endkatexmm %}
+
+It is also possible to have a fine-grained scaling by
+appending layers/gates within the circuit as follows:
+
+{% katexmm %}
+$$
+    U \rightarrow U(UU^\dagger)^n L^\dagger_dL^\dagger_{d-1}\dots L^\dagger_{d-s+1}L_{d-s+1}\dots L_{d-1}L_d \tag{5}
+$$
+{% endkatexmm %}
+
+With this new circuit folding rule, the folded circuit depth is given by:
+
+{% katexmm %}
+$$
+    d' = d(2n + 1) + 2s \tag{6}
+$$
+{% endkatexmm %}
+
+So how does this scaling relate to our desired increase in noise $\lambda$?
+
+What we would like is a relation of the type:
+
+{% katexmm %}
+$$
+    d' = \lambda d  \tag{7}
+$$
+{% endkatexmm %}
+
+That is the noise strength $\lambda$ scales proportionally with the depth.
+
+From Equation $(6)$, we have:
+
+{% katexmm %}
+$$
+    d' = d + 2(dn + s)
+$$
+{% endkatexmm %}
+
+Let us define $k$ as:
+
+{% katexmm %}
+$$
+    k = dn + s \tag{8}
+$$
+{% endkatexmm %}
+
+Consequently we have:
+
+{% katexmm %}
+$$
+    d' = d + 2k
+$$
+{% endkatexmm %}
+
+Dividing both sides by $d$ we get:
+
+{% katexmm %}
+$$
+    \dfrac{d'}{d} = 1 + \dfrac{2k}{d}
+$$
+{% endkatexmm %}
+
+From Equation $(7)$, we recognize that $\lambda = \frac{d'}{d}$
+therefore the equation above results in:
+
+{% katexmm %}
+$$
+    \lambda = 1 + \dfrac{2k}{d} \tag{9}
+$$
+{% endkatexmm %}
+
+From equation $(8)$, we see that $k$ depends only on the circuit parameters:
+$n$ is the number of circuit folds, $d$ is the number of layers/gates, and
+$s$ is the number of additional layers/gates.
+
+It follows that equation $(9)$ relates the strength of the noise $\lambda$
+to circuit parameters therefore we should be able to build a circuit
+for a particular noise strength of our desire.
+
+### Circuit folding algorithm
+Since $d$, $n$, and $s$ are positive integers, if we require $0 \le s < n$
+Equation $(8)$ is equivalent to Euclidian division.
+We therefore have the following:
+
+{% katexmm %}
+$$
+\begin{align}
+    n &= k / d \\
+    s &= k \% d \tag{10}
+\end{align}
+$$
+{% endkatexmm %}
+
+The algorithm practically writes itself at this point:
+from Equation $(9)$, for a given noise strength $\lambda$,
+calculate $k = \frac{d(\lambda - 1)}{2}$.  
+Then we use Equation $(10)$ to find $n$ and $s$ given that $d$
+is fixed.
+
+<div class='figure'>
+<div class='algorithm' markdown='1'>
+**_Prepare:_**  
+$\quad \lambda \ge 1$  
+$\quad V = U$  
+$\quad d = \text{len(}U\text{)}$  
+
+**_Initialize:_**  
+$\quad k = \Bigl\lfloor\frac{d(\lambda - 1)}{2}\Bigr\rfloor$  
+$\quad n = k / d$  
+$\quad s = k \% d$   
+
+**while** $n > 0$**:**  
+$\quad U \gets U \circ V^\dagger V$  
+$\quad n \gets n - 1$  
+
+$L = V[d-s:d]$  
+$U \gets U \circ L^\dagger L$  
+
+**return** $U$
+</div>
+<div class='caption'>
+    <span class='caption-label'>
+        Noise amplification by unitary folding algorithm:
+    </span>
+    from the desired noise strength $\lambda$, calculate
+    the new circuit paramters $n$ and $s$ via $k$ then
+    generate the circuit.
+</div>
+</div>
 
 ## Zero-noise extrapolation under different noise models
 ### ZNE in the presence of incoherent errors
