@@ -610,7 +610,8 @@ $$
 {% endkatexmm %}
 
 It is also possible to have a fine-grained scaling by
-appending layers/gates within the circuit as follows:
+appending layers/gates within the circuit by appending
+the last $s$ layers/gates:
 
 {% katexmm %}
 $$
@@ -685,7 +686,7 @@ $s$ is the number of additional layers/gates.
 
 It follows that equation $(9)$ relates the strength of the noise $\lambda$
 to circuit parameters therefore we should be able to build a circuit
-for a particular noise strength of our desire.
+for any particular noise strength.
 
 ### Circuit folding algorithm
 Since $d$, $n$, and $s$ are positive integers, if we require $0 \le s < n$
@@ -703,7 +704,7 @@ $$
 
 The algorithm practically writes itself at this point:
 from Equation $(9)$, for a given noise strength $\lambda$,
-calculate $k = \frac{d(\lambda - 1)}{2}$.  
+calculate $k = \Bigl\lfloor\frac{d(\lambda - 1)}{2}\Bigr\rfloor$.  
 Then we use Equation $(10)$ to find $n$ and $s$ given that $d$
 is fixed.
 
@@ -711,16 +712,16 @@ is fixed.
 <div class='algorithm' markdown='1'>
 **_Prepare:_**  
 $\quad \lambda \ge 1$  
-$\quad V = U$  
-$\quad d = \text{len(}U\text{)}$  
+$\quad V \gets U$  
+$\quad d \gets \text{len(}U\text{)}$  
 
 **_Initialize:_**  
 $\quad k = \Bigl\lfloor\frac{d(\lambda - 1)}{2}\Bigr\rfloor$  
-$\quad n = k / d$  
+$\quad n = \lfloor k / d\rfloor$  
 $\quad s = k \% d$   
 
 **while** $n > 0$**:**  
-$\quad U \gets U \circ V^\dagger V$  
+$\quad U \gets U \circ V V^\dagger$  
 $\quad n \gets n - 1$  
 
 $L = V[d-s:d]$  
@@ -732,8 +733,8 @@ $U \gets U \circ L^\dagger L$
     <span class='caption-label'>
         Noise amplification by unitary folding algorithm:
     </span>
-    from the desired noise strength $\lambda$, calculate
-    the new circuit paramters $n$ and $s$ via $k$ then
+    from the desired noise strength $\lambda$ calculate
+    the new circuit parameters $n$ and $s$ via $k$ then
     generate the circuit.
 </div>
 </div>
