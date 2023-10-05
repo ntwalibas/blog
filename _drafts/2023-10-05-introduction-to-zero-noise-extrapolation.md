@@ -568,12 +568,12 @@ Unitary folding is given by the following replacement rule:
 
 {% katexmm %}
 $$
-    U \rightarrow U(UU^\dagger)^n \tag{4}
+    U \rightarrow U(U^\dagger U)^n \tag{4}
 $$
 {% endkatexmm %}
 
 Where $n$ is a positive integer representing the number
-of times we repeat the identity-equivalent unitary $(UU^\dagger)$.
+of times we repeat the identity-equivalent unitary $(U^\dagger U)$.
 
 Where $U$ is either a gate or a layer in the circuit.
 
@@ -609,13 +609,12 @@ $$
 $$
 {% endkatexmm %}
 
-It is also possible to have a fine-grained scaling by
-appending layers/gates within the circuit by appending
-the last $s$ layers/gates:
+It is also possible to have a fine-grained scaling for the folded
+circuit by appending the last $s$ layers/gates:
 
 {% katexmm %}
 $$
-    U \rightarrow U(UU^\dagger)^n L^\dagger_dL^\dagger_{d-1}\dots L^\dagger_{d-s+1}L_{d-s+1}\dots L_{d-1}L_d \tag{5}
+    U \rightarrow U(U^\dagger U)^n L^\dagger_dL^\dagger_{d-1}\dots L^\dagger_{d-s+1}L_{d-s+1}\dots L_{d-1}L_d \tag{5}
 $$
 {% endkatexmm %}
 
@@ -721,7 +720,7 @@ $\quad n = \lfloor k / d\rfloor$
 $\quad s = k \% d$   
 
 **while** $n > 0$**:**  
-$\quad U \gets U \circ V V^\dagger$  
+$\quad U \gets U \circ V^\dagger V$  
 $\quad n \gets n - 1$  
 
 $L = V[d-s:d]$  
