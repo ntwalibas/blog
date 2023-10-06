@@ -7,7 +7,7 @@ This post follows a paper from Unitary Fund to explain the technical details
 of ZNE and presents some sample code as to its implementation and application."
 layout: default
 date: 2023-10-05
-keywords: error mitigation, zero-noise extrapolation, zne, unitary fund
+keywords: error mitigation, zero-noise extrapolation, zne, unitary folding
 toc: true
 published: false
 ---
@@ -205,7 +205,7 @@ $$
 {% endkatexmm %}
 
 Where $N$ is the number of samples and $h_i$ is
-the $i^{th}$ eigenvalue of $H$.  
+the $i^{\text{th}}$ eigenvalue of $H$.  
 We are essentially trying to estimate the "true" expectation
 value via a limited number of samples by using the sample mean
 as an estimator the population mean.
@@ -239,7 +239,7 @@ $\ket{\bar{0}} = \ket{00\dots0}$ with the corresponding density
 matrix given by $\ket{\bar{0}}\bra{\bar{0}}$.
 
 We then evolve this state using a unitary operator
-$U = U_N \cdots U_i \cdots U_1$, where $U_i$ is the $i^{th}$
+$U = U_N \cdots U_i \cdots U_1$, where $U_i$ is the $i^{\text{th}}$
 gate being applied to the initial state $\ket{\bar{0}}\bra{\bar{0}}$.
 
 The operation $U$ is ideal, there are exactly zero errors that
@@ -739,8 +739,102 @@ $U \gets U \circ L^\dagger L$
 </div>
 
 ## Zero-noise extrapolation under different noise models
-### ZNE in the presence of incoherent errors
-### ZNE in the presence of coherent errors
+In general, different assumptions about the noise the system
+is under leads to different estimators we can use so as to extrapolate
+the correct zero-noise expectation value.
+
+We won't go into detailed noise modeling but we will derive
+the form of the estimator under the depolarizing noise channel
+as an example of an incoherent error and the estimator
+under stochastic over/underrotation as an example
+of a coherent error.
+
+We do this for a single-qubit example since the analytic
+derivations are easy and we can check if things worked out.
+
+### ZNE in the presence of an incoherent error
+Let $\rho$ be the density matrix describing a single-qubit system.
+Our goal is derive the expression of the expectation value
+of some observable, and from there derive a form of the estimator.
+
+First, we derive a form of $\rho$ under the completely depolazing
+noise model.
+
+Let us assume that with probability $p$ the gate $U$ is faithfully
+applied on $\rho$ and with probability $1-p$ we end up with a completely
+mixed state:
+
+{% katexmm %}
+$$
+\begin{align}
+    \rho \rightarrow p U\rho U^\dagger + (1-p) \dfrac{\mathbb{1}}{2}
+\end{align}
+$$
+{% endkatexmm %}
+
+Let's perform circuit folding as per Equation $(4)$.
+(The same calculation calculation can be done as per Equation $(5)$
+but we go for simplicity.)
+
+Applying the first circuit folding, we get:
+
+{% katexmm %}
+$$
+\begin{align}
+    \rho \rightarrow p^3 U(U^\dagger U)\rho (U^\dagger U)U^\dagger + (1-p^3) \dfrac{\mathbb{1}}{2}
+\end{align}
+$$
+{% endkatexmm %}
+
+After the $n^{\text{th}}$ circuit folding, $\rho$ will have evolved as:
+
+{% katexmm %}
+$$
+\begin{align}
+    \rho &\rightarrow p^{(1+2n)} U(U^\dagger U)^n\rho (U^\dagger U)^n U^\dagger + (1-p^{(1+2n)}) \dfrac{\mathbb{1}}{2}\\
+    &\rightarrow p^{\lambda} U \rho U^\dagger + (1-p^{\lambda}) \dfrac{\mathbb{1}}{2}
+\end{align}
+$$
+{% endkatexmm %}
+
+Before calculating the expectation value,
+it is worth thinking about the meaning of the derived value of $\rho$:
+notice that as $\lambda$ increases, $p^{\lambda}$ decreases
+and consequently $1-p^{\lambda}$ increases.
+This means that as we increase the noise strength $\lambda$,
+the probability of ending up with a mixed state increases.
+This is what we are looking for indeed: increasing the noise strength
+$\lambda$ should artificially boost the noise in the system.
+
+Let's now compute the expectation value of some observable $H$
+with respect to the state $\rho$:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}}(\lambda) &= \text{Tr}[H\rho] \\
+    &= \text{Tr}[H(p^{\lambda} U \rho U^\dagger + (1-p^{\lambda}) \dfrac{\mathbb{1}}{2})] \\
+    &= p^{\lambda}\text{Tr}[HU \rho U^\dagger] + \dfrac{1}{2}\text{Tr}[H] - \dfrac{p^{\lambda}}{2}\text{Tr}[H] \\
+    &= \dfrac{1}{2}\text{Tr}[H] + p^{\lambda}\left( \text{Tr}[HU \rho U^\dagger] - \dfrac{1}{2}\text{Tr}[H] \right)
+\end{align}
+$$
+{% endkatexmm %}
+
+Setting $a = \frac{1}{2}\text{Tr}[H]$ and $b = \left( \text{Tr}[HU \rho U^\dagger] - \frac{1}{2}\text{Tr}[H] \right)$,
+we have:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}}(\lambda) = a + b p^\lambda
+\end{align}
+$$
+{% endkatexmm %}
+
+Our estimator is an exponential function which we can fit
+and extrapolate from using exponential extrapolation.
+
+### ZNE in the presence of a coherent error
 
 ## Estimation procedures
 ### Non-adaptive estimation
