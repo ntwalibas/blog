@@ -1308,9 +1308,9 @@ $$
 $$
 {% endkatexmm %}
 
-Our calculation tells us that with probability $\frac{1}{3}$, the $X$ gate
-will leave a (Haar-)randomly chosen state unchanged and with probability
-$\frac{2}{3}$, it will change that state.
+Our calculation tells us that with probability $\frac{1}{3}$ the $X$ gate
+will leave a chosen (Haar-)random state unchanged, and with probability
+$\frac{2}{3}$ it will change that state.
 
 Let's try to obtain the same result using Monte Carlo integration.
 This is important because it allows us to validate the basic scheme
