@@ -733,9 +733,9 @@ The move from cartesian coordinates to spherical coordinates is given by:
 {% katexmm %}
 $$
 \begin{align}
-    x &= r\sin\phi\cos\theta \\
-    y &= r\sin\phi\sin\theta \\
-    z &= r\cos\phi
+    x &= r\sin\theta\cos\phi \\
+    y &= r\sin\theta\sin\phi \\
+    z &= r\cos\theta
 \end{align}
 $$
 {% endkatexmm %}
@@ -746,8 +746,8 @@ The region of integration is given by:
 $$
 \begin{align}
     0 &\le r \le R \\
-    0 &\le \phi \le \pi \\
-    0 &\le \theta \le 2\pi
+    0 &\le \theta \le \pi \\
+    0 &\le \phi \le 2\pi
 \end{align}
 $$
 {% endkatexmm %}
@@ -756,7 +756,7 @@ The Jacobian determinant of a sphere is given by:
 
 {% katexmm %}
 $$
-\det J = r^2\sin\theta
+\det J = r^2\sin\phi
 $$
 {% endkatexmm %}
 
@@ -765,9 +765,9 @@ The volume of a sphere is therefore calculated as:
 {% katexmm %}
 $$
 \begin{align}
-    V &= \int_0^{2\pi} \int_0^{\pi} \int_0^{R} r^2\sin\phi \,dr\,d\phi\,d\theta \\
-    &= \dfrac{R^3}{3} \int_0^{2\pi} \int_0^{\pi} \sin\phi \,d\phi\,d\theta \\
-    &= \dfrac{2}{3} R^3 \int_0^{2\pi} \,d\theta \\
+    V &= \int_0^{2\pi} \int_0^{\pi} \int_0^{R} r^2\sin\theta \,dr\,d\theta\,d\phi \\
+    &= \dfrac{R^3}{3} \int_0^{2\pi} \int_0^{\pi} \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{2}{3} R^3 \int_0^{2\pi} \,d\phi \\
     &= \dfrac{4}{3} \pi R^3
 \end{align}
 $$
@@ -788,24 +788,24 @@ of unknown radius is given by:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\phi,\theta) \,r^2\sin\phi \,dr\,d\phi\,d\theta
+\bar{f} = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\theta,\phi) \,r^2\sin\theta \,dr\,d\theta\,d\phi
 $$
 {% endkatexmm %}
 
 As an example, let us find the average of $f(x,y,z)=x^4$ over a sphere
 of unknown radius $R$.  
 Moving from cartesian coordinates to spherical coordinates, $f$ is now given by
-$f(r,\phi,\theta)=R^4\sin^4\phi\cos^4\theta$.
+$f(r,\theta,\phi)=R^4\sin^4\theta\cos^4\phi$.
 
 Evaluating the integral above, we get:
 
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \dfrac{3}{4\pi \cancel{R^3}} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} R^{\cancel{4}}\sin^4\phi\cos^4\theta \,r^2\sin\phi \,dr\,d\phi\,d\theta \\
-    &= \dfrac{3}{4\pi R} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} r^2\sin^5\phi\cos^4\theta \,dr\,d\phi\,d\theta \\
-    &= \dfrac{3}{4\pi \cancel{R}} \times \dfrac{R^{\cancel{3}}}{3} \int_0^{2\pi} \int_0^{\pi} \sin^5\phi\cos^4\theta \,d\phi\,d\theta \\
-    &= \dfrac{R^2}{4\pi} \times \dfrac{16}{15} \int_0^{2\pi} cos^4 \,d\theta \\
+    \bar{f} &= \dfrac{3}{4\pi \cancel{R^3}} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} R^{\cancel{4}}\sin^4\theta\cos^4\phi \,r^2\sin\theta \,dr\,d\theta\,d\phi \\
+    &= \dfrac{3}{4\pi R} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} r^2\sin^5\theta\cos^4\phi \,dr\,d\theta\,d\phi \\
+    &= \dfrac{3}{4\pi \cancel{R}} \times \dfrac{R^{\cancel{3}}}{3} \int_0^{2\pi} \int_0^{\pi} \sin^5\theta\cos^4\phi \,d\theta\,d\phi \\
+    &= \dfrac{R^2}{4\pi} \times \dfrac{16}{15} \int_0^{2\pi} cos^4 \,d\phi \\
     &= \dfrac{4R^2}{15\pi} \times \dfrac{3\pi}{4} \\
     &= \dfrac{R^2}{5}
 \end{align}
@@ -816,13 +816,13 @@ $$
 Same as with the circle, we can make a simplification of the averaging
 formula if the radius is a known constant.
 The function to average will therefore have a dependence
-only on $\phi$ and $\theta$ and is given as $f(\phi,\theta;R)$.
+only on $\theta$ and $\phi$ and is given as $f(\theta,\phi;R)$.
 
 The average of a sphere of known radius is therefore given by:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi}f(\phi,\theta;R) \,\sin\phi \,d\phi\,d\theta
+\bar{f} = \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi}f(\theta,\phi;R) \,\sin\theta \,d\theta\,d\phi
 $$
 {% endkatexmm %}
 
@@ -832,8 +832,8 @@ over the unit sphere is given by $\bar{f}=\dfrac{1^2}{5}=\dfrac{1}{5}=0.2$:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi} \sin^4\phi\cos^4\theta \sin\phi \,d\phi\,d\theta \\
-    &= \dfrac{1}{4\pi} \times \dfrac{16}{15} \int_0^{2\pi} \cos^4\theta\,d\theta \\
+    \bar{f} &= \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi} \sin^4\theta\cos^4\phi \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{1}{4\pi} \times \dfrac{16}{15} \int_0^{2\pi} \cos^4\phi\,d\phi \\
     &= \dfrac{1}{4\pi} \times \dfrac{16}{15} \times \dfrac{3\pi}{4} \\
     &= \dfrac{1}{5}
 \end{align}
@@ -859,14 +859,14 @@ that in subsection $2.2.1$ in {% cite Ozols_2009 %}:
 
 {% katexmm %}
 $$
-\mathbb{S}^2 = \left\{ \left. \begin{bmatrix}x \\ y \\ z\end{bmatrix} = \begin{bmatrix} \sin\phi\cos\theta \\ \sin\phi\sin\theta \\ \cos\phi \end{bmatrix} \right|\, 0 \le \phi \le \pi; 0 \le \theta < 2\pi \right\}
+\mathbb{S}^2 = \left\{ \left. \begin{bmatrix}x \\ y \\ z\end{bmatrix} = \begin{bmatrix} \sin\theta\cos\phi \\ \sin\theta\sin\phi \\ \cos\theta \end{bmatrix} \right|\, 0 \le \theta \le \pi; 0 \le \phi < 2\pi \right\}
 $$
 {% endkatexmm %}
 
 Where $\mathbb{S}^2$ is the sphere. To sample uniformly from a sphere,
-we sample $\theta$ uniformly in the interval $[0,2\pi]$
-and we sample $p \in [-1,1]$ uniformly then calculate $\phi$ from $p$
-using $\phi = \arccos p$.
+we sample $\phi$ uniformly in the interval $[0,2\pi]$
+and we sample $p \in [-1,1]$ uniformly then calculate $\theta$ from $p$
+using $\theta = \arccos p$.
 
 The formula stays the same as with the circle, we just now sample uniformly
 from the sphere:
@@ -891,13 +891,13 @@ def monte_carlo_average(f, sample_size):
     """Compute the average of a function `f` over the unit sphere
     """
     def sample_from_sphere(size):
-        theta = np.random.uniform(0, 2 * np.pi, size)
+        phi = np.random.uniform(0, 2 * np.pi, size)
         p = np.random.uniform(-1, 1, size)
-        phi = np.arccos(p)
+        theta = np.arccos(p)
         return zip(
-            np.sin(phi) * np.cos(theta),
-            np.sin(phi) * np.sin(theta),
-            np.cos(phi)
+            np.sin(theta) * np.cos(phi),
+            np.sin(theta) * np.sin(phi),
+            np.cos(theta)
         )
 
     return np.mean([f(*sample) for sample in sample_from_sphere(sample_size)])
@@ -935,7 +935,7 @@ Let us define spherical designs, the same way we defined circular designs:
 > $t$-design if:
 > {% katexmm %}
 > $$
-> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\phi,\theta) \,r^2\sin\phi \,dr\,d\phi\,d\theta
+> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\theta,\phi) \,r^2\sin\theta \,dr\,d\theta\,d\phi
 > $$
 > {% endkatexmm %}
 > holds for all possible $f_t$.
