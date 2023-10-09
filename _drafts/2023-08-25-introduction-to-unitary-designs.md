@@ -222,7 +222,7 @@ $[a,b]$ is computed using the formula:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{b-a} \int_{a}^{b} f(x)\,dx
+\bar{f} = \dfrac{1}{b-a} \int_{a}^{b} f(x)\,dx \tag{1}
 $$
 {% endkatexmm %}
 
@@ -250,7 +250,7 @@ Essentially the same way a normal average is calculated:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{line})
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{line}) \tag{2}
 $$
 {% endkatexmm %}
 
@@ -422,7 +422,7 @@ of unknown radius is given by:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{\pi R^2} \int_{0}^{2\pi} \int_{0}^R f(\theta, r) r\,dr\,d\theta
+\bar{f} = \dfrac{1}{\pi R^2} \int_{0}^{2\pi} \int_{0}^R f(\theta, r) r\,dr\,d\theta \tag{3}
 $$
 {% endkatexmm %}
 
@@ -473,7 +473,7 @@ using the formula:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} = \dfrac{1}{2\pi} \int_{0}^{2\pi} f(\theta; R) \,d\theta
+    \bar{f} = \dfrac{1}{2\pi} \int_{0}^{2\pi} f(\theta; R) \,d\theta \tag{4}
 \end{align}
 $$
 {% endkatexmm %}
@@ -510,7 +510,7 @@ The formula itself doesn't change:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{circle}, \, y_{i}^{circle})
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{circle}, \, y_{i}^{circle}) \tag{5}
 $$
 {% endkatexmm %}
 
@@ -586,7 +586,7 @@ We start by defining what a circular design is:
 > $t$-design if:
 > {% katexmm %}
 > $$
-> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{1}{\pi R^2} \int_{0}^{2\pi} \int_{0}^R f_t(\theta, r) r\,dr\,d\theta
+> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{1}{\pi R^2} \int_{0}^{2\pi} \int_{0}^R f_t(\theta, r) r\,dr\,d\theta \tag{6}
 > $$
 > {% endkatexmm %}
 > holds for all possible $f_t$.
@@ -788,7 +788,7 @@ of unknown radius is given by:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\theta,\phi) \,r^2\sin\theta \,dr\,d\theta\,d\phi
+\bar{f} = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\theta,\phi) \,r^2\sin\theta \,dr\,d\theta\,d\phi \tag{7}
 $$
 {% endkatexmm %}
 
@@ -822,7 +822,7 @@ The average of a sphere of known radius is therefore given by:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi}f(\theta,\phi;R) \,\sin\theta \,d\theta\,d\phi
+\bar{f} = \dfrac{1}{4\pi} \int_0^{2\pi} \int_0^{\pi}f(\theta,\phi;R) \,\sin\theta \,d\theta\,d\phi \tag{8}
 $$
 {% endkatexmm %}
 
@@ -873,7 +873,7 @@ from the sphere:
 
 {% katexmm %}
 $$
-\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{sphere}, \, y_{i}^{sphere}, \, z_{i}^{sphere})
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(x_{i}^{sphere}, \, y_{i}^{sphere}, \, z_{i}^{sphere}) \tag{9}
 $$
 {% endkatexmm %}
 
@@ -935,7 +935,7 @@ Let us define spherical designs, the same way we defined circular designs:
 > $t$-design if:
 > {% katexmm %}
 > $$
-> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\theta,\phi) \,r^2\sin\theta \,dr\,d\theta\,d\phi
+> \dfrac{1}{\lvert X \rvert} \sum_{x \in X} f_t(x) = \dfrac{3}{4\pi R^3} \int_0^{2\pi} \int_0^{\pi} \int_0^{R} f(r,\theta,\phi) \,r^2\sin\theta \,dr\,d\theta\,d\phi \tag{10}
 > $$
 > {% endkatexmm %}
 > holds for all possible $f_t$.
@@ -1114,7 +1114,7 @@ subsection:
 $$
 \begin{align}
 f : \mathbb{C}^n &\rightarrow \mathbb{R} \\
-\ket{\psi} &\mapsto \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi}
+\ket{\psi} &\mapsto \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} \tag{11}
 \end{align}
 $$
 {% endkatexmm %}
@@ -1140,7 +1140,7 @@ $$
 \begin{align}
 f : \mathbb{C}^n &\rightarrow \mathbb{R} \\
 \ket{\psi} &\mapsto \bra{\psi}\mathcal{E} \ket{\psi}\bra{\psi} \mathcal{E}^\dagger\ket{\psi} \\
-&\mapsto \lvert \bra{\psi}\mathcal{E} \ket{\psi} \rvert^2
+&\mapsto \lvert \bra{\psi}\mathcal{E} \ket{\psi} \rvert^2 \tag{12}
 \end{align}
 $$
 {% endkatexmm %}
@@ -1170,7 +1170,7 @@ The average is given by:
 $$
 \begin{align}
 \bar{f} &= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} f(\ket{\psi}) d_{\mu}\ket{\psi} \\
-&= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi}
+&= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi} \tag{13}
 \end{align}
 $$
 {% endkatexmm %}
@@ -1236,8 +1236,8 @@ $\mathcal{E}$ and not on the states:
 {% katexmm %}
 $$
 \begin{align}
-\bar{f}: \, &\mathbb{C}^{n \times n} \rightarrow \mathbb{R} \\
-&\mathcal{E} \mapsto \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi}
+    \bar{f}: \, &\mathbb{C}^{n \times n} \rightarrow \mathbb{R} \\
+    &\mathcal{E} \mapsto \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi}
 \end{align}
 $$
 {% endkatexmm %}
@@ -1248,7 +1248,74 @@ then $\mathcal{E}$ perfectly preserves quantum states. This will be
 the case if $\mathcal{E} = \mathbb{1}_n$, that is the identity matrix.
 And if it is $0$, then the channel doesn't preserve quantum states.
 
+We will work through a simple example: calculating the average fidelity
+of the Pauli $X$ gate. Then we will find the average fidelity of
+of the $RY(\theta)$ gate under noise calibration error and depolarizing
+noise error.
+
 ### Average of a function over the Bloch sphere: analytic solution
+To get started, let's calculate the average fidelity of the $X$ gate.
+This is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^2))} \int_{\mathcal{S}(\mathbb{C}^2)} \bra{\psi}X(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+From Equation $(12)$, we can rewrite the average as:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^2))} \int_{\mathcal{S}(\mathbb{C}^2)} \lvert \bra{\psi}X\ket{\psi} \rvert^2 d_{\mu}\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+Since we are working with pure single-qubit states ($\ket{\psi} \in \mathbb{C}^2$),
+we know those states live "on" the Bloch sphere which is a unit sphere.
+
+We can therefore use Equation $(7)$ to compute the average:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{3}{4\pi R^3} \int_{0}^{2\pi} \int_{0}^{\pi} \int_{0}^{R} \lvert \bra{\psi}X\ket{\psi} \rvert^2 \sin\theta \,dr\,d\theta\,d\phi
+\end{align}
+$$
+{% endkatexmm %}
+
+But since we are working with a unit sphere, it is more convenient to use
+Equation $(8)$:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \lvert \bra{\psi}X\ket{\psi} \rvert^2 \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \Bigg\lvert \left( \cos\frac{\theta}{2} \bra{0} + e^{-i\phi} \sin\frac{\theta}{2} \bra{1} \right)
+    \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}
+    \left( \cos\frac{\theta}{2} \ket{0} + e^{i\phi} \sin\frac{\theta}{2} \ket{1} \right)  \Bigg\rvert^2 \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \Bigg\lvert \left( \cos\frac{\theta}{2} \bra{0} + e^{-i\phi} \sin\frac{\theta}{2} \bra{1} \right)
+    \left( \cos\frac{\theta}{2} \ket{1} + e^{i\phi} \sin\frac{\theta}{2} \ket{0} \right) \Bigg\rvert^2 \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \Bigg\lvert 2\cos\phi\cos\frac{\theta}{2}\sin\frac{\theta}{2} \Bigg\rvert^2 \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{1}{\pi} \int_{0}^{2\pi} \cos^2 \phi \,d\phi \int_{0}^{\pi} \cos^2\frac{\theta}{2}\sin^2\frac{\theta}{2} \sin\theta \,d\theta \\
+    &= \dfrac{1}{\pi} \times \pi \times \dfrac{1}{3} \\
+    &= \dfrac{1}{3}
+\end{align}
+$$
+{% endkatexmm %}
+
+Our calculation tells us that with probability $\frac{1}{3}$, the $X$ gate
+will leave a (Haar-)randomly chosen state unchanged and with probability
+$\frac{2}{3}$, it will change that state.
+
+Let's try to obtain the same result using Monte Carlo integration.
+This is important because it allows us to validate the basic scheme
+used to compute the $\lvert \bra{\psi}X\ket{\psi} \rvert^2$.
+This scheme is just the SWAP test.
 
 ### Average of a function over the Bloch sphere: Monte Carlo integration
 
