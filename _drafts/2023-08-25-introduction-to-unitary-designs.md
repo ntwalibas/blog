@@ -1303,7 +1303,8 @@ $$
     &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \Bigg\lvert 2\cos\phi\cos\frac{\theta}{2}\sin\frac{\theta}{2} \Bigg\rvert^2 \sin\theta \,d\theta\,d\phi \\
     &= \dfrac{1}{\pi} \int_{0}^{2\pi} \cos^2 \phi \,d\phi \int_{0}^{\pi} \cos^2\frac{\theta}{2}\sin^2\frac{\theta}{2} \sin\theta \,d\theta \\
     &= \dfrac{1}{\pi} \times \pi \times \dfrac{1}{3} \\
-    &= \dfrac{1}{3}
+    &= \dfrac{1}{3} \\
+    &\approx 0.\bar{3}
 \end{align}
 $$
 {% endkatexmm %}
@@ -1314,10 +1315,109 @@ $\frac{2}{3}$ it will change that state.
 
 Let's try to obtain the same result using Monte Carlo integration.
 This is important because it allows us to validate the basic scheme
-used to compute the $\lvert \bra{\psi}X\ket{\psi} \rvert^2$.
+used to compute $\lvert \bra{\psi}X\ket{\psi} \rvert^2$.
 This scheme is just the SWAP test.
 
 ### Average of a function over the Bloch sphere: Monte Carlo integration
+The procedure to compute the average is very similar to Equation $(9)$
+except now we need to generate Haar-random states:
+
+{% katexmm %}
+$$
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} f(\ket{\psi}) \tag{14}
+$$
+{% endkatexmm %}
+
+Where $\ket{\psi}$ is chosen randomly according to the Haar measure.
+
+In our specific case, the function is given by Equation $(12)$
+so Equation $(14)$ reads:
+
+{% katexmm %}
+$$
+\bar{f} = \dfrac{1}{N} \sum_{i=0}^{N-1} \lvert \bra{\psi} X \ket{\psi} \rvert^2
+$$
+{% endkatexmm %}
+
+As we've repeatedly alluded to, $\lvert \bra{\psi} X \ket{\psi} \rvert^2$
+is calculated using the SWAP test as can be seen in the figure below:
+
+<div class='figure'>
+    <img src='/assets/images/unitaryd/swap-test.png'
+         style='width: 30%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>SWAP test:</span>
+        our goal is to compare how much the states $\ket{\psi}$
+        and $X\ket{\psi}$ are similar, outputing how probable the
+        two states are similar.
+    </div>
+</div>
+
+Back to the business of generating Haar-random states, we need to generate
+a random unitary matrix in $U(2)$ and using it we can generate
+a Haar-random state. {% cite Ozols_2009 %} in section $2.3$ shows
+a method to generate a random matrix from $U(2)$ but we won't use
+that method because it is not our goal to learn how to generate either
+random states or random matrices.  
+Instead, we will use `Scipy` to do the heavy lifting for us:
+it is as simple as importing the `unitary_group` from `scipy.stats`
+then specify the dimension of the unitary we wish to get, in our case $2$.
+
+The code below computes the average fidelity as we wish:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import scipy as sp
+import numpy as np
+import pennylane as qml
+import numpy.linalg as la
+
+from scipy.stats import unitary_group as ug
+
+def swap_test():
+    n_shots = 50_000
+    dev = qml.device(
+        "default.qubit",
+        wires = 3,
+        shots = n_shots
+    )
+
+    @qml.qnode(dev)
+    def swap_circuit():
+        U = ug.rvs(2)
+        qml.QubitUnitary(U, wires = 1)
+        qml.QubitUnitary(U, wires = 2)
+        qml.PauliX(wires = 2)
+        qml.Hadamard(wires = 0)
+        qml.CSWAP(wires = [0, 1, 2])
+        qml.Hadamard(wires = 0)
+        return qml.counts(qml.PauliZ(0))
+
+    dist = swap_circuit()
+    one_state_count = dist[-1] if -1 in dist else 0
+    return 1 - (2 / n_shots) * one_state_count
+
+def monte_carlo_average(f, sample_size):
+    total = 0
+
+    for _ in range(sample_size):
+        total += f()
+
+    return total / sample_size
+
+if __name__ == "__main__":
+    print(monte_carlo_average(swap_test, 5_000))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average of $f(\psi) = \lvert \bra{\psi} X \ket{\psi} \rvert^2$ over the Bloch sphere:
+    </span>
+    one of my runs gave a result of $0.33129305600000036$ which is fairly close to the
+    analytical value of $0.\bar{3}$. Notice also that we make $25\times 10^7$ calls
+    to the quantum "computer" which is a large number of calls.
+</div>
+</div>
 
 ### Average of a function over the Bloch sphere: state designs
 

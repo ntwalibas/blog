@@ -1,0 +1,7 @@
+a W |0\rangle
+b W |\psi\rangle
+c W X|\psi\rangle
+a H
+a +b +c
+a H
+a M
