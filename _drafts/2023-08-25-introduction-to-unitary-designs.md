@@ -1367,14 +1367,11 @@ The code below computes the average fidelity as we wish:
 
 <div class='figure' markdown='1'>
 {% highlight python %}
-import scipy as sp
-import numpy as np
 import pennylane as qml
-import numpy.linalg as la
 
 from scipy.stats import unitary_group as ug
 
-def swap_test():
+def swap_test(state_prep_unitary):
     n_shots = 50_000
     dev = qml.device(
         "default.qubit",
@@ -1383,17 +1380,23 @@ def swap_test():
     )
 
     @qml.qnode(dev)
-    def swap_circuit():
-        U = ug.rvs(2)
-        qml.QubitUnitary(U, wires = 1)
-        qml.QubitUnitary(U, wires = 2)
+    def swap_test_circuit():
+        # Prepare the state |psi> on qubit 1
+        qml.QubitUnitary(state_prep_unitary, wires = 1)
+
+        # Prepare the state X|psi> on qubit 2
+        qml.QubitUnitary(state_prep_unitary, wires = 2)
         qml.PauliX(wires = 2)
+
+        # Perform the SWAP test
         qml.Hadamard(wires = 0)
         qml.CSWAP(wires = [0, 1, 2])
         qml.Hadamard(wires = 0)
+
+        # Making sure to collect statistics of qubit 0
         return qml.counts(qml.PauliZ(0))
 
-    dist = swap_circuit()
+    dist = swap_test_circuit()
     one_state_count = dist[-1] if -1 in dist else 0
     return 1 - (2 / n_shots) * one_state_count
 
@@ -1401,7 +1404,8 @@ def monte_carlo_average(f, sample_size):
     total = 0
 
     for _ in range(sample_size):
-        total += f()
+        # ug.rvs will sample a random 2x2 matrix from the unitary group
+        total += f(ug.rvs(2))
 
     return total / sample_size
 
@@ -1411,15 +1415,173 @@ if __name__ == "__main__":
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>
-        Average of $f(\psi) = \lvert \bra{\psi} X \ket{\psi} \rvert^2$ over the Bloch sphere:
+        Average of $f(\ket{\psi}) = \lvert \bra{\psi} X \ket{\psi} \rvert^2$ over the Bloch sphere using Monte Carlo integration:
     </span>
     one of my runs gave a result of $0.33129305600000036$ which is fairly close to the
-    analytical value of $0.\bar{3}$. Notice also that we make $25\times 10^7$ calls
-    to the quantum "computer" which is a large number of calls.
+    analytical value of $0.\bar{3}$.
 </div>
 </div>
 
+Notice also that we make $25\times 10^7$ calls to the quantum "computer"
+which is a large number of calls. Using states designs, we will reduce that
+to $3\times 10^4$ which is more than $800$ fold decrease in the number of calls.
+
 ### Average of a function over the Bloch sphere: state designs
+Computing the average of a function of a quantum state is akin
+to computing the average over spheres. The only difference now
+is that we are supposed to choose specific states, and in the
+case of single-qubit states, we need to choose states on the
+Bloch sphere.
+
+First, we define state designs:
+
+> **Definition:**
+> let $f_t$ be a polynomial in $t$ variables homogeneous in degree at most $t$
+> in those variables and degree $t$ in the complex conjugate of those variables.
+> A set $X = \\{ \ket{\psi} \vert \ket{\psi} \in \mathcal{S}(\mathbb{C}^d) \\}$ is a state
+> $t$-design if:
+> {% katexmm %}
+> $$
+> \dfrac{1}{\lvert X \rvert} \sum_{\ket{\psi} \in X} f_t(\ket{\psi}) = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^d))} \int_{\mathcal{S}(\mathbb{C}^d)} f_f(\ket{\psi}) d_{\mu}\ket{\psi} \tag{15}
+> $$
+> {% endkatexmm %}
+> holds for all possible $f_t$.
+> Moreover a quantum state $t$-design is also a quantum state $s$-design for all $0 < s < t$.
+
+The definition is pretty familiar at this point but one aspect deserves
+a comment: $f_t$ is a polynomial in $t$ variables homogeneous in degree at most $t$
+in those variables and degree $t$ in the complex conjugate of those variables.
+
+What that means is that we should have an equal number of kets $\ket{\psi}$ and an equal
+number of bras $\bra{\psi}$ in the function $f_t$.  
+In the case of $f_2(\ket{\psi}) = \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi}$
+we have exactly two $\ket{\psi}$ and two $\bra{\psi}$, so our function is a 2-design.
+
+It has been proven <sup><i>[cite]</i></sup> that the eigenvectors of
+Pauli matrices form a state $2$-design, $P = \\{\ket{0}, \ket{1}, \ket{+}, \ket{-}, \ket{+i}, \ket{-i}\\}$.
+
+Let's try to calculate the average fidelity of $f(\ket{\psi}) = \lvert \bra{\psi} X \ket{\psi} \rvert^2$
+using our state $2$-design.
+
+Since our function is relatively simple and we only have $6$ states,
+we can easily analytically compute the average using Equation $(15)$
+then do the same computation again in software:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \dfrac{1}{\lvert P \rvert} \sum_{\ket{\psi} \in P} f_t(\ket{\psi}) \\
+    &= \dfrac{1}{6} \sum_{\ket{\psi} \in P} \lvert \bra{\psi} X \ket{\psi} \rvert^2 \\
+    &= \dfrac{1}{6} \left( \lvert\bra{0} X \ket{0}\rvert^2
+    + \lvert\bra{1} X \ket{1}\rvert^2
+    + \lvert\bra{+} X \ket{+}\rvert^2
+    + \lvert\bra{-} X \ket{-}\rvert^2
+    + \lvert\bra{+i} X \ket{+i}\rvert^2
+    + \lvert\bra{-i} X \ket{-i}\rvert^2
+    \right) \\
+    &= \dfrac{1}{6} \left( 0 + 0 + 1 + 1 + 0 + 0 \right) \\
+    &= \dfrac{1}{3} \\
+    &= 0.\bar{3}
+\end{align}
+$$
+{% endkatexmm %}
+
+Which is in excellent agreement with the results we got thus far.
+We now code that up to finalize:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import pennylane as qml
+
+def zero_ev(wire):
+    # This circuit prepares the |0> state
+    pass
+
+def one_ev(wire):
+    # This circuit prepares the |1> state
+    qml.PauliX(wires = wire)
+
+def plus_ev(wire):
+    # This circuit prepares the |+> state
+    qml.Hadamard(wires = wire)
+
+def minus_ev(wire):
+    # This circuit prepares the |-> state
+    qml.PauliX(wires = wire)
+    qml.Hadamard(wires = wire)
+
+def plus_i_ev(wire):
+    # This circuit prepares the |+i> state
+    qml.Hadamard(wires = wire)
+    qml.S(wires = wire)
+
+def minus_i_ev(wire):
+    # This circuit prepares the |-i> state
+    qml.PauliX(wires = wire)
+    qml.Hadamard(wires = wire)
+    qml.S(wires = wire)
+
+def swap_test(state_prep_gate):
+    n_shots = 50_000
+    dev = qml.device(
+        "default.qubit",
+        wires = 3,
+        shots = n_shots
+    )
+
+    @qml.qnode(dev)
+    def swap_test_circuit():
+        # Prepare the state |psi> on qubit 1
+        state_prep_gate(1)
+        
+        # Prepare the state X|psi> on qubit 2
+        state_prep_gate(2)
+        qml.PauliX(wires = 2)
+
+        # Perform the SWAP test
+        qml.Hadamard(wires = 0)
+        qml.CSWAP(wires = [0, 1, 2])
+        qml.Hadamard(wires = 0)
+
+        # Making sure to collect statistics of qubit 0
+        return qml.counts(qml.PauliZ(0))
+
+    dist = swap_test_circuit()
+    one_state_count = dist[-1] if -1 in dist else 0
+    return 1 - (2 / n_shots) * one_state_count
+
+def state_design_average(f, states):
+    return np.mean([f(state) for state in states])
+
+if __name__ == "__main__":
+    print(state_design_average(
+        swap_test,
+        [zero_ev, one_ev, plus_ev, minus_ev, plus_i_ev, minus_i_ev]
+    ))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average of $f(\ket{\psi}) = \lvert \bra{\psi} X \ket{\psi} \rvert^2$ over the Bloch sphere using state designs:
+    </span>
+    on my run I got $\bar{f} = 0.33331333333333324$ which is also good.
+    We don't get exactly $0.\bar{3}$ because we had to sample from the quantum "computer".
+</div>
+</div>
+
+And thus, using state designs, we have managed to calculate
+the average fidelity of the $X$ gate using $3\times 10^4$ samples,
+instead of the $25\times 10^7$ that we used for Monte Carlo integration.
+
+Not only that, find the average using sums over the $2$-design
+set (Pauli eigenvectors) was simpler than doing integration!
+
+It is therefore to our advantage to use designs
+than other methods whenever the situtation lands itself to their use.
+
+In the coming subsection, we are going to find the average fidelity
+of the $RY(\theta)$ gate subject to noise using state designs.
 
 ### Application: quantum gate fidelity
 
