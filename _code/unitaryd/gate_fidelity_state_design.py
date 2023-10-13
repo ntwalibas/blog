@@ -1,6 +1,9 @@
 import numpy as np
 import pennylane as qml
 
+# Make sure results are reproducible
+np.random.seed(1)
+
 def zero(wire):
     # This non-circuit prepares the |0> state
     pass
@@ -29,7 +32,12 @@ def minus_i(wire):
     qml.Hadamard(wires = wire)
     qml.S(wires = wire)
 
-def swap_test(state_prep_gate):
+def PauliX_e(angle, wire):
+    # We add a randomly generated angle to simulate
+    # stochastic calibration noise
+    qml.RX(np.pi + angle, wires = wire)
+
+def swap_test(state_prep_gate, calibration_error_angle):
     n_shots = 50_000
     dev = qml.device(
         "default.qubit",
@@ -39,8 +47,9 @@ def swap_test(state_prep_gate):
 
     @qml.qnode(dev)
     def swap_test_circuit():
-        # Prepare the state |psi> on qubit 1
+        # Prepare the state X_e|psi> on qubit 1
         state_prep_gate(1)
+        PauliX_e(calibration_error_angle, 1)
         
         # Prepare the state X|psi> on qubit 2
         state_prep_gate(2)
@@ -51,18 +60,23 @@ def swap_test(state_prep_gate):
         qml.CSWAP(wires = [0, 1, 2])
         qml.Hadamard(wires = 0)
 
-        # Making sure to collect statistics of qubit 0
+        # Collect counts on qubit 0
         return qml.counts(qml.PauliZ(0))
 
     dist = swap_test_circuit()
     one_state_count = dist[-1] if -1 in dist else 0
     return 1 - (2 / n_shots) * one_state_count
 
-def state_design_average(f, states):
-    return np.mean([f(state) for state in states])
+def state_design_average(f, calibration_error_angle, states):
+    return np.mean([f(state, calibration_error_angle) for state in states])
 
 if __name__ == "__main__":
-    print(state_design_average(
-        swap_test,
-        [zero, one, plus, minus, plus_i, minus_i]
-    ))
+    calibration_error_angles = [0, np.pi / 2, np.pi]
+    for calibration_error_angle in calibration_error_angles:
+        print(f"Fidelity at angle error {calibration_error_angle} =",
+            state_design_average(
+                swap_test,
+                np.random.normal(0, calibration_error_angle, 1)[0],
+                [zero, one, plus, minus, plus_i, minus_i]
+            )
+        )

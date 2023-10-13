@@ -1250,8 +1250,7 @@ And if it is $0$, then the channel doesn't preserve quantum states.
 
 We will work through a simple example: calculating the average fidelity
 of the Pauli $X$ gate. Then we will find the average fidelity of
-of the $RY(\theta)$ gate under noise calibration error and depolarizing
-noise error.
+of the $X$ gate under stochastic calibration error.
 
 ### Average of a function over the Bloch sphere: analytic solution
 To get started, let's calculate the average fidelity of the $X$ gate.
@@ -1393,7 +1392,7 @@ def swap_test(state_prep_unitary):
         qml.CSWAP(wires = [0, 1, 2])
         qml.Hadamard(wires = 0)
 
-        # Making sure to collect statistics of qubit 0
+        # Collect counts on qubit 0
         return qml.counts(qml.PauliZ(0))
 
     dist = swap_test_circuit()
@@ -1455,7 +1454,8 @@ in those variables and degree $t$ in the complex conjugate of those variables.
 What that means is that we should have an equal number of kets $\ket{\psi}$ and an equal
 number of bras $\bra{\psi}$ in the function $f_t$.  
 In the case of $f_2(\ket{\psi}) = \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi}$
-we have exactly two $\ket{\psi}$ and two $\bra{\psi}$, so our function is a 2-design.
+we have exactly two $\ket{\psi}$ and two $\bra{\psi}$, so our function is homogeneous
+in degree $2$.
 
 It has been proven <sup><i>[cite]</i></sup> that the eigenvectors of
 Pauli matrices form a state $2$-design, $P = \\{\ket{0}, \ket{1}, \ket{+}, \ket{-}, \ket{+i}, \ket{-i}\\}$.
@@ -1494,29 +1494,29 @@ We now code that up to finalize:
 import numpy as np
 import pennylane as qml
 
-def zero_ev(wire):
-    # This circuit prepares the |0> state
+def zero(wire):
+    # This non-circuit prepares the |0> state
     pass
 
-def one_ev(wire):
+def one(wire):
     # This circuit prepares the |1> state
     qml.PauliX(wires = wire)
 
-def plus_ev(wire):
+def plus(wire):
     # This circuit prepares the |+> state
     qml.Hadamard(wires = wire)
 
-def minus_ev(wire):
+def minus(wire):
     # This circuit prepares the |-> state
     qml.PauliX(wires = wire)
     qml.Hadamard(wires = wire)
 
-def plus_i_ev(wire):
+def plus_i(wire):
     # This circuit prepares the |+i> state
     qml.Hadamard(wires = wire)
     qml.S(wires = wire)
 
-def minus_i_ev(wire):
+def minus_i(wire):
     # This circuit prepares the |-i> state
     qml.PauliX(wires = wire)
     qml.Hadamard(wires = wire)
@@ -1544,7 +1544,7 @@ def swap_test(state_prep_gate):
         qml.CSWAP(wires = [0, 1, 2])
         qml.Hadamard(wires = 0)
 
-        # Making sure to collect statistics of qubit 0
+        # Collect counts on qubit 0
         return qml.counts(qml.PauliZ(0))
 
     dist = swap_test_circuit()
@@ -1557,7 +1557,7 @@ def state_design_average(f, states):
 if __name__ == "__main__":
     print(state_design_average(
         swap_test,
-        [zero_ev, one_ev, plus_ev, minus_ev, plus_i_ev, minus_i_ev]
+        [zero, one, plus, minus, plus_i, minus_i]
     ))
 
 {% endhighlight %}
@@ -1574,16 +1574,225 @@ And thus, using state designs, we have managed to calculate
 the average fidelity of the $X$ gate using $3\times 10^4$ samples,
 instead of the $25\times 10^7$ that we used for Monte Carlo integration.
 
-Not only that, find the average using sums over the $2$-design
+Not only that, finding the average using sums over the $2$-design
 set (Pauli eigenvectors) was simpler than doing integration!
 
 It is therefore to our advantage to use designs
 than other methods whenever the situtation lands itself to their use.
 
 In the coming subsection, we are going to find the average fidelity
-of the $RY(\theta)$ gate subject to noise using state designs.
+of the Pauli $X$ gate subject to calibration noise using state designs.
 
 ### Application: quantum gate fidelity
+Assume that the only noise the Pauli $X$ gate is subject to
+is a stochastic calibration noise.
+
+The $X$ gate is a rotation about the x-axis by $\pi$ radians up to
+an irrelevant global phase:
+
+{% katexmm %}
+$$
+RX(\pi) =
+-i\begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix}
+\equiv
+\begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix} = X
+$$
+{% endkatexmm %}
+
+Let's say that our implementation is not perfect and instead of
+having $X = RX(\pi)$ we end up with
+$X_{\epsilon} = RX(\pi + \hat{\epsilon})$ where $\hat{\epsilon}$ is
+a random variable with zero-mean and standard deviation $\sigma$.
+
+Our goal is calculate the average fidelity of the implemented gate
+$X_{\epsilon}$ with respect to the ideal gate $X$.  
+In general, we should expect that in case on no calibration error,
+that is $\hat{\epsilon}$ has zero-mean and zero standard deviation,
+$X_{\epsilon} = X$. And we also expect that as we increase
+the standard deviation, we will get farther away from the ideal
+$X$ gate.
+
+Let us formulate the problem in a general way: let $G$ be the ideal gate
+and $G_{\epsilon}$ be the gate subject to some sort of error.
+There is no requirement that the error be a calibration error,
+it can be any other such as incoherent errors.
+
+We wish to calculate the average fidelity of the gate $G_{\epsilon}$
+with respect to the ideal gate $G$. (To simplify the language, we will
+simply say that we wish to find the average fidelity of $G_{\epsilon}$.)
+
+To do the same, we need to find how probable the states $G_{\epsilon} \ket{\psi}$
+are the same as the states $G \ket{\psi}$.
+
+The average fidelity is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}G_{\epsilon}^{\dagger} \cdot G(\ket{\psi}\bra{\psi}) \cdot G_{\epsilon}\ket{\psi} d_{\mu}\ket{\psi} \tag{16}
+\end{align}
+$$
+{% endkatexmm %}
+
+In our case where we are dealing with single-qubit gates $X_{\epsilon}$
+and $X$, Equation $(16)$ specializes to:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \bra{\psi}X_{\epsilon}^{\dagger} \cdot X(\ket{\psi}\bra{\psi}) \cdot X_{\epsilon}\ket{\psi} \sin\theta \,d\theta\,d\phi
+\end{align}
+$$
+{% endkatexmm %}
+
+Immediately, we can see that it is no fun trying to calculate
+that integral by hand. This is especially true if we had
+more complex noise channels describing $X_{\epsilon}$.
+Even more so on real devices where gates are subject to much
+more complicated noise channels.
+
+Fornunately we have designs to our rescue: we will use the exact
+procedure as above with the difference now being that we need
+to incorporate the action of $X_{\epsilon}$ on the state $\ket{\psi}$
+chosen from eigenvectors of Pauli matrices:
+
+<div class='figure'>
+    <img src='/assets/images/unitaryd/gate_fidelity_state_design.png'
+         style='width: 30%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Average gate fidelity of $X_\epsilon$:</span>
+        we compare how probable the state created by $X_\epsilon$ is equal
+        to the state create by $X$.
+    </div>
+</div>
+
+The code that follows computes the average gate fidelity as per the circuit above:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import pennylane as qml
+
+# Make sure results are reproducible
+np.random.seed(1)
+
+def zero(wire):
+    # This non-circuit prepares the |0> state
+    pass
+
+def one(wire):
+    # This circuit prepares the |1> state
+    qml.PauliX(wires = wire)
+
+def plus(wire):
+    # This circuit prepares the |+> state
+    qml.Hadamard(wires = wire)
+
+def minus(wire):
+    # This circuit prepares the |-> state
+    qml.PauliX(wires = wire)
+    qml.Hadamard(wires = wire)
+
+def plus_i(wire):
+    # This circuit prepares the |+i> state
+    qml.Hadamard(wires = wire)
+    qml.S(wires = wire)
+
+def minus_i(wire):
+    # This circuit prepares the |-i> state
+    qml.PauliX(wires = wire)
+    qml.Hadamard(wires = wire)
+    qml.S(wires = wire)
+
+def PauliX_e(angle, wire):
+    # We add a randomly generated angle to simulate
+    # stochastic calibration noise
+    qml.RX(np.pi + angle, wires = wire)
+
+def swap_test(state_prep_gate, calibration_error_angle):
+    n_shots = 50_000
+    dev = qml.device(
+        "default.qubit",
+        wires = 3,
+        shots = n_shots
+    )
+
+    @qml.qnode(dev)
+    def swap_test_circuit():
+        # Prepare the state X_e|psi> on qubit 1
+        state_prep_gate(1)
+        PauliX_e(calibration_error_angle, 1)
+        
+        # Prepare the state X|psi> on qubit 2
+        state_prep_gate(2)
+        qml.PauliX(wires = 2)
+
+        # Perform the SWAP test
+        qml.Hadamard(wires = 0)
+        qml.CSWAP(wires = [0, 1, 2])
+        qml.Hadamard(wires = 0)
+
+        # Collect counts on qubit 0
+        return qml.counts(qml.PauliZ(0))
+
+    dist = swap_test_circuit()
+    one_state_count = dist[-1] if -1 in dist else 0
+    return 1 - (2 / n_shots) * one_state_count
+
+def state_design_average(f, calibration_error_angle, states):
+    return np.mean([f(state, calibration_error_angle) for state in states])
+
+if __name__ == "__main__":
+    calibration_error_angles = [0, np.pi / 2, np.pi]
+    for calibration_error_angle in calibration_error_angles:
+        print(f"Fidelity at angle error {calibration_error_angle} = ",
+            state_design_average(
+                swap_test,
+                np.random.normal(0, calibration_error_angle, 1)[0],
+                [zero, one, plus, minus, plus_i, minus_i]
+            )
+        )
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Computatin of the average fidelity of $X_\epsilon$:
+    </span>
+    we compute the average fidelity for different deviations
+    from the ideal angle that corresponds to the $X$ gate.
+</div>
+</div>
+
+Here are the results of my run locally:
+
+<div class='figure' markdown='1'>
+{% highlight text %}
+Fidelity at angle error 0 = 1.0
+Fidelity at angle error 1.5707963267948966 = 0.8583533333333334
+Fidelity at angle error 3.141592653589793 = 0.3489
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average fidelity of $X_\epsilon$ for different calibration noises:
+    </span>
+    as expected, when there is no calibration error, we get an average fidelity of
+    $1$. As we increase the amount of deviation from the true angle $\pi$
+    that corresponds to the ideal gate $X$, the average fidelity
+    keeps dropping.
+</div>
+</div>
+
+And there it is: we were able to calculate by how much a gate subject
+to some error is different from the ideal gate.
+
+In the next section, we introduce unitary designs then use them
+to do the same computation of the average gate fidelity.
 
 ## Unitary designs
 
