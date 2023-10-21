@@ -1804,17 +1804,18 @@ the random unitary to a fudiciary starting state.
 
 Sure, we could have randomly sampled from $\mathcal{S}(\mathbb{C}^n)$
 then synthesize a circuit that prepares that state but
-that would have been harder for no good reason.
+we would have been bothering ourselves solving a problem
+useless to our mission of understand designs.
 
-So it stands to reason that it makes more sense to
-have function that depend not on states but on unitaries.
+Therefore it stands to reason that it makes more sense to
+have functions that depend not on states but on unitaries.
 Moreover unitaries are nicer than states: they form a group
 so we can combine then under the group operation if we need to.
 
 In this section we look at functions that depend on unitaries
 and not quantum states and how to average such functions.
 As application, we will again calculate the average fidelity
-of the Pauli $X$ gate but in now averaging over unitaries.
+of the Pauli $X$ gate but now by averaging over unitaries.
 
 ### Functions of a unitary and their average
 A function of a unitary is a function that takes a unitary
