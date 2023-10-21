@@ -1911,7 +1911,7 @@ reuse the results therein.
     <div class='caption-label'>
         Integration over the unitary group
     </div>
-    When we integrate equations such as $(17)$, we are integrating
+    When we evaluate integrals such as in Equation $(17)$, we are integrating
     over the unitary groups.<br><br>
     
     Integrals such as those can be evaluated using a variety of means
