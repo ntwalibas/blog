@@ -1583,7 +1583,7 @@ than other methods whenever the situtation lands itself to their use.
 In the coming subsection, we are going to find the average fidelity
 of the Pauli $X$ gate subject to calibration noise using state designs.
 
-### Application: quantum gate fidelity
+### Application: average gate fidelity
 Assume that the only noise the Pauli $X$ gate is subject to
 is a stochastic calibration noise.
 
@@ -1646,7 +1646,8 @@ and $X$, Equation $(16)$ specializes to:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} = \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \bra{\psi}X_{\epsilon}^{\dagger} \cdot X(\ket{\psi}\bra{\psi}) \cdot X_{\epsilon}\ket{\psi} \sin\theta \,d\theta\,d\phi
+    \bar{f} &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \bra{\psi}X_{\epsilon}^{\dagger} \cdot X(\ket{\psi}\bra{\psi}) \cdot X_{\epsilon}\ket{\psi} \sin\theta \,d\theta\,d\phi \\
+    &= \dfrac{1}{4\pi} \int_{0}^{2\pi} \int_{0}^{\pi} \lvert \bra{\psi}X_{\epsilon}^{\dagger} \cdot X\ket{\psi} \rvert^2 \sin\theta \,d\theta\,d\phi
 \end{align}
 $$
 {% endkatexmm %}
@@ -1795,6 +1796,41 @@ In the next section, we introduce unitary designs then use them
 to do the same computation of the average gate fidelity.
 
 ## Unitary designs
+In the previous section, we were able to average a function
+over quantum states by randomly sampling said states.  
+But note that in order to generate those random states,
+we actually randomly sampled unitaries then applied
+the random unitary to a fudiciary starting state.
+
+Sure, we could have randomly sampled from $\mathcal{S}(\mathbb{C}^n$
+then synthesize a circuit that prepares that state but
+that would have been harder for no good reason.
+
+So it stands to reason that it makes more sense to
+have function that depend not on states but on unitaries.
+Moreover unitaries are nicer than states: they form a group
+so we can combine then under the group operation if we need to.
+
+In this section we look at functions that depend on unitaries
+and not quantum states and how to average such functions.
+As application, we will again calculate the average fidelity
+of the Pauli $X$ gate but in now averaging over unitaries.
+
+### Functions of a unitary and their average
+
+### Average of a function of a unitary: analytic solution
+#### Function in one variable
+#### Function in two variables
+
+### Average of a function of a unitary: Monte Carlo integration
+#### Function in one variable
+#### Function in two variables
+
+### Average of a function of a unitary: unitary designs
+#### Unitary 1-design
+#### Unitary 2-design
+
+### Application: average gate fidelity
 
 ## Next steps
 
