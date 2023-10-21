@@ -1854,14 +1854,14 @@ by a unitary.
 The single-qubit case is given by:
 {% katexmm %}
 $$
-    f = U\rho U^\dagger
+    f(U) = U\rho U^\dagger
 $$
 {% endkatexmm %}
 
 And the two-qubits case is given by:
 {% katexmm %}
 $$
-    f = (U_A \otimes U_B) \rho  (U_A \otimes U_B)^\dagger
+    f(U_A, U_B) = (U_A \otimes U_B) \rho  (U_A \otimes U_B)^\dagger
 $$
 {% endkatexmm %}
 
@@ -1869,13 +1869,67 @@ Where $U, U_A, U_B \in \mathbb{U}(2)$ and $\rho$ are density matrices
 either for a single-qubit system or a two-qubits system.
 
 Both functions will help us introduce averaging over functions
-of unitaries and think about that means.
+of unitaries, and think about the obtained results mean.
 
 Then in the application subsection we will rephase the calculation
 of average gate fidelity given by Equation $(16)$ as an integral
 over unitaries instead of quantum states.
 
-#### Average of function of unitaries
+#### Average of a function of unitaries
+The average of a function of unitaries is similar to that of
+a function of quantum states. The only difference is that
+we need to be careful about the calculation of the volume
+element, as usual.
+
+Similar to Equation $(13)$, the average of a function of unitaries
+is given by:
+
+{% katexmm %}
+$$
+    \bar{f} = \dfrac{1}{Vol(\mathbb{U}({2^n}))} \int_{\mathbb{U}({2^n})} f(U) d_{\mu}U \tag{17}
+$$
+{% endkatexmm %}
+
+Where the volume element is calculated with respect to the Haar measure.
+The calculation of this volume element is not necessarily trivial for arbitrary
+system size as can be seen in {% cite Tilma_2004 %} who have carried out these calculations.
+
+On the plus side, since our goal is to understand enough to write
+software that calculates the average, and not necessarily carry out
+the calculations by hand, it will suffice to use precalculated results.
+
+In fact, for our two functions of interest, it is not even necessary
+to find the volume element $d_{\mu}U$: integration over the Haar measure
+mostly amounts to using properties of the Haar measure.  
+And even in that case our goal is not to learn how to evaluate
+integrals over the unitary group. The integrals we will care about
+in this post have been evaluated in {% cite zhang2015matrix %}. We will simply
+reuse the results therein.
+
+<div class='figure figure-alert figure-info' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Integration over the unitary group
+    </div>
+    When we integrate equations such as $(17)$, we are integrating
+    over the unitary groups.<br><br>
+    
+    Integrals such as those can be evaluated using a variety of means
+    such as using the invariance of the Haar measure, techniques
+    from representation theory, Weingarten functions, etc.<br><br>
+
+    Knowing those techniques is a good skill to have but
+    as would be obvious by now, all we have needed was the result
+    of each integral &ndash; to verify our code &ndash; and not how it was obtained.
+    We went through the trouble of performing earlier evaluations
+    because they were easy to carry out and to solify our intuition.<br><br>
+
+    Now, we trust the results already obtained by others
+    and focus on coding designs. And that's the whole point:
+    we don't want to evaluate those integrals by hand if we can help it!
+</div>
+</div>
+
 
 ### Average of a function of a unitary: analytic solution
 #### Function in one variable
