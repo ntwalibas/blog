@@ -1817,6 +1817,65 @@ As application, we will again calculate the average fidelity
 of the Pauli $X$ gate but in now averaging over unitaries.
 
 ### Functions of a unitary and their average
+A function of a unitary is a function that takes a unitary
+matrix as input and can output some other quantity depending
+on the form of the function.  
+In general the specific set of the codomain doesn't matter
+for the math so long as we can interpret the output we get.
+
+Otherwise the form of such function is similar to functions
+we have seen thus far, the only difference now is that
+these functions take unitary matrices as input.
+
+#### Functions of a unitary
+Let $U$ be a unitary from $\mathbb{C}^n \times \mathbb{C}^n$.
+We are interested in functions that take unitaries such as $U$
+as input.
+
+Functions over unitaries can have a variety of codomains:
+- $\mathbb{C}^n \times \mathbb{C}^n$: a function that corresponds to
+    the commutator between $U, V \in \mathbb{C}^n \times \mathbb{C}^n$
+    will output a matrix in $\mathbb{C}^n \times \mathbb{C}^n$.
+- $\mathbb{C}^n$: a function corresponding to the application
+    of a unitary to a quantum state $\ket{\psi} \in \mathbb{C}^n$
+    will output a quantum state in $\mathbb{C}^n$.
+- $\mathbb{R}$: a function that computes the distance between two
+    quantum states such as $\lvert\bra{\psi}U\ket{\psi}\rvert^2$
+    will output a real number.
+
+And so on. So we can't readily define the codomain of functions
+over unitaries until we are precise about what are computing.
+
+Nonetheless, to get our feet in the waters, we will start with
+two functions that corresponds to the conjugation of a density matrix
+by a unitary.
+
+The single-qubit case is given by:
+{% katexmm %}
+$$
+    f = U\rho U^\dagger
+$$
+{% endkatexmm %}
+
+And the two-qubits case is given by:
+{% katexmm %}
+$$
+    f = (U_A \otimes U_B) \rho  (U_A \otimes U_B)^\dagger
+$$
+{% endkatexmm %}
+
+Where in both cases $U \in \mathbb{C}^2 \times \mathbb{C}^2$
+and $\rho$ is a density matrix either for a single-qubit system
+or a two-qubits system.
+
+Both functions will help us introduce averaging over functions
+of unitaries and think about that means.
+
+Then in the application subsection we will rephase the calculation
+of average gate fidelity given by Equation $(16)$ as an integral
+over unitaries instead of quantum states.
+
+#### Average of function of unitaries
 
 ### Average of a function of a unitary: analytic solution
 #### Function in one variable
