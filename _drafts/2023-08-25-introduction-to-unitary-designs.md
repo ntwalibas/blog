@@ -1828,17 +1828,18 @@ we have seen thus far, the only difference now is that
 these functions take unitary matrices as input.
 
 #### Functions of a unitary
-Let $U$ be a unitary from $\mathbb{C}^n \times \mathbb{C}^n$.
+Let $U$ be a unitary from $\mathbb{U}(2^n) \subset \mathbb{C}^{2^n} \times \mathbb{C}^{2^n}$,
+the set of unitary matrices acting on $n$ qubits.
 We are interested in functions that take unitaries such as $U$
 as input.
 
 Functions over unitaries can have a variety of codomains:
-- $\mathbb{C}^n \times \mathbb{C}^n$: a function that corresponds to
-    the commutator between $U, V \in \mathbb{C}^n \times \mathbb{C}^n$
-    will output a matrix in $\mathbb{C}^n \times \mathbb{C}^n$.
-- $\mathbb{C}^n$: a function corresponding to the application
-    of a unitary to a quantum state $\ket{\psi} \in \mathbb{C}^n$
-    will output a quantum state in $\mathbb{C}^n$.
+- $\mathbb{U}(2^n)$: a function that corresponds to
+    the commutator between $U, V \in \mathbb{U}(2^n)$
+    will output a matrix in $\mathbb{U}(2^n)$.
+- $\mathbb{C}^{2^n}$: a function corresponding to the application
+    of a unitary to a quantum state $\ket{\psi} \in \mathbb{C}^{2^n}$
+    will output a quantum state in $\mathbb{C}^{2^n}$.
 - $\mathbb{R}$: a function that computes the distance between two
     quantum states such as $\lvert\bra{\psi}U\ket{\psi}\rvert^2$
     will output a real number.
@@ -1864,9 +1865,8 @@ $$
 $$
 {% endkatexmm %}
 
-Where in both cases $U \in \mathbb{C}^2 \times \mathbb{C}^2$
-and $\rho$ is a density matrix either for a single-qubit system
-or a two-qubits system.
+Where $U, U_A, U_B \in \mathbb{U}(2)$ and $\rho$ are density matrices
+either for a single-qubit system or a two-qubits system.
 
 Both functions will help us introduce averaging over functions
 of unitaries and think about that means.
