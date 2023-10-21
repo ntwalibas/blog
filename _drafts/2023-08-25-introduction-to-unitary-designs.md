@@ -1802,7 +1802,7 @@ But note that in order to generate those random states,
 we actually randomly sampled unitaries then applied
 the random unitary to a fudiciary starting state.
 
-Sure, we could have randomly sampled from $\mathcal{S}(\mathbb{C}^n$
+Sure, we could have randomly sampled from $\mathcal{S}(\mathbb{C}^n)$
 then synthesize a circuit that prepares that state but
 that would have been harder for no good reason.
 
@@ -1924,7 +1924,7 @@ reuse the results therein.
     We went through the trouble of performing earlier evaluations
     because they were easy to carry out and to solify our intuition.<br><br>
 
-    Now, we trust the results already obtained by others
+    Now we trust the results already obtained by others
     and focus on coding designs. And that's the whole point:
     we don't want to evaluate those integrals by hand if we can help it!
 </div>
