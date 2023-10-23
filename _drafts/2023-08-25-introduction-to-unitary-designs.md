@@ -1849,25 +1849,27 @@ And so on. So we can't readily define the codomain of functions
 over unitaries until we are precise about what are computing.
 
 Nonetheless, to get our feet in the waters, we will start with
-two functions that corresponds to the conjugation of a density matrix
+two functions that corresponds to the conjugation of a square matrix $M$
 by a unitary.
 
 The single-qubit case is given by:
 {% katexmm %}
 $$
-    f(U) = U\rho U^\dagger
+    f(U) = U M U^\dagger
 $$
 {% endkatexmm %}
 
 And the two-qubits case is given by:
 {% katexmm %}
 $$
-    f(U_A, U_B) = (U_A \otimes U_B) \rho  (U_A \otimes U_B)^\dagger
+    f(U_A, U_B) = (U_A \otimes U_B) M  (U_A \otimes U_B)^\dagger
 $$
 {% endkatexmm %}
 
-Where $U, U_A, U_B \in \mathbb{U}(2)$ and $\rho$ are density matrices
-either for a single-qubit system or a two-qubits system.
+Where $U, U_A, U_B \in \mathbb{U}(2)$ and $M$ are square matrices
+of dimensions $2^n \times 2^n$. Even this dimension is a hard requirement
+that need not be but we impose it because all the matrices we will be
+working with will be either quantum gates or density matrices.
 
 Both functions will help us introduce averaging over functions
 of unitaries, and think about the obtained results mean.
@@ -1933,7 +1935,82 @@ reuse the results therein.
 
 
 ### Average of a function of a unitary: analytic solution
+We present the analytic solutions of the average of the two functions
+of interest and we interpret the obtained result when the conjugated
+matrix $M$ is a density matrix.
+
+Before we start, recall that we said that sometimes it is assumed
+that the Haar measure is uniform. That simply means that we don't
+need to divide by the volume and simply take it that the Haar measure
+is uniform.
+In this case the average is simplified and is given by:
+
+{% katexmm %}
+$$
+    \bar{f} = \int_{\mathbb{U}({2^n})} f(U) d_{\mu}U
+$$
+{% endkatexmm %}
+
+Where the volume element $d_{\mu}U$ has the Haar measure already
+divided by the volume (it is uniform). The calculations that lead to the relevant
+solutions assume this to be the case.
+
 #### Function in one variable
+(See subsection $3.1$, Equation $(3.6)$ of {% cite zhang2015matrix %}.)
+
+In the first case, for the function where the unitary we are
+integrating over act on a unitary acting on single qubit,
+the average is given by the following:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \int_{\mathbb{U}({2^n})} f(U) d_{\mu}U \\
+    &= \int_{\mathbb{U}({2})} UM U^\dagger d_{\mu}U \\
+    &= \dfrac{\text{Tr}[M]}{2} \mathbb{1} \tag{18}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\mathbb{1}$ is the identity matrix on $1$ qubit.
+
+We recognize $\frac{\text{Tr}[M]}{2} \mathbb{1}$
+as the completely mixed state if $M$ is a density matrix.
+The interpretation of the result obtained
+is that the averaging procedure transforms any density matrix into the
+completely mixed state. Therefore the averaging procedure
+acts as the completely depolarizing channel.
+
+This is easily realized by remembering that a valid density
+matrix must have unit trace therefore Equation $(18)$ will result
+in $\frac{1}{2} \mathbb{1}$ which is the completely mixed
+state for a single qubit.
+
+It is worth recalling that $M$ doesn't need to be a density matrix,
+it can any square matrix. Even though we may use them for testing,
+it is not obvious how to interpret the result.
+
+For instance, consider $M = X$ where $X$ is the Pauli $X$ matrix.
+Averaging over it, we obtain:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \int_{\mathbb{U}({2})} U X U^\dagger d_{\mu}U \\
+    &= \dfrac{\text{Tr}[X]}{2} \mathbb{1} \\
+    &= 0 \times \mathbb{1} \\
+    &= \mathbb{0}
+\end{align}
+$$
+{% endkatexmm %}
+
+While the null matrix is indeed a unitary matrix, it is **not** a valid
+quantum gate so we can't say that overaging over the Pauli $X$
+results in a particular quantum gate.
+
+It follows that in the general case, we shouldn't draw a conclusion
+of the kind: averaging over a quantum gate results in another quantum gate.
+
 #### Function in two variables
 
 ### Average of a function of a unitary: Monte Carlo integration
