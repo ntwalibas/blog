@@ -1829,15 +1829,15 @@ we have seen thus far, the only difference now is that
 these functions take unitary matrices as input.
 
 #### Functions of a unitary
-Let $U$ be a unitary from $\mathbb{U}(2^n) \subset \mathbb{C}^{2^n} \times \mathbb{C}^{2^n}$,
+Let $U$ be a unitary from $U(2^n) \subset \mathbb{C}^{2^n} \times \mathbb{C}^{2^n}$,
 the set of unitary matrices acting on $n$ qubits.
 We are interested in functions that take unitaries such as $U$
 as input.
 
 Functions over unitaries can have a variety of codomains:
-- $\mathbb{U}(2^n)$: a function that corresponds to
-    the commutator between $U, V \in \mathbb{U}(2^n)$
-    will output a matrix in $\mathbb{U}(2^n)$.
+- $U(2^n)$: a function that corresponds to
+    the commutator between $U, V \in U(2^n)$
+    will output a matrix in $U(2^n)$.
 - $\mathbb{C}^{2^n}$: a function corresponding to the application
     of a unitary to a quantum state $\ket{\psi} \in \mathbb{C}^{2^n}$
     will output a quantum state in $\mathbb{C}^{2^n}$.
@@ -1866,7 +1866,7 @@ $$
 $$
 {% endkatexmm %}
 
-Where $U, U_A, U_B \in \mathbb{U}(2)$ and $M$ are square matrices
+Where $U, U_A, U_B \in U(2)$ and $M$ are square matrices
 of dimensions $2^n \times 2^n$. Even this dimension is a hard requirement
 that need not be but we impose it because all the matrices we will be
 working with will be either quantum gates or density matrices.
@@ -1889,7 +1889,7 @@ is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \dfrac{1}{Vol(\mathbb{U}({2^n}))} \int_{\mathbb{U}({2^n})} f(U) d_{\mu}U \tag{17}
+    \bar{f} = \dfrac{1}{Vol(U({2^n}))} \int_{U({2^n})} f(U) d_{\mu}U \tag{17}
 $$
 {% endkatexmm %}
 
@@ -1947,7 +1947,7 @@ In this case the average is simplified and is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \int_{\mathbb{U}({2^n})} f(U) dU
+    \bar{f} = \int_{U({2^n})} f(U) dU
 $$
 {% endkatexmm %}
 
@@ -1964,8 +1964,8 @@ integrating over act on single qubit, the average is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}({2^n})} f(U) dU \\
-    &= \int_{\mathbb{U}({2})} UM U^\dagger dU \\
+    \bar{f} &= \int_{U({2^n})} f(U) dU \\
+    &= \int_{U({2})} UM U^\dagger dU \\
     &= \dfrac{\text{Tr}[M]}{2} \mathbb{1} \tag{18}
 \end{align}
 $$
@@ -1995,7 +1995,7 @@ Averaging over it, we obtain:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}({2})} U X U^\dagger dU \\
+    \bar{f} &= \int_{U({2})} U X U^\dagger dU \\
     &= \dfrac{\text{Tr}[X]}{2} \mathbb{1} \\
     &= 0 \times \mathbb{1} \\
     &= \mathbb{0}
@@ -2020,8 +2020,8 @@ the average is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}_A({2^n})} \int_{\mathbb{U}_B({2^n})} f(U_A, U_B) \,d_{\mu}(U_A) d_{\mu}(U_B) \\
-    &= \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} (U_A \otimes U_B) M_{AB} (U_A \otimes U_B)^\dagger \,d_{\mu}(U_A) d_{\mu}(U_B) \\
+    \bar{f} &= \int_{U({2^n})} \int_{U({2^n})} f(U_A, U_B) \,d_{\mu}(U_A) d_{\mu}(U_B) \\
+    &= \int_{U({2})} \int_{U({2})} (U_A \otimes U_B) M_{AB} (U_A \otimes U_B)^\dagger \,d_{\mu}(U_A) d_{\mu}(U_B) \\
     &= \text{Tr}_{AB}[M_{AB}] \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \tag{19}
 \end{align}
 $$
@@ -2047,7 +2047,7 @@ The Monte Carlo integration for the single-qubit integral is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \int_{\mathbb{U}({2})} f(U) dU \approx \dfrac{1}{N} \sum_{i=1}^N f(U_i) \tag{20}
+    \bar{f} = \int_{U({2})} f(U) dU \approx \dfrac{1}{N} \sum_{i=1}^N f(U_i) \tag{20}
 $$
 {% endkatexmm %}
 
@@ -2057,7 +2057,7 @@ the average of $f(U) = U S U^\dagger$ is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}({2})} U S U^\dagger dU \\
+    \bar{f} &= \int_{U({2})} U S U^\dagger dU \\
     &= \dfrac{\text{Tr}[S]}{2} \mathbb{1} \\
     &= \dfrac{1+i}{2} \mathbb{1} \\
     &= \begin{bmatrix} \dfrac{1+i}{2} & 0 \\ 0 & \dfrac{1+i}{2} \end{bmatrix}
@@ -2106,7 +2106,7 @@ The Monte Carlo integration for the two qubits integral is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} f(U_A, U_B) \,d(U_A) d(U_B) \approx \dfrac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N f(U_i, U_j) \tag{21}
+    \bar{f} = \int_{U({2})} \int_{U({2})} f(U_A, U_B) \,d(U_A) d(U_B) \approx \dfrac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N f(U_i, U_j) \tag{21}
 $$
 {% endkatexmm %}
 
@@ -2116,7 +2116,7 @@ the average of $f(U_A, U_B) = (U_A \otimes U_B) \, CNOT \, (U_A \otimes U_B)^\da
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} (U_A \otimes U_B) CNOT (U_A \otimes U_B)^\dagger \,d(U_A) d(U_B) \\
+    \bar{f} &= \int_{U({2})} \int_{U({2})} (U_A \otimes U_B) CNOT (U_A \otimes U_B)^\dagger \,d(U_A) d(U_B) \\
     &= \text{Tr}_{AB}[CNOT] \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \\
     &= 2 \times \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \\
     &= \begin{bmatrix} \dfrac{1}{2} & 0 & 0 & 0 \\ 0 & \dfrac{1}{2} & 0 & 0 \\ 0 & 0 & \dfrac{1}{2} & 0 \\ 0 & 0 & 0 & \dfrac{1}{2} \end{bmatrix}
@@ -2175,11 +2175,11 @@ show how to check whether a set is a $1$-design or a $2$-design.
 > **Definition:**
 > let $f_t$ be a polynomial in $t$ variables homogeneous in degree at most $t$
 > in those variables and degree $t$ in the Hermitian transpose of those variables.
-> A set $X = \\{ U \vert U \in \mathbb{U}(2^n) \\}$ is a unitary
+> A set $X = \\{ U \vert U \in U(2^n) \\}$ is a unitary
 > $t$-design if:
 > {% katexmm %}
 > $$
-> \dfrac{1}{\lvert X \rvert} \sum_{U \in X} f_t(U) = \int_{\mathbb{U}({2^n})} f_t(U) dU \tag{22}
+> \dfrac{1}{\lvert X \rvert} \sum_{U \in X} f_t(U) = \int_{U({2^n})} f_t(U) dU \tag{22}
 > $$
 > {% endkatexmm %}
 > holds for all possible $f_t$, with $dU$ being the volume element with uniform Haar measure.
@@ -2209,7 +2209,7 @@ A set $X$ is a unitary $1$-design if and only if {% cite Roy_2009 %}:
 {% katexmm %}
 $$
 \begin{align}
-    \dfrac{1}{\lvert X \rvert} \sum_{U \in X} U \otimes U^\dagger &= \int_{\mathbb{U}({2^n})} U \otimes U^\dagger dU \\
+    \dfrac{1}{\lvert X \rvert} \sum_{U \in X} U \otimes U^\dagger &= \int_{U({2^n})} U \otimes U^\dagger dU \\
     &= \dfrac{P_{21}}{2^n} \tag{23}
 \end{align}
 $$
@@ -2218,7 +2218,7 @@ $$
 Where $P_{ji}$ is a permutation that maps the basis elements $\ket{ij}$ to $\ket{ji}$,
 (effectively the two-qubits SWAP gate).
 
-The proof that $\int_{\mathbb{U}({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
+The proof that $\int_{U({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
 can be found in Subsection $3.1$, Corollary $3.5$ of {% cite zhang2015matrix %}.
 
 It is the case the Pauli group is a $1$-design. Let's use $
@@ -2229,7 +2229,7 @@ Equivalently, a set $X$ is a unitary $2$-design if and only if {% cite Roy_2009 
 {% katexmm %}
 $$
 \begin{align}
-    \dfrac{1}{\lvert X \rvert} \sum_{U \in X} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} &= \int_{\mathbb{U}({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU \\
+    \dfrac{1}{\lvert X \rvert} \sum_{U \in X} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} &= \int_{U({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU \\
     &= \dfrac{P_{3412} + P_{4321}}{4^n - 1} - \dfrac{P_{4312} + P_{3421}}{2^n(4^n - 1)} \tag{24}
 \end{align}
 $$
@@ -2237,7 +2237,7 @@ $$
 
 Where $P_{lkji}$ is a permutation that maps the basis elements $\ket{ijkl}$ to $\ket{lkji}$.
 
-The proof that $\int_{\mathbb{U}({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU = \dfrac{P_{3412} + P_{4321}}{4^n - 1} - \dfrac{P_{4312} + P_{3421}}{2^n(4^n - 1)}$ can be found in Subsection $3.2$, Corollary $3.15$ of {% cite zhang2015matrix %}.
+The proof that $\int_{U({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU = \dfrac{P_{3412} + P_{4321}}{4^n - 1} - \dfrac{P_{4312} + P_{3421}}{2^n(4^n - 1)}$ can be found in Subsection $3.2$, Corollary $3.15$ of {% cite zhang2015matrix %}.
 
 ### Application: average gate fidelity
 
@@ -2369,6 +2369,8 @@ Of course since we are writing Python, we remain mindful of indices starting at 
 import itertools as it
 import numpy as np
 
+from typing import List, Tuple
+
 class Permutation:
     def __init__(self, n_qubits: int):
         if n_qubits < 1:
@@ -2388,7 +2390,7 @@ class Permutation:
     
     def get_permutation_list(self, order: List) -> List[Tuple]:
         if len(order) != self.n_qubits:
-            raise ValueError("The order list must have the same length as the number of qubits to permute")
+            raise ValueError("The order list length must equal the number of qubits")
 
         if len(set(order)) != self.n_qubits:
             raise ValueError("The order list cannot contain duplicate items")
@@ -2401,7 +2403,7 @@ class Permutation:
             old_element = list(basis_element)
             for old_index, new_index in enumerate(order):
                 if new_index < 1 or new_index > self.n_qubits:
-                    raise ValueError(f"Item {new_index} at index {old_index} in order list is out of bounds")
+                    raise ValueError(f"Item {new_index} in order list out of bounds")
                 new_element[old_index] = old_element[new_index - 1]
             permutations.append((basis_element, ''.join(new_element)))
             
@@ -2436,6 +2438,8 @@ the permutation matrix.
 import itertools as it
 import numpy as np
 
+from typing import List, Tuple
+
 class Permutation:
     def __init__(self, n_qubits: int):
         if n_qubits < 1:
@@ -2455,7 +2459,7 @@ class Permutation:
     
     def get_permutation_list(self, order: List) -> List[Tuple]:
         if len(order) != self.n_qubits:
-            raise ValueError("The order list must have the same length as the number of qubits to permute")
+            raise ValueError("The order list length must equal the number of qubits")
 
         if len(set(order)) != self.n_qubits:
             raise ValueError("The order list cannot contain duplicate items")
@@ -2468,7 +2472,7 @@ class Permutation:
             old_element = list(basis_element)
             for old_index, new_index in enumerate(order):
                 if new_index < 1 or new_index > self.n_qubits:
-                    raise ValueError(f"Item {new_index} at index {old_index} in order list is out of bounds")
+                    raise ValueError(f"Item {new_index} in order list out of bounds")
                 new_element[old_index] = old_element[new_index - 1]
             permutations.append((basis_element, ''.join(new_element)))
             
@@ -2504,4 +2508,100 @@ And that's it, we have ourselves a class to help generate permutation
 matrices acting on the given number of qubits.
 
 ### Generating the Pauli group
+In the subsection on unitary $1$-designs, we posited that the Pauli group
+is a $1$-design. In order to verify this, we first need to generate
+the elements of the group.
 
+PennyLane already contains a function that can generate elements
+of the Pauli group for an arbitrary number of qubits.
+We won't use that function and go through the trouble of generating
+the Pauli group for a single-qubit system because we will use
+similar logic to generate elements of the Clifford group
+(and PennyLane doesn't appear to have a facility to this task.)
+
+Given a [generating set](https://en.wikipedia.org/wiki/Generating_set_of_a_group)
+of a group, we should be able to generate all the other group
+elements under the group operation.
+
+In the case of the Pauli group, the generating set of the group
+are the Pauli matrices:
+
+{% katexmm %}
+$$
+    \mathcal{P} \equiv \langle X, Y, Z \rangle
+$$
+{% endkatexmm %}
+
+Which means that the set $\\{ X, Y, Z \\}$ generates all
+the elements of the Pauli group $\mathcal{P}$ under matrix
+multiplication.
+
+Therefore, the code to generate the Pauli group will amount
+multiplying all the elements of the group until we can no longer
+generate an element we haven't seen before.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+
+from collections import deque
+
+def array_in_list(element, list):
+    for list_element in list:
+        if np.allclose(list_element, element):
+            return True
+    return False
+
+class Pauli:
+    @staticmethod
+    def generators():
+        X = np.matrix([
+            [0, 1],
+            [1, 0]
+        ])
+        Y = np.matrix([
+            [ 0, -1j],
+            [1j,   0]
+        ])
+        Z = np.matrix([
+            [1,  0],
+            [0, -1]
+        ])
+
+        return [X, Y, Z]
+
+    @staticmethod
+    def group():
+        group = []
+        queue = deque()
+        queue.append(
+            np.matrix([
+                [1, 0],
+                [0, 1]
+            ])
+        )
+
+        while queue:
+            x = queue.popleft()
+            if array_in_list(x, group):
+                continue
+            else:
+                group.append(x)
+            for generator in Pauli.generators():
+                queue.append(x @ generator)
+    
+        return group
+
+if __name__ == "__main__":
+    from pprint import pprint
+    pprint(Pauli.group())
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the Pauli group:
+    </span>
+    from the generating set, we keep multiplying the generators
+    until we have generated all possible elements of the group.
+</div>
+</div>
