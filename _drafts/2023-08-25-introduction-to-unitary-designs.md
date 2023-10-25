@@ -1956,11 +1956,10 @@ divided by the volume (it is uniform). The calculations that lead to the relevan
 solutions assume this to be the case.
 
 #### Function in one variable
-(See subsection $3.1$, Equation $(3.6)$ of {% cite zhang2015matrix %}.)
+(See subsection $3.1$, Equation $(3.6)$ in {% cite zhang2015matrix %}.)
 
 In the first case, for the function where the unitary we are
-integrating over act on a unitary acting on single qubit,
-the average is given by the following:
+integrating over act on single qubit, the average is given by:
 
 {% katexmm %}
 $$
@@ -2012,10 +2011,159 @@ It follows that in the general case, we shouldn't draw a conclusion
 of the kind: averaging over a quantum gate results in another quantum gate.
 
 #### Function in two variables
+(See subsection $3.1$, Equation $(3.10)$ in {% cite zhang2015matrix %}.)
+
+In the second case, for the function where the unitaries we are
+integrating over act separately acting on two qubits,
+the average is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \int_{\mathbb{U}_A({2^n})} \int_{\mathbb{U}_B({2^n})} f(U_A, U_B) \,d_{\mu}(U_A) d_{\mu}(U_B) \\
+    &= \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} (U_A \otimes U_B) M_{AB} (U_A \otimes U_B)^\dagger \,d_{\mu}(U_A) d_{\mu}(U_B) \\
+    &= \text{Tr}_{AB}[M_{AB}] \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \tag{19}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\mathbb{1}_A$ is the identity matrix on the first qubit,
+and $\mathbb{1}_B$ is the indentity matrix on the second qubit.
+
+Equation $(19)$ is the completely depolarizing channel for
+two qubits.
 
 ### Average of a function of a unitary: Monte Carlo integration
+Recalling that every density matrix has unit trace, it is not
+interesting to compute Equations $(18)$ and $(19)$ using Monte Carlo
+integration.
+
+Instead, for the single-qubit and two qubits integrals,
+we will use some quantum gates so as to convince ourselves
+that Monte Carlo integration recovers the expected analytical result.
+
 #### Function in one variable
+The Monte Carlo integration for the single-qubit integral is given by:
+
+{% katexmm %}
+$$
+    \bar{f} = \int_{\mathbb{U}({2})} f(U) d_{\mu}U \approx \dfrac{1}{N} \sum_{i=1}^N f(U_i) \tag{20}
+$$
+{% endkatexmm %}
+
+For instance, for $S = \begin{bmatrix} 1 & 0 \\ 0 & i \end{bmatrix}$ (the phase gate),
+the average of $f(U) = U S U^\dagger$ is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \int_{\mathbb{U}({2})} U S U^\dagger d_{\mu}U \\
+    &= \dfrac{\text{Tr}[S]}{2} \mathbb{1} \\
+    &= \dfrac{1+i}{2} \mathbb{1} \\
+    &= \begin{bmatrix} \dfrac{1+i}{2} & 0 \\ 0 & \dfrac{1+i}{2} \end{bmatrix}
+\end{align}
+$$
+{% endkatexmm %}
+
+Using Monte Carlo integration, we obtain the same result.
+The code follows performs the same calculation as above:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+
+from scipy.stats import unitary_group as ug
+
+# Limit the number of decimal digits to 2
+np.set_printoptions(precision = 2, suppress = True)
+
+def monte_carlo_average(M, n_samples):
+    R = np.zeros(M.shape)
+    for _ in range(n_samples):
+        U = ug.rvs(2)
+        R = R + (U * M * U.conj().T)
+    return (1 / n_samples) * R
+
+if __name__ == "__main__":
+    S = np.matrix([
+        [1, 0],
+        [0, 1j]
+    ])
+    print(monte_carlo_average(S, 50_000))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average of $f(U) = U S U^\dagger$ using Monte Carlo integration:
+    </span>
+    the result of my run is $\begin{bmatrix} 0.5+0.5j & -0. +0.j\\ -0. +0.j & 0.5+0.5j \end{bmatrix}$
+    which is the expected result.
+</div>
+</div>
+
 #### Function in two variables
+The Monte Carlo integration for the two qubits integral is given by:
+
+{% katexmm %}
+$$
+    \bar{f} = \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} f(U_A, U_B) \,d_{\mu}(U_A) d_{\mu}(U_B) \approx \dfrac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N f(U_i, U_j) \tag{21}
+$$
+{% endkatexmm %}
+
+As an example, take $CNOT = \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{bmatrix}$,
+the average of $f(U_A, U_B) = (U_A \otimes U_B) \, CNOT \, (U_A \otimes U_B)^\dagger$ is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} (U_A \otimes U_B) CNOT (U_A \otimes U_B)^\dagger \,d_{\mu}(U_A) d_{\mu}(U_B) \\
+    &= \text{Tr}_{AB}[CNOT] \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \\
+    &= 2 \times \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \\
+    &= \begin{bmatrix} \dfrac{1}{2} & 0 & 0 & 0 \\ 0 & \dfrac{1}{2} & 0 & 0 \\ 0 & 0 & \dfrac{1}{2} & 0 \\ 0 & 0 & 0 & \dfrac{1}{2} \end{bmatrix}
+\end{align}
+$$
+{% endkatexmm %}
+
+The average using Monte Carlo integration is computed by the code that follows:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+
+from scipy.stats import unitary_group as ug
+
+# Limit the number of decimal digits to 2
+np.set_printoptions(precision = 2, suppress = True)
+
+def monte_carlo_average(M, n_samples):
+    R = np.zeros(M.shape)
+    for _ in range(n_samples):
+        U_i = ug.rvs(2)
+        for _ in range(n_samples):
+            U_j = ug.rvs(2)
+            R = R + (np.kron(U_i, U_j) * M * np.kron(U_i, U_j).conj().T)
+    return (1 / n_samples**2) * R
+
+if __name__ == "__main__":
+    CNOT = np.matrix([
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 1, 0],
+    ])
+    # We know the resulting matrix is real
+    # so we make sure to take only the real parts of each entry
+    print(monte_carlo_average(CNOT, 2_000).real)
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average of $f(U_A, U_B) = (U_A \otimes U_B) \, CNOT \, (U_A \otimes U_B)^\dagger$ using Monte Carlo integration:
+    </span>
+    the result of my run is $\begin{bmatrix} 0.49 & 0 & 0 & 0 \\ 0 & 0.49 & 0 & 0 \\ 0 & 0 & 0.51 & 0 \\ 0 & 0 & 0 & 0.51 \end{bmatrix}$
+    which is close enough to the expected result.
+</div>
+</div>
 
 ### Average of a function of a unitary: unitary designs
 #### Unitary 1-design
