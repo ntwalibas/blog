@@ -2221,7 +2221,7 @@ Where $P_{ji}$ is a permutation that maps the basis elements $\ket{ij}$ to $\ket
 The proof that $\int_{U({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
 can be found in Subsection $3.1$, Corollary $3.5$ of {% cite zhang2015matrix %}.
 
-It is the case the Pauli group is a $1$-design. Let's use $
+It is the case the Pauli group is a $1$-design. Let's use
 
 #### Unitary 2-design
 Equivalently, a set $X$ is a unitary $2$-design if and only if {% cite Roy_2009 %}:
@@ -2546,7 +2546,7 @@ import numpy as np
 
 from collections import deque
 
-def array_in_list(element, list):
+def matrix_in_list(element, list):
     for list_element in list:
         if np.allclose(list_element, element):
             return True
@@ -2583,10 +2583,10 @@ class Pauli:
 
         while queue:
             x = queue.popleft()
-            if array_in_list(x, group):
+            if matrix_in_list(x, group):
                 continue
-            else:
-                group.append(x)
+            
+            group.append(x)
             for generator in Pauli.generators():
                 queue.append(x @ generator)
     
@@ -2603,5 +2603,299 @@ if __name__ == "__main__":
     </span>
     from the generating set, we keep multiplying the generators
     until we have generated all possible elements of the group.
+</div>
+</div>
+
+### Generating the Clifford group
+The Clifford group forms a $2$-design (in fact, it is a $3$-design).
+In order check the same and use it, we first need to generate it.
+
+The Clifford group is the set of matrices that normalize the Pauli group:
+
+{% katexmm %}
+$$
+    \mathcal{C_n} = \{ C \in U(2^n) \,\vert\, C\mathcal{P}_nC^\dagger=\mathcal{P}_n \}
+$$
+{% endkatexmm %}
+
+In simple terms, the Clifford group is the set of unitaries that map
+elements of the Pauli group to elements of that same group.
+
+Again limiting ourselves to the single-qubit case, the Clifford group
+is defined simplifies to:
+
+{% katexmm %}
+$$
+    \mathcal{C} = \{ C \in U(2) \,\vert\, C\mathcal{P}C^\dagger=\mathcal{P} \}
+$$
+{% endkatexmm %}
+
+In this new group, the group operation is not multiplication but
+conjugation of Pauli matrices.  
+This is important to remember because the procedure to generate
+elements of the Clifford group is similar to that used to generate
+the Pauli group except now we check if the element $C \in U(2)$
+maps Paulis to Paulis.
+
+Every group has a generating set. The generating set of the Clifford
+group on a single qubit is given by the Hadamard gate and the Phase gate:
+
+{% katexmm %}
+$$
+    \mathcal{C} \equiv \langle H, S \rangle
+$$
+{% endkatexmm %}
+
+(If one wants to go beyond $1$ qubit, one must add the $CNOT$ gate
+but we don't bother about it here.)
+
+The strategy is to start with the identity matrix (it normalizes any group)
+then use it in conjuction with the generating set of the Clifford group
+to generate new elements. If the element generated normalizes
+the Pauli group, add it to the Clifford group, else skip it.
+The process continues until there are no new elements that were generated.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import scipy.linalg as la
+
+from collections import deque
+
+def matrix_in_list(element, list):
+    for list_element in list:
+        if np.allclose(list_element, element):
+            return True
+    return False
+
+def matrix_is_normalizer(x):
+    pauli_group = Pauli.group()
+    for pauli in pauli_group:
+        p = x @ pauli @ x.conj().H
+        if matrix_in_list(p, pauli_group):
+            return True
+    return False
+
+class Pauli:
+    @staticmethod
+    def generators():
+        X = np.matrix([
+            [0, 1],
+            [1, 0]
+        ])
+        Y = np.matrix([
+            [ 0, -1j],
+            [1j,   0]
+        ])
+        Z = np.matrix([
+            [1,  0],
+            [0, -1]
+        ])
+
+        return [X, Y, Z]
+
+    @staticmethod
+    def group():
+        group = []
+        queue = deque()
+        queue.append(
+            np.matrix([
+                [1, 0],
+                [0, 1]
+            ])
+        )
+
+        while queue:
+            x = queue.popleft()
+            if matrix_in_list(x, group):
+                continue
+
+            group.append(x)
+            for generator in Pauli.generators():
+                queue.append(x @ generator)
+    
+        return group
+
+class Clifford:
+    @staticmethod
+    def generators():
+        H = (1/np.sqrt(2)) * np.matrix([
+            [1,  1],
+            [1, -1]
+        ], dtype = complex)
+
+        S = np.matrix([
+            [1,  0],
+            [0, 1j]
+        ], dtype = complex)
+
+        return [H, S]
+
+    @staticmethod
+    def group():
+        group = []
+        queue = deque()
+        queue.append(
+            np.matrix([
+                [1, 0],
+                [0, 1]
+            ])
+        )
+
+        while queue:
+            x = queue.popleft()
+            if matrix_in_list(x, group):
+                continue
+    
+            if matrix_is_normalizer(x):
+                group.append(x)
+                for clifford in Clifford.generators():
+                    queue.append(x @ clifford)
+    
+        return group
+
+if __name__ == "__main__":
+    from pprint import pprint
+    pprint(len(Clifford.group()))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the Clifford group $\mathcal{C}$:
+    </span>
+    we note that we end up with $192$ elements, which isn't tiny,
+    compared to the $16$ elements of the Pauli group.
+</div>
+</div>
+
+The procedure above yields $192$ elements in the group.
+This is because the Clifford group on $n$ qubits has
+$2^{n^2+2n+3} \left( \prod_{i=1}^n (4^i - 1) \right)$.
+
+But if one were to look at the generated elements,
+it becomes clear that there are elements that only differ by a global phase.
+If we were to keep only one element from those that are similar up to the global phase
+then the $n$ qubits Clifford group reduces to $2^{n^2+2n} \left( \prod_{i=1}^n (4^i - 1) \right)$
+elements only. So for a single-qubit Clifford group, we would go from
+$192$ elements down to $24$ elements.
+
+The procedure follows if we remember that removing
+the global phase is the same as normalizing the unitary of interest
+(here normalizing the unitary means making sure it has unit determinant).
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import scipy.linalg as la
+
+from collections import deque
+
+def matrix_in_list(element, list):
+    for list_element in list:
+        if np.allclose(list_element, element):
+            return True
+    return False
+
+def matrix_is_normalizer(x):
+    pauli_group = Pauli.group()
+    for pauli in pauli_group:
+        p = x @ pauli @ x.conj().H
+        if matrix_in_list(p, pauli_group):
+            return True
+    return False
+
+class Pauli:
+    @staticmethod
+    def generators():
+        X = np.matrix([
+            [0, 1],
+            [1, 0]
+        ])
+        Y = np.matrix([
+            [ 0, -1j],
+            [1j,   0]
+        ])
+        Z = np.matrix([
+            [1,  0],
+            [0, -1]
+        ])
+
+        return [X, Y, Z]
+
+    @staticmethod
+    def group():
+        group = []
+        queue = deque()
+        queue.append(
+            np.matrix([
+                [1, 0],
+                [0, 1]
+            ])
+        )
+
+        while queue:
+            x = queue.popleft()
+            if matrix_in_list(x, group):
+                continue
+
+            group.append(x)
+            for generator in Pauli.generators():
+                queue.append(x @ generator)
+    
+        return group
+
+class Clifford:
+    @staticmethod
+    def generators():
+        H = (1/np.sqrt(2)) * np.matrix([
+            [1,  1],
+            [1, -1]
+        ], dtype = complex)
+
+        S = np.matrix([
+            [1,  0],
+            [0, 1j]
+        ], dtype = complex)
+
+        return [H, S]
+
+    @staticmethod
+    def group():
+        group = []
+        queue = deque()
+        queue.append(
+            np.matrix([
+                [1, 0],
+                [0, 1]
+            ])
+        )
+
+        while queue:
+            x = queue.popleft()
+            global_phase = 1 / np.emath.sqrt(la.det(x))
+            x = x * global_phase
+
+            # We need to account for a matrix with a negated phase
+            if matrix_in_list(x, group) or matrix_in_list(-x, group):
+                continue
+
+            if matrix_is_normalizer(x):
+                group.append(x)
+                for clifford in Clifford.generators():
+                    queue.append(x @ clifford)
+    
+        return group
+
+if __name__ == "__main__":
+    from pprint import pprint
+    pprint(len(Clifford.group()))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the normalized Clifford group $\mathcal{C}/U(1)$:
+    </span>
+    having made sure to only keep elements that do not share the same
+    global phase, we end up with a Clifford group with $24$ elements.
 </div>
 </div>

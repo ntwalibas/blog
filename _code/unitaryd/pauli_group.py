@@ -2,7 +2,7 @@ import numpy as np
 
 from collections import deque
 
-def array_in_list(element, list):
+def matrix_in_list(element, list):
     for list_element in list:
         if np.allclose(list_element, element):
             return True
@@ -39,10 +39,10 @@ class Pauli:
 
         while queue:
             x = queue.popleft()
-            if array_in_list(x, group):
+            if matrix_in_list(x, group):
                 continue
-            else:
-                group.append(x)
+
+            group.append(x)
             for generator in Pauli.generators():
                 queue.append(x @ generator)
     
