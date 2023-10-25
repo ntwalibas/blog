@@ -2197,8 +2197,13 @@ On the other hand $f_t(U_A, U_B) = U_A U_B U_A^\dagger$ will not pass
 even though it is homogeneous: it has an unequal number unitaries ($2$)
 and their complex conjugates ($1$).
 
-<!-- We will then proceed to construct our $1$-design and $2$-design
-sets and use them to compute the integrals $(18)$ and $(19)$. -->
+For our functions of interest, $f = UMU^\dagger$ has one unitary and one
+Hermitian conjugate of that unitary so it is a polynomial that's homogeneous
+of degree $1$. We will therefore require a $1$-design to compute it.
+
+The function $f = (U_A \otimes U_B)M_{AB}(U_A \otimes U_B)^\dagger$
+has two unitaries and two Hermitian conjugates of those unitaries so
+it is a polynomial of degree $2$. We will need a $2$-design to compute it.
 
 #### Unitary 1-design
 Having defined what unitary $t$-designs are, how do we check if
@@ -2221,7 +2226,106 @@ Where $P_{ji}$ is a permutation that maps the basis elements $\ket{ij}$ to $\ket
 The proof that $\int_{U({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
 can be found in Subsection $3.1$, Corollary $3.5$ of {% cite zhang2015matrix %}.
 
-It is the case the Pauli group is a $1$-design. Let's use
+It is the case the Pauli group is a $1$-design. We now verify that's the case using
+Equation $(23)$. Please make sure to have the supplementary materials code where
+we generate the Pauli group and the permutation matrix $P_{21}$.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import itertools as it
+
+from collections import deque
+from typing import List, Tuple
+
+class Permutation:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def matrix_in_list(element, list):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Pauli:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def is_unitary_1_design(group):
+    R = np.asmatrix(np.zeros((4,4)))
+
+    for element in group:
+        element_dagger = element.H
+        R = R + (np.kron(element, element_dagger))
+    
+    F = (1 / len(group)) * R
+    P_21 = Permutation(2).get_permutation_matrix([2, 1])
+    return np.allclose(F, P_21 / 2)
+
+if __name__ == "__main__":
+    print(is_unitary_1_design(Pauli.group()))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Check whether the Pauli group is a $1$-design:
+    </span>
+    the test should be successful and print <code>True</code>.
+</div>
+</div>
+
+Now that we have validated that the Pauli group is a $1$-design,
+we can proceed to use to compute the average of our function of
+interest $f = U\,M\,U^\dagger$.
+
+The procedure is exactly the same as computing the average
+using Monte Carlo integration except instead of sampling
+$U$ randomly, we take it from the Pauli group:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} &= \dfrac{1}{\lvert \mathcal{P} \rvert} \sum_{U \in \mathcal{P}} UMU^\dagger
+\end{align}
+$$
+{% endkatexmm %}
+
+The code that computes the average using the Pauli group is:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+
+from collections import deque
+
+def matrix_in_list(element, list):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Pauli:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def unitary_design_average(M, t_design):
+    R = np.zeros(M.shape)
+    for U in t_design:
+        R = R + (U @ M @ U.conj().T)
+    return (1 / len(t_design)) * R
+
+if __name__ == "__main__":
+    S = np.matrix([
+        [1,  0],
+        [0, 1j]
+    ])
+    print(unitary_design_average(S, Pauli.group()))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Computing the average of the phase gate:
+    </span>
+    we get the expected result as per analytical solution.
+</div>
+</div>
 
 #### Unitary 2-design
 Equivalently, a set $X$ is a unitary $2$-design if and only if {% cite Roy_2009 %}:
@@ -2593,8 +2697,7 @@ class Pauli:
         return group
 
 if __name__ == "__main__":
-    from pprint import pprint
-    pprint(Pauli.group())
+    print(len(Pauli.group()))
 
 {% endhighlight %}
 <div class='caption'>
@@ -2755,8 +2858,7 @@ class Clifford:
         return group
 
 if __name__ == "__main__":
-    from pprint import pprint
-    pprint(len(Clifford.group()))
+    print(len(Clifford.group()))
 
 {% endhighlight %}
 <div class='caption'>
@@ -2887,8 +2989,7 @@ class Clifford:
         return group
 
 if __name__ == "__main__":
-    from pprint import pprint
-    pprint(len(Clifford.group()))
+    print(len(Clifford.group()))
 
 {% endhighlight %}
 <div class='caption'>
