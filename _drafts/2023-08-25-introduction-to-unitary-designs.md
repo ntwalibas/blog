@@ -1947,11 +1947,11 @@ In this case the average is simplified and is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \int_{\mathbb{U}({2^n})} f(U) d_{\mu}U
+    \bar{f} = \int_{\mathbb{U}({2^n})} f(U) dU
 $$
 {% endkatexmm %}
 
-Where the volume element $d_{\mu}U$ has the Haar measure already
+Where the volume element $dU$ has the Haar measure already
 divided by the volume (it is uniform). The calculations that lead to the relevant
 solutions assume this to be the case.
 
@@ -1964,8 +1964,8 @@ integrating over act on single qubit, the average is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}({2^n})} f(U) d_{\mu}U \\
-    &= \int_{\mathbb{U}({2})} UM U^\dagger d_{\mu}U \\
+    \bar{f} &= \int_{\mathbb{U}({2^n})} f(U) dU \\
+    &= \int_{\mathbb{U}({2})} UM U^\dagger dU \\
     &= \dfrac{\text{Tr}[M]}{2} \mathbb{1} \tag{18}
 \end{align}
 $$
@@ -1995,7 +1995,7 @@ Averaging over it, we obtain:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}({2})} U X U^\dagger d_{\mu}U \\
+    \bar{f} &= \int_{\mathbb{U}({2})} U X U^\dagger dU \\
     &= \dfrac{\text{Tr}[X]}{2} \mathbb{1} \\
     &= 0 \times \mathbb{1} \\
     &= \mathbb{0}
@@ -2047,7 +2047,7 @@ The Monte Carlo integration for the single-qubit integral is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \int_{\mathbb{U}({2})} f(U) d_{\mu}U \approx \dfrac{1}{N} \sum_{i=1}^N f(U_i) \tag{20}
+    \bar{f} = \int_{\mathbb{U}({2})} f(U) dU \approx \dfrac{1}{N} \sum_{i=1}^N f(U_i) \tag{20}
 $$
 {% endkatexmm %}
 
@@ -2057,7 +2057,7 @@ the average of $f(U) = U S U^\dagger$ is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}({2})} U S U^\dagger d_{\mu}U \\
+    \bar{f} &= \int_{\mathbb{U}({2})} U S U^\dagger dU \\
     &= \dfrac{\text{Tr}[S]}{2} \mathbb{1} \\
     &= \dfrac{1+i}{2} \mathbb{1} \\
     &= \begin{bmatrix} \dfrac{1+i}{2} & 0 \\ 0 & \dfrac{1+i}{2} \end{bmatrix}
@@ -2081,7 +2081,7 @@ def monte_carlo_average(M, n_samples):
     R = np.zeros(M.shape)
     for _ in range(n_samples):
         U = ug.rvs(2)
-        R = R + (U * M * U.conj().T)
+        R = R + (U @ M @ U.conj().T)
     return (1 / n_samples) * R
 
 if __name__ == "__main__":
@@ -2106,7 +2106,7 @@ The Monte Carlo integration for the two qubits integral is given by:
 
 {% katexmm %}
 $$
-    \bar{f} = \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} f(U_A, U_B) \,d_{\mu}(U_A) d_{\mu}(U_B) \approx \dfrac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N f(U_i, U_j) \tag{21}
+    \bar{f} = \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} f(U_A, U_B) \,d(U_A) d(U_B) \approx \dfrac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N f(U_i, U_j) \tag{21}
 $$
 {% endkatexmm %}
 
@@ -2116,7 +2116,7 @@ the average of $f(U_A, U_B) = (U_A \otimes U_B) \, CNOT \, (U_A \otimes U_B)^\da
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} &= \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} (U_A \otimes U_B) CNOT (U_A \otimes U_B)^\dagger \,d_{\mu}(U_A) d_{\mu}(U_B) \\
+    \bar{f} &= \int_{\mathbb{U}_A({2})} \int_{\mathbb{U}_B({2})} (U_A \otimes U_B) CNOT (U_A \otimes U_B)^\dagger \,d(U_A) d(U_B) \\
     &= \text{Tr}_{AB}[CNOT] \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \\
     &= 2 \times \dfrac{\mathbb{1}_A}{2} \otimes \dfrac{\mathbb{1}_B}{2} \\
     &= \begin{bmatrix} \dfrac{1}{2} & 0 & 0 & 0 \\ 0 & \dfrac{1}{2} & 0 & 0 \\ 0 & 0 & \dfrac{1}{2} & 0 \\ 0 & 0 & 0 & \dfrac{1}{2} \end{bmatrix}
@@ -2141,7 +2141,7 @@ def monte_carlo_average(M, n_samples):
         U_i = ug.rvs(2)
         for _ in range(n_samples):
             U_j = ug.rvs(2)
-            R = R + (np.kron(U_i, U_j) * M * np.kron(U_i, U_j).conj().T)
+            R = R + (np.kron(U_i, U_j) @ M @ np.kron(U_i, U_j).conj().T)
     return (1 / n_samples**2) * R
 
 if __name__ == "__main__":
@@ -2166,11 +2166,342 @@ if __name__ == "__main__":
 </div>
 
 ### Average of a function of a unitary: unitary designs
+Having computing the integrals using Monte Carlo integration,
+it is time to compute the same using unitary designs.
+
+Let's begin by defining what a unitary $t$-designs are then we will
+show how to check whether a set is a $1$-design or a $2$-design.
+
+> **Definition:**
+> let $f_t$ be a polynomial in $t$ variables homogeneous in degree at most $t$
+> in those variables and degree $t$ in the Hermitian transpose of those variables.
+> A set $X = \\{ U \vert U \in \mathbb{U}(2^n) \\}$ is a unitary
+> $t$-design if:
+> {% katexmm %}
+> $$
+> \dfrac{1}{\lvert X \rvert} \sum_{U \in X} f_t(U) = \int_{\mathbb{U}({2^n})} f_t(U) dU \tag{22}
+> $$
+> {% endkatexmm %}
+> holds for all possible $f_t$, with $dU$ being the volume element with uniform Haar measure.
+> Moreover a unitary $t$-design is also a unitary $s$-design for all $0 < s < t$.
+
+The definition is pretty similar to that of state designs but
+now we require that each term in the function $f_t$ contains
+an equal number of unitaries and their Hermitian conjugate.
+
+For instance $f_t(U_A, U_B) = U_A^\dagger U_B^\dagger U_A U_B$ will
+pass since it has two unitaries and two Hermitian conjugates of those
+unitaries.
+
+On the other hand $f_t(U_A, U_B) = U_A U_B U_A^\dagger$ will not pass
+even though it is homogeneous: it has an unequal number unitaries ($2$)
+and their complex conjugates ($1$).
+
+<!-- We will then proceed to construct our $1$-design and $2$-design
+sets and use them to compute the integrals $(18)$ and $(19)$. -->
+
 #### Unitary 1-design
+Having defined what unitary $t$-designs are, how do we check if
+a particular set is a $1$-design?
+
+A set $X$ is a unitary $1$-design if and only if {% cite Roy_2009 %}:
+
+{% katexmm %}
+$$
+\begin{align}
+    \dfrac{1}{\lvert X \rvert} \sum_{U \in X} U \otimes U^\dagger &= \int_{\mathbb{U}({2^n})} U \otimes U^\dagger dU \\
+    &= \dfrac{P_{21}}{2^n} \tag{23}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $P_{ji}$ is a permutation that maps the basis elements $\ket{ij}$ to $\ket{ji}$,
+(effectively the two-qubits SWAP gate).
+
+The proof that $\int_{\mathbb{U}({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
+can be found in Subsection $3.1$, Corollary $3.5$ of {% cite zhang2015matrix %}.
+
+It is the case the Pauli group is a $1$-design. Let's use $
+
 #### Unitary 2-design
+Equivalently, a set $X$ is a unitary $2$-design if and only if {% cite Roy_2009 %}:
+
+{% katexmm %}
+$$
+\begin{align}
+    \dfrac{1}{\lvert X \rvert} \sum_{U \in X} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} &= \int_{\mathbb{U}({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU \\
+    &= \dfrac{P_{3412} + P_{4321}}{4^n - 1} - \dfrac{P_{4312} + P_{3421}}{2^n(4^n - 1)} \tag{24}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $P_{lkji}$ is a permutation that maps the basis elements $\ket{ijkl}$ to $\ket{lkji}$.
+
+The proof that $\int_{\mathbb{U}({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU = \dfrac{P_{3412} + P_{4321}}{4^n - 1} - \dfrac{P_{4312} + P_{3421}}{2^n(4^n - 1)}$ can be found in Subsection $3.2$, Corollary $3.15$ of {% cite zhang2015matrix %}.
 
 ### Application: average gate fidelity
 
 ## Next steps
 
 ## Conclusion
+
+## Supplementary material
+There were procedures we needed to carry out that were important to understand
+the material but it made no sense to have in the main text.
+
+The supplements that follow contain code to help carry out those procedures
+without cluttering the main text.
+
+### Generating permutation matrices
+In the subsection on computing the average of a function of
+unitaries using unitary designs, we need to generate permutation
+matrices so we can check whether a given set is a $1$-design
+or a $2$-design. This supplement is about how to do that.
+
+A permutation matrix simply exchanges basis elements.
+For instance, the permutation $P_{21}$ has the effect of
+of swapping basis elements such that if the basis element
+is $\ket{ij}$ then $P_{21}\ket{ij} = \ket{ji}$.
+The result will be as follows:
+
+{% katexmm %}
+$$
+\begin{align}
+    \ket{00} &\mapsto \ket{00} \\
+    \ket{01} &\mapsto \ket{10} \\
+    \ket{10} &\mapsto \ket{01} \\
+    \ket{11} &\mapsto \ket{11} \\
+\end{align}
+$$
+{% endkatexmm %}
+
+On the other hand the permutation $P_{3412}$ has the effect
+of swapping basis elements such as $P_{3412}\ket{i_1j_2k_3l_4} = \ket{k_3l_4i_1j_2}$.
+The result will be as follows:
+
+{% katexmm %}
+$$
+\begin{align}
+    \ket{0000} &\mapsto \ket{0000} \\
+    \ket{0001} &\mapsto \ket{0100} \\
+    \ket{0010} &\mapsto \ket{1000} \\
+    &\vdots\\
+    \ket{1110} &\mapsto \ket{1011} \\
+    \ket{1111} &\mapsto \ket{1111} \\
+\end{align}
+$$
+{% endkatexmm %}
+
+As we can see, we are just exchanging values at the given indices.
+Our goal is to generate the matrices that correspond to those
+permutations.
+
+We adopt a 3-steps plan:
+1. Generate the basis elements corresponding to the number of qubits.
+2. Generate a list where each item is a tuple that tells which
+    basis element maps to which basis element.
+3. Generate the permutation matrix based on the list generated above.
+
+Step $1$ is fairly trivial: say we have $n$ qubits. If $n = 1$
+then we are done: $\mathcal{B}_1 = \\{0, 1 \\}$.
+If $n = 2$ then the basis set is the Cartesian product of
+two single-qubit basis sets: $\mathcal{B}_2 = \mathcal{B}_1 \times \mathcal{B}_1$.
+If $n = 3$ then the basis set is the Cartesian product of
+a two-qubits basis set and a single-qubit basis set:
+$\mathcal{B}_3 = \mathcal{B}_2 \times \mathcal{B}_1$.
+
+In general, for $n > 1$ qubits we have:
+
+{% katexmm %}
+$$
+    \mathcal{B}_n = \mathcal{B}_{n-1} \times \mathcal{B}_1
+$$
+{% endkatexmm %}
+
+Let's readily code the same:
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import itertools as it
+import numpy as np
+
+class Permutation:
+    def __init__(self, n_qubits: int):
+        if n_qubits < 1:
+            raise ValueError("The number of qubits must be at least 1")
+        self.n_qubits = n_qubits
+    
+    def get_basis_set(self):
+        single_qubit_basis = ['0', '1']
+        new_basis = single_qubit_basis
+        temp_basis = []
+        for _ in range(self.n_qubits - 1):
+            for r in it.product(new_basis, single_qubit_basis):
+                temp_basis.append(r[0] + r[1])
+            new_basis = temp_basis
+            temp_basis = []
+        return new_basis
+    
+if __name__ == "__main__":
+    permutation = Permutation(2)
+    print(permutation.get_basis_set())
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the standard basis set corresponding to the number of qubits given:
+    </span>
+    the same function could be written elegantly using recursion instead of iteration.
+</div>
+</div>
+
+Moving onto step $2$: As we have already seen, the procedure is to take
+every basis element and make the appropriate replacement as dictated
+by the permutation formula. As an example, assume again that the
+replacement formula is given by $P_{3412}\ket{i_1j_2k_3l_4} = \ket{k_3l_4i_1j_2}$.
+To generate the new basis element, assuming $\ket{\psi} = \ket{i_1j_2k_3l_4}$,
+we perform the replacements $\ket{\psi}[1] = k_3$, $\ket{\psi}[2] = l_4$,
+$\ket{\psi}[3] = i_1$, and $\ket{\psi}[4] = j_2$.  
+Of course since we are writing Python, we remain mindful of indices starting at $0$.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import itertools as it
+import numpy as np
+
+class Permutation:
+    def __init__(self, n_qubits: int):
+        if n_qubits < 1:
+            raise ValueError("The number of qubits must be at least 1")
+        self.n_qubits = n_qubits
+    
+    def get_basis_set(self):
+        single_qubit_basis = ['0', '1']
+        new_basis = single_qubit_basis
+        temp_basis = []
+        for _ in range(self.n_qubits - 1):
+            for r in it.product(new_basis, single_qubit_basis):
+                temp_basis.append(r[0] + r[1])
+            new_basis = temp_basis
+            temp_basis = []
+        return new_basis
+    
+    def get_permutation_list(self, order: List) -> List[Tuple]:
+        if len(order) != self.n_qubits:
+            raise ValueError("The order list must have the same length as the number of qubits to permute")
+
+        if len(set(order)) != self.n_qubits:
+            raise ValueError("The order list cannot contain duplicate items")
+        
+        permutations = []
+        basis = self.get_basis_set()
+        
+        for basis_element in basis:
+            new_element = list(basis_element)
+            old_element = list(basis_element)
+            for old_index, new_index in enumerate(order):
+                if new_index < 1 or new_index > self.n_qubits:
+                    raise ValueError(f"Item {new_index} at index {old_index} in order list is out of bounds")
+                new_element[old_index] = old_element[new_index - 1]
+            permutations.append((basis_element, ''.join(new_element)))
+            
+        return permutations
+    
+if __name__ == "__main__":
+    permutation = Permutation(2)
+    print(permutation.get_permutation_list([2, 1]))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the permutation list from basis element to basis element given the replacement formula:
+    </span>
+    the first loop goes over every basis element and the second loop does the replacement
+    for each qubit according to the given formula.
+</div>
+</div>
+
+Last, in step $3$, we generate the permutation matrix using the permutation list.
+The procedure is as follows: thinking of a unitary matrix as a map where
+the columns correspond to inputs and the rows correspond to outputs,
+all we need to need to do is set to $1$ the cell where the column and the row intersect.
+
+For instance, using $P_{21}$ we have $P_{21}\ket{01} = \ket{10}$.
+This tells us that we need set the cell $(1,2)$ to $1$.
+Essentially the permutation list acts as a list of coordinates into
+the permutation matrix.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import itertools as it
+import numpy as np
+
+class Permutation:
+    def __init__(self, n_qubits: int):
+        if n_qubits < 1:
+            raise ValueError("The number of qubits must be at least 1")
+        self.n_qubits = n_qubits
+    
+    def get_basis_set(self):
+        single_qubit_basis = ['0', '1']
+        new_basis = single_qubit_basis
+        temp_basis = []
+        for _ in range(self.n_qubits - 1):
+            for r in it.product(new_basis, single_qubit_basis):
+                temp_basis.append(r[0] + r[1])
+            new_basis = temp_basis
+            temp_basis = []
+        return new_basis
+    
+    def get_permutation_list(self, order: List) -> List[Tuple]:
+        if len(order) != self.n_qubits:
+            raise ValueError("The order list must have the same length as the number of qubits to permute")
+
+        if len(set(order)) != self.n_qubits:
+            raise ValueError("The order list cannot contain duplicate items")
+        
+        permutations = []
+        basis = self.get_basis_set()
+        
+        for basis_element in basis:
+            new_element = list(basis_element)
+            old_element = list(basis_element)
+            for old_index, new_index in enumerate(order):
+                if new_index < 1 or new_index > self.n_qubits:
+                    raise ValueError(f"Item {new_index} at index {old_index} in order list is out of bounds")
+                new_element[old_index] = old_element[new_index - 1]
+            permutations.append((basis_element, ''.join(new_element)))
+            
+        return permutations
+
+    def get_permutation_matrix(self, order: List) -> np.ndarray:
+        permutations = self.get_permutation_list(order)
+        dim = len(permutations)
+        permutation_matrix = np.zeros((dim, dim))
+        
+        for perm in permutations:
+            x = int(perm[0], 2)
+            y = int(perm[1], 2)
+            permutation_matrix[x][y] = 1
+        
+        return permutation_matrix
+    
+if __name__ == "__main__":
+    permutation = Permutation(2)
+    print(permutation.get_permutation_matrix([2, 1]))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the permutation list from basis element to basis element given the replacement formula:
+    </span>
+    the first loop goes over every basis element and the second loop does the replacement
+    for each qubit according to the given formula.
+</div>
+</div>
+
+And that's it, we have ourselves a class to help generate permutation
+matrices acting on the given number of qubits.
+
+### Generating the Pauli group
+

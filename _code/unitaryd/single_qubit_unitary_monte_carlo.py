@@ -9,7 +9,7 @@ def monte_carlo_average(M, n_samples):
     R = np.zeros(M.shape)
     for _ in range(n_samples):
         U = ug.rvs(2)
-        R = R + (U * M * U.conj().T)
+        R = R + (U @ M @ U.conj().T)
     return (1 / n_samples) * R
 
 if __name__ == "__main__":

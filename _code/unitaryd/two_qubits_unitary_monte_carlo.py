@@ -11,7 +11,7 @@ def monte_carlo_average(M, n_samples):
         U_i = ug.rvs(2)
         for _ in range(n_samples):
             U_j = ug.rvs(2)
-            R = R + (np.kron(U_i, U_j) * M * np.kron(U_i, U_j).conj().T)
+            R = R + (np.kron(U_i, U_j) @ M @ np.kron(U_i, U_j).conj().T)
     return (1 / n_samples**2) * R
 
 if __name__ == "__main__":
@@ -23,4 +23,4 @@ if __name__ == "__main__":
     ])
     # We know the resulting matrix is real
     # so we make sure to take only the real parts of each entry
-    print(monte_carlo_average(CNOT, 2_000).real)
+    print(monte_carlo_average(CNOT, 1_000).real)
