@@ -3,6 +3,9 @@ import scipy.linalg as la
 
 from collections import deque
 
+# Limit the number of decimal digits to 2
+np.set_printoptions(precision = 2, suppress = True)
+
 def matrix_in_list(element, list):
     for list_element in list:
         if np.allclose(list_element, element):
@@ -37,23 +40,13 @@ class Pauli:
 
     @staticmethod
     def group():
-        group = []
-        queue = deque()
-        queue.append(
+        group = Pauli.generators()
+        group.append(
             np.matrix([
                 [1, 0],
                 [0, 1]
             ])
         )
-
-        while queue:
-            x = queue.popleft()
-            if matrix_in_list(x, group):
-                continue
-
-            group.append(x)
-            for generator in Pauli.generators():
-                queue.append(x @ generator)
     
         return group
 
@@ -99,6 +92,20 @@ class Clifford:
     
         return group
 
+def unitary_design_average(M, t_design):
+    R = np.zeros(M.shape)
+    for U_i in t_design:
+        for U_j in t_design:
+            R = R + (np.kron(U_i, U_j) @ M @ np.kron(U_i, U_j).conj().T)
+    return (1 / len(t_design)**2) * R
+
 if __name__ == "__main__":
-    from pprint import pprint
-    pprint(len(Clifford.group()))
+    CNOT = np.matrix([
+        [1, 0, 0, 0],
+        [0, 1/np.sqrt(2), 1/np.sqrt(2), 0],
+        [0, 1/np.sqrt(2), 1/np.sqrt(2), 0],
+        [0, 0, 0, 1],
+    ])
+    # We know the resulting matrix is real
+    # so we make sure to take only the real parts of each entry
+    print(unitary_design_average(CNOT, Clifford.group()).real)

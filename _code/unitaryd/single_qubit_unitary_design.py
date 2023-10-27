@@ -1,16 +1,5 @@
 import numpy as np
 
-from collections import deque
-
-# Limit the number of decimal digits to 2
-np.set_printoptions(precision = 2, suppress = True)
-
-def matrix_in_list(element, list):
-    for list_element in list:
-        if np.allclose(list_element, element):
-            return True
-    return False
-
 class Pauli:
     @staticmethod
     def generators():
@@ -31,23 +20,13 @@ class Pauli:
 
     @staticmethod
     def group():
-        group = []
-        queue = deque()
-        queue.append(
+        group = Pauli.generators()
+        group.append(
             np.matrix([
                 [1, 0],
                 [0, 1]
             ])
         )
-
-        while queue:
-            x = queue.popleft()
-            if matrix_in_list(x, group):
-                continue
-
-            group.append(x)
-            for generator in Pauli.generators():
-                queue.append(x @ generator)
     
         return group
 

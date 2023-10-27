@@ -64,7 +64,7 @@ def matrix_in_list(element, list):
 def matrix_is_normalizer(x):
     pauli_group = Pauli.group()
     for pauli in pauli_group:
-        p = x @ pauli @ x.conj().H
+        p = x @ pauli @ x.conj().T
         if matrix_in_list(p, pauli_group):
             return True
     return False
@@ -89,23 +89,13 @@ class Pauli:
 
     @staticmethod
     def group():
-        group = []
-        queue = deque()
-        queue.append(
+        group = Pauli.generators()
+        group.append(
             np.matrix([
                 [1, 0],
                 [0, 1]
             ])
         )
-
-        while queue:
-            x = queue.popleft()
-            if matrix_in_list(x, group):
-                continue
-
-            group.append(x)
-            for generator in Pauli.generators():
-                queue.append(x @ generator)
     
         return group
 
@@ -155,12 +145,40 @@ def is_unitary_1_design(group):
     R = np.asmatrix(np.zeros((4,4)))
 
     for element in group:
-        element_dagger = element.H
-        R = R + (np.kron(element, element_dagger))
+        R = R + np.kron(element, element.H)
     
     F = (1 / len(group)) * R
     P_21 = Permutation(2).get_permutation_matrix([2, 1])
+
     return np.allclose(F, P_21 / 2)
 
+def is_unitary_2_design(group):
+    R = np.asmatrix(np.zeros((16,16)))
+    for element in group:
+        element_d = element.H
+        R = R + np.kron(
+            np.kron(element, element),
+            np.kron(element_d, element_d)
+        )
+
+    F = (1 / len(group)) * R
+    P_3412 = Permutation(4).get_permutation_matrix([3, 4, 1, 2])
+    P_3421 = Permutation(4).get_permutation_matrix([3, 4, 2, 1])
+    P_4321 = Permutation(4).get_permutation_matrix([4, 3, 2, 1])
+    P_4312 = Permutation(4).get_permutation_matrix([4, 3, 1, 2])
+
+    return np.allclose(
+        F,
+        (P_3412 + P_4321) / 3 - (P_4312 + P_3421) / 6
+    )
+
 if __name__ == "__main__":
-    print(is_unitary_1_design(Pauli.group()))
+    print("Clifford group is 2-design:",
+        is_unitary_2_design(Clifford.group()))
+    print("Clifford group is 1-design:",
+        is_unitary_1_design(Clifford.group()))
+
+    print("Pauli group is 2-design:",
+        is_unitary_2_design(Pauli.group()))
+    print("Pauli group is 1-design:",
+        is_unitary_1_design(Pauli.group()))

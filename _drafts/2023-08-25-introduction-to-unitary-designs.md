@@ -2226,7 +2226,8 @@ Where $P_{ji}$ is a permutation that maps the basis elements $\ket{ij}$ to $\ket
 The proof that $\int_{U({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
 can be found in Subsection $3.1$, Corollary $3.5$ of {% cite zhang2015matrix %}.
 
-It is the case the Pauli group is a $1$-design. We now verify that's the case using
+It is the case the [Pauli group](https://en.wikipedia.org/wiki/Pauli_group)
+is a $1$-design. We now verify that's the case using
 Equation $(23)$. Please make sure to have the supplementary materials code where
 we generate the Pauli group and the permutation matrix $P_{21}$.
 
@@ -2235,14 +2236,9 @@ we generate the Pauli group and the permutation matrix $P_{21}$.
 import numpy as np
 import itertools as it
 
-from collections import deque
 from typing import List, Tuple
 
 class Permutation:
-    # Please copy and paste the code from the supplementary material here
-    pass
-
-def matrix_in_list(element, list):
     # Please copy and paste the code from the supplementary material here
     pass
 
@@ -2254,8 +2250,7 @@ def is_unitary_1_design(group):
     R = np.asmatrix(np.zeros((4,4)))
 
     for element in group:
-        element_dagger = element.H
-        R = R + (np.kron(element, element_dagger))
+        R = R + np.kron(element, element.H)
     
     F = (1 / len(group)) * R
     P_21 = Permutation(2).get_permutation_matrix([2, 1])
@@ -2269,7 +2264,7 @@ if __name__ == "__main__":
     <span class='caption-label'>
         Check whether the Pauli group is a $1$-design:
     </span>
-    the test should be successful and print <code>True</code>.
+    the test should be successful and print <mark>True</mark>.
 </div>
 </div>
 
@@ -2294,12 +2289,6 @@ The code that computes the average using the Pauli group is:
 <div class='figure' markdown='1'>
 {% highlight python %}
 import numpy as np
-
-from collections import deque
-
-def matrix_in_list(element, list):
-    # Please copy and paste the code from the supplementary material here
-    pass
 
 class Pauli:
     # Please copy and paste the code from the supplementary material here
@@ -2327,6 +2316,17 @@ if __name__ == "__main__":
 </div>
 </div>
 
+In computing this average using Monte Carlo integration,
+we used about $50,000$ samples in order to account
+for the way statistics work: the more samples we use,
+the better will our results be.
+
+With designs, in this case the Pauli group, we used
+$4$ elements only and we got our result which is also exact!
+With Monte Carlo, I supposed we could use $40$ samples
+but we can see how quickly we will loose accuracy and
+we still wouldn't beat the loop that run just $4$ times.
+
 #### Unitary 2-design
 Equivalently, a set $X$ is a unitary $2$-design if and only if {% cite Roy_2009 %}:
 
@@ -2342,6 +2342,164 @@ $$
 Where $P_{lkji}$ is a permutation that maps the basis elements $\ket{ijkl}$ to $\ket{lkji}$.
 
 The proof that $\int_{U({2^n})} U^{\otimes 2} \otimes (U^\dagger)^{\otimes 2} \, dU = \dfrac{P_{3412} + P_{4321}}{4^n - 1} - \dfrac{P_{4312} + P_{3421}}{2^n(4^n - 1)}$ can be found in Subsection $3.2$, Corollary $3.15$ of {% cite zhang2015matrix %}.
+
+Our $2$-design set is the [Clifford group](https://en.wikipedia.org/wiki/Clifford_group) {% cite DiMatteo_2014 %}.
+We can verify this by using Equation $(24)$, same as we did for the Pauli group.
+Note also that since the Clifford group is a $2$-design, it is also a $1$-design.
+In fact, the Clifford group has been proven to be a $3$-design {% cite webb2016clifford %}
+but since we are not using anything that requires $3$-designs, we won't delve into that.
+On the other hand, the Pauli group is uniquely a $1$-design.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import itertools as it
+import scipy.linalg as la
+
+from collections import deque
+from typing import List, Tuple
+
+class Permutation:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def matrix_in_list(element, list):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def matrix_is_normalizer(x):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Pauli:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Clifford:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def is_unitary_1_design(group):
+    R = np.asmatrix(np.zeros((4,4)))
+
+    for element in group:
+        R = R + np.kron(element, element.H)
+    
+    F = (1 / len(group)) * R
+    P_21 = Permutation(2).get_permutation_matrix([2, 1])
+
+    return np.allclose(F, P_21 / 2)
+
+def is_unitary_2_design(group):
+    R = np.asmatrix(np.zeros((16,16)))
+    for element in group:
+        element_d = element.H
+        R = R + np.kron(
+            np.kron(element, element),
+            np.kron(element_d, element_d)
+        )
+
+    F = (1 / len(group)) * R
+    P_3412 = Permutation(4).get_permutation_matrix([3, 4, 1, 2])
+    P_3421 = Permutation(4).get_permutation_matrix([3, 4, 2, 1])
+    P_4321 = Permutation(4).get_permutation_matrix([4, 3, 2, 1])
+    P_4312 = Permutation(4).get_permutation_matrix([4, 3, 1, 2])
+
+    return np.allclose(
+        F,
+        (P_3412 + P_4321) / 3 - (P_4312 + P_3421) / 6
+    )
+
+if __name__ == "__main__":
+    print("Clifford group is 2-design:",
+        is_unitary_2_design(Clifford.group()))
+    print("Clifford group is 1-design:",
+        is_unitary_1_design(Clifford.group()))
+
+    print("Pauli group is 2-design:",
+        is_unitary_2_design(Pauli.group()))
+    print("Pauli group is 1-design:",
+        is_unitary_1_design(Pauli.group()))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Check that the Clifford group is a $2$-design but the Pauli group isn't:
+    </span>
+    since the Clifford group is a $2$-design, it should also be a $1$-design.
+</div>
+</div>
+
+Our second function of interest is a polynomial homogeneous in degree $2$
+so computing its average requires a $2$-design which we now have.
+
+Computing the average of $f = (U_A \otimes U_B) M_{AB} (U_A \otimes U_B)^\dagger$
+is exactly the same procedure as we did for Monte Carlo integration
+except instead of sampling randomly, we use the Clifford group elements.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import scipy.linalg as la
+
+from collections import deque
+
+# Limit the number of decimal digits to 2
+np.set_printoptions(precision = 2, suppress = True)
+
+def matrix_in_list(element, list):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def matrix_is_normalizer(x):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Pauli:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Clifford:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def unitary_design_average(M, t_design):
+    R = np.zeros(M.shape)
+    for U_i in t_design:
+        for U_j in t_design:
+            R = R + (np.kron(U_i, U_j) @ M @ np.kron(U_i, U_j).conj().T)
+    return (1 / len(t_design)**2) * R
+
+if __name__ == "__main__":
+    CNOT = np.matrix([
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 1, 0],
+    ])
+    # We know the resulting matrix is real
+    # so we make sure to take only the real parts of each entry
+    print(unitary_design_average(CNOT, Clifford.group()).real)
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average of $f(U_A, U_B) = (U_A \otimes U_B) \, CNOT \, (U_A \otimes U_B)^\dagger$ using unitary designs:
+    </span>
+    for a total of $576$ total iterations, we got the exact expected result.
+</div>
+</div>
+
+Compared to the $20\times 10^6$ samples we used for Monte Carlo
+integration, $576$ samples using unitary designs is a real bargain.
+
+Also, note that if one uses the Pauli group instead of the Clifford
+group for this second function, for certain instances we might get
+the correct result. But we saw earlier for spherical designs
+that sometimes we get correct results but that's a fluke.
+We are guaranteed to get the correct results for all instances
+only when we use the design that corresponds to the degree
+of the polynomial.
 
 ### Application: average gate fidelity
 
@@ -2407,7 +2565,7 @@ We adopt a 3-steps plan:
 3. Generate the permutation matrix based on the list generated above.
 
 Step $1$ is fairly trivial: say we have $n$ qubits. If $n = 1$
-then we are done: $\mathcal{B}_1 = \\{0, 1 \\}$.
+then we are done: $\mathcal{B}_1 = \\{\ket{0}, \ket{1} \\}$.
 If $n = 2$ then the basis set is the Cartesian product of
 two single-qubit basis sets: $\mathcal{B}_2 = \mathcal{B}_1 \times \mathcal{B}_1$.
 If $n = 3$ then the basis set is the Cartesian product of
@@ -2459,11 +2617,11 @@ if __name__ == "__main__":
 </div>
 </div>
 
-Moving onto step $2$: As we have already seen, the procedure is to take
+Moving onto step $2$: as we have already seen, the procedure is to take
 every basis element and make the appropriate replacement as dictated
-by the permutation formula. As an example, assume again that the
+by the permutation formula. For example, assume again that the
 replacement formula is given by $P_{3412}\ket{i_1j_2k_3l_4} = \ket{k_3l_4i_1j_2}$.
-To generate the new basis element, assuming $\ket{\psi} = \ket{i_1j_2k_3l_4}$,
+To generate the new basis element, starting from $\ket{\psi} = \ket{i_1j_2k_3l_4}$,
 we perform the replacements $\ket{\psi}[1] = k_3$, $\ket{\psi}[2] = l_4$,
 $\ket{\psi}[3] = i_1$, and $\ket{\psi}[4] = j_2$.  
 Of course since we are writing Python, we remain mindful of indices starting at $0$.
@@ -2601,10 +2759,11 @@ if __name__ == "__main__":
 {% endhighlight %}
 <div class='caption'>
     <span class='caption-label'>
-        Generating the permutation list from basis element to basis element given the replacement formula:
+        Generating the permutation matrix from the permutation list:
     </span>
-    the first loop goes over every basis element and the second loop does the replacement
-    for each qubit according to the given formula.
+    the basis elements in the permutation list correspond
+    to coordinates in the permutation matrix. By casting them
+    to integers, we are able to fill the entries in the matrix.
 </div>
 </div>
 
@@ -2643,6 +2802,14 @@ multiplication.
 Therefore, the code to generate the Pauli group will amount
 multiplying all the elements of the group until we can no longer
 generate an element we haven't seen before.
+
+The single-qubit Pauli group is given by:
+
+{% katexmm %}
+$$
+    \mathcal{P} = \{ \pm I, \pm iI, \pm X, \pm iX, \pm Y, \pm iY, \pm Z, \pm iZ \}
+$$
+{% endkatexmm %}
 
 <div class='figure' markdown='1'>
 {% highlight python %}
@@ -2709,6 +2876,68 @@ if __name__ == "__main__":
 </div>
 </div>
 
+The Pauli group on $n$ qubits has $4^{n+1}$ elements in general.
+But lots of those elements are equivalent up to a global phase.
+So we can reduce the size of our group to $4^n$ elements
+by keeping only one of the elements that are equivalent.
+In the case of a single-qubit Pauli group this is equivalent
+to just keeping the Pauli matrices (including the identity).
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+
+from collections import deque
+
+def matrix_in_list(element, list):
+    for list_element in list:
+        if np.allclose(list_element, element):
+            return True
+    return False
+
+class Pauli:
+    @staticmethod
+    def generators():
+        X = np.matrix([
+            [0, 1],
+            [1, 0]
+        ])
+        Y = np.matrix([
+            [ 0, -1j],
+            [1j,   0]
+        ])
+        Z = np.matrix([
+            [1,  0],
+            [0, -1]
+        ])
+
+        return [X, Y, Z]
+
+    @staticmethod
+    def group():
+        group = Pauli.generators()
+        group.append(
+            np.matrix([
+                [1, 0],
+                [0, 1]
+            ])
+        )
+    
+        return group
+
+if __name__ == "__main__":
+    print(len(Pauli.group()))
+
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Generating the Pauli group:
+    </span>
+    by keeping only elements that are not equivalent
+    up to a global phase, we reduce that size of the group.
+</div>
+</div>
+
 ### Generating the Clifford group
 The Clifford group forms a $2$-design (in fact, it is a $3$-design).
 In order check the same and use it, we first need to generate it.
@@ -2725,7 +2954,7 @@ In simple terms, the Clifford group is the set of unitaries that map
 elements of the Pauli group to elements of that same group.
 
 Again limiting ourselves to the single-qubit case, the Clifford group
-is defined simplifies to:
+as defined simplifies to:
 
 {% katexmm %}
 $$
@@ -2734,11 +2963,11 @@ $$
 {% endkatexmm %}
 
 In this new group, the group operation is not multiplication but
-conjugation of Pauli matrices.  
+conjugation of the Pauli group by the Clifford group elements.  
 This is important to remember because the procedure to generate
 elements of the Clifford group is similar to that used to generate
-the Pauli group except now we check if the element $C \in U(2)$
-maps Paulis to Paulis.
+the Pauli group except now we check if elements $C \in U(2)$
+map Paulis to Paulis.
 
 Every group has a generating set. The generating set of the Clifford
 group on a single qubit is given by the Hadamard gate and the Phase gate:
@@ -2774,7 +3003,7 @@ def matrix_in_list(element, list):
 def matrix_is_normalizer(x):
     pauli_group = Pauli.group()
     for pauli in pauli_group:
-        p = x @ pauli @ x.conj().H
+        p = x @ pauli @ x.conj().T
         if matrix_in_list(p, pauli_group):
             return True
     return False
@@ -2901,7 +3130,7 @@ def matrix_in_list(element, list):
 def matrix_is_normalizer(x):
     pauli_group = Pauli.group()
     for pauli in pauli_group:
-        p = x @ pauli @ x.conj().H
+        p = x @ pauli @ x.conj().T
         if matrix_in_list(p, pauli_group):
             return True
     return False
@@ -2926,23 +3155,13 @@ class Pauli:
 
     @staticmethod
     def group():
-        group = []
-        queue = deque()
-        queue.append(
+        group = Pauli.generators()
+        group.append(
             np.matrix([
                 [1, 0],
                 [0, 1]
             ])
         )
-
-        while queue:
-            x = queue.popleft()
-            if matrix_in_list(x, group):
-                continue
-
-            group.append(x)
-            for generator in Pauli.generators():
-                queue.append(x @ generator)
     
         return group
 
