@@ -2187,10 +2187,10 @@ show how to check whether a set is a $1$-design or a $2$-design.
 
 The definition is pretty similar to that of state designs but
 now we require that each term in the function $f_t$ contains
-an equal number of unitaries and their Hermitian conjugate.
+an equal number of unitaries and their Hermitian transpose.
 
 For instance $f_t(U_A, U_B) = U_A^\dagger U_B^\dagger U_A U_B$ will
-pass since it has two unitaries and two Hermitian conjugates of those
+pass since it has two unitaries and two Hermitian transposes of those
 unitaries.
 
 On the other hand $f_t(U_A, U_B) = U_A U_B U_A^\dagger$ will not pass
@@ -2198,11 +2198,11 @@ even though it is homogeneous: it has an unequal number unitaries ($2$)
 and their complex conjugates ($1$).
 
 For our functions of interest, $f = UMU^\dagger$ has one unitary and one
-Hermitian conjugate of that unitary so it is a polynomial that's homogeneous
+Hermitian transpose of that unitary so it is a polynomial that's homogeneous
 of degree $1$. We will therefore require a $1$-design to compute it.
 
 The function $f = (U_A \otimes U_B)M_{AB}(U_A \otimes U_B)^\dagger$
-has two unitaries and two Hermitian conjugates of those unitaries so
+has two unitaries and two Hermitian transposes of those unitaries so
 it is a polynomial of degree $2$. We will need a $2$-design to compute it.
 
 #### Unitary 1-design
@@ -2221,14 +2221,15 @@ $$
 {% endkatexmm %}
 
 Where $P_{ji}$ is a permutation that maps the basis elements $\ket{ij}$ to $\ket{ji}$,
-(effectively the two-qubits SWAP gate).
+(effectively the two-qubits SWAP gate). If we are dealing with $4$ qubits,
+$P_{21}$ will map $\ket{ijkl}$ to $\ket{klij}$.
 
 The proof that $\int_{U({2^n})} U \otimes U^\dagger dU = \dfrac{P_{21}}{2^n}$
 can be found in Subsection $3.1$, Corollary $3.5$ of {% cite zhang2015matrix %}.
 
-It is the case the [Pauli group](https://en.wikipedia.org/wiki/Pauli_group)
-is a $1$-design. We now verify that's the case using
-Equation $(23)$. Please make sure to have the supplementary materials code where
+It is the case that the [Pauli group](https://en.wikipedia.org/wiki/Pauli_group)
+is a $1$-design. We now verify using Equation $(23)$.
+Please make sure to have the supplementary materials code where
 we generate the Pauli group and the permutation matrix $P_{21}$.
 
 <div class='figure' markdown='1'>
