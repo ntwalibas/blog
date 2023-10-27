@@ -2496,13 +2496,167 @@ integration, $576$ samples using unitary designs is a real bargain.
 
 Also, note that if one uses the Pauli group instead of the Clifford
 group for this second function, for certain instances we might get
-the correct result. But we saw earlier for spherical designs
-that sometimes we get correct results but that's a fluke.
+the correct result. But that's a fluke.
 We are guaranteed to get the correct results for all instances
 only when we use the design that corresponds to the degree
 of the polynomial.
 
 ### Application: average gate fidelity
+We were able to calculate the average gate fidelity using state designs.
+We compute the same now using unitary designs.
+
+We begin by reformulating the problem in terms of integration
+over the unitary group instead of states.
+
+Let's recall the formula for calculating the average gate fidelity
+of $G_\epsilon$ given the ideal gate $G$:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}G_{\epsilon}^{\dagger} \cdot G(\ket{\psi}\bra{\psi}) \cdot G_{\epsilon}\ket{\psi} \,d_{\mu}\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+To simplify our reasoning process, let's first assume that
+the Haar measure is uniform, that is $d\ket{\psi} = \frac{d_{\mu}\ket{\psi}}{Vol(\mathcal{S}(\mathbb{C}^n))}$:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}G_{\epsilon}^{\dagger} \cdot G(\ket{\psi}\bra{\psi}) \cdot G_{\epsilon}\ket{\psi} \,d\ket{\psi}
+\end{align}
+$$
+{% endkatexmm %}
+
+Instead of creating random states $\ket{\psi}$ by randomly
+generating unitaries $U$ such as $\ket{\psi} = U\ket{0}$,
+we generate said unitaries $U$ randomly and integrate
+over the unitary group:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \int_{U \in U(2^n)} \bra{0}U^\dagger G_{\epsilon}^{\dagger} \cdot G(U\ket{0}\bra{0}U^\dagger) \cdot G_{\epsilon} U\ket{0} \,dU
+\end{align}
+$$
+{% endkatexmm %}
+
+We can see that our function of interest $f = \bra{0}U^\dagger G_{\epsilon}^{\dagger} \cdot G(U\ket{0}\bra{0}U^\dagger) \cdot G_{\epsilon} U\ket{0}$
+has two unitaries $U$ and two Hermitian transposes of the same unitary.
+It follows that the function requires a $2$-design.
+We will of course make use of the Clifford group.
+
+Our goal is to perform the computation:
+
+{% katexmm %}
+$$
+\begin{align}
+    \bar{f} = \dfrac{1}{\lvert \mathcal{C} \rvert} \sum_{U \in \mathcal{C}} \bra{0}U^\dagger X_{\epsilon}^{\dagger} \cdot X(U\ket{0}\bra{0}U^\dagger) \cdot X_{\epsilon} U\ket{0}
+\end{align}
+$$
+{% endkatexmm %}
+
+Where we have set $G_\epsilon = X_\epsilon$ and $G = X$,
+$X$ is the Pauli $X$ gate and $X_\epsilon$ is the $X$ gate subject
+to coherent noise.
+
+Where each $U$ is taken from the Clifford group $\mathcal{C}$.
+The code remains essentially the same as that for computing the average fidelity
+using state designs but instead of passing states to the SWAP test,
+we pass unitaries from the Clifford group.
+
+<div class='figure' markdown='1'>
+{% highlight python %}
+import numpy as np
+import pennylane as qml
+import scipy.linalg as la
+
+from collections import deque
+
+# Make sure results are reproducible
+np.random.seed(1)
+
+def matrix_in_list(element, list):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def matrix_is_normalizer(x):
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Pauli:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+class Clifford:
+    # Please copy and paste the code from the supplementary material here
+    pass
+
+def PauliX_e(angle, wire):
+    # We add a randomly generated angle to simulate
+    # stochastic calibration noise
+    qml.RX(np.pi + angle, wires = wire)
+
+def swap_test(state_prep_unitary, calibration_error_angle):
+    n_shots = 50_000
+    dev = qml.device(
+        "default.qubit",
+        wires = 3,
+        shots = n_shots
+    )
+
+    @qml.qnode(dev)
+    def swap_test_circuit():
+        # Prepare the state X_e|psi> on qubit 1
+        qml.QubitUnitary(state_prep_unitary, wires = 1)
+        PauliX_e(calibration_error_angle, 1)
+
+        # Prepare the state X|psi> on qubit 2
+        qml.QubitUnitary(state_prep_unitary, wires = 2)
+        qml.PauliX(wires = 2)
+
+        # Perform the SWAP test
+        qml.Hadamard(wires = 0)
+        qml.CSWAP(wires = [0, 1, 2])
+        qml.Hadamard(wires = 0)
+
+        # Collect counts on qubit 0
+        return qml.counts(qml.PauliZ(0))
+
+    dist = swap_test_circuit()
+    one_state_count = dist[-1] if -1 in dist else 0
+    return 1 - (2 / n_shots) * one_state_count
+
+def unitary_design_average(f, calibration_error_angle, unitaries):
+    return np.mean([f(unitary, calibration_error_angle) for unitary in unitaries])
+
+if __name__ == "__main__":
+    calibration_error_angles = [0, np.pi / 2, np.pi]
+    for calibration_error_angle in calibration_error_angles:
+        print(f"Fidelity at angle error {calibration_error_angle} =",
+            unitary_design_average(
+                swap_test,
+                np.random.normal(0, calibration_error_angle, 1)[0],
+                Clifford.group()
+            )
+        )
+{% endhighlight %}
+<div class='caption'>
+    <span class='caption-label'>
+        Average fidelity of $X_\epsilon$ with respect to the ideal gate $X$:
+    </span>
+    we obtain exactly the same result as we did using state designs.
+</div>
+</div>
+
+We have confirmed that we can calculate the average fidelity
+using unitary designs instead of state designs.
+
+If were dealing with a two qubits gate, we could use the Clifford
+on two qubits (by adding the $CNOT$ gate to the generating set),
+and that would be easier than using state designs.
 
 ## Next steps
 
