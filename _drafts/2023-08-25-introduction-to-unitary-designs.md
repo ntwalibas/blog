@@ -2265,7 +2265,7 @@ if __name__ == "__main__":
     <span class='caption-label'>
         Check whether the Pauli group is a $1$-design:
     </span>
-    the test should be successful and print <mark>True</mark>.
+    the test should be successful and print <code>True</code>.
 </div>
 </div>
 
