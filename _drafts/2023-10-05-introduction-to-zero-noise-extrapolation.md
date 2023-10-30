@@ -831,10 +831,54 @@ $$
 $$
 {% endkatexmm %}
 
-Our estimator is an exponential function which we can fit
-and extrapolate from using exponential extrapolation.
+And there is our estimator: an exponential function
+which we can fit and extrapolate from using exponential
+extrapolation as we will do in the next section.
 
 ### ZNE in the presence of a coherent error
+Let $U(\theta)$ be a rotation gate. A coherent error
+is one that doesn't result in the loss of coherence,
+that is the error is simply the application of an
+additional unwanted rotation on the state.
+
+We can represent this as:
+
+{% katexmm %}
+$$
+\begin{align}
+    U(\theta') = U(\hat{\epsilon})U(\theta)
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $\theta'$ is the actual angle of rotation
+that will be applied, $\theta$ is the angle that
+we wanted, and $\hat{\epsilon}$ is a random variable
+corresponding to the underrotation or overrotation angle
+due to stochastic calibration error.
+
+The error channel corresponding to this coherent error on
+a single qubit system is derived in {% cite Giurgica_Tiron_2020 %}
+and is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \rho \rightarrow (1-Q)\rho + QG\rho G
+\end{align}
+$$
+{% endkatexmm %}
+
+Where $G$ is the generator of $U$ as in $U = \exp(-i\theta G/2)$,
+and $Q = \frac{1}{2}\left( 1 - e^{-2\sigma^2} \right)$;
+$\sigma^2$ being the variance associated with the calibratin error
+$\hat{\epsilon}$.
+
+As with incoherent errors, we wish to derive a form of the
+density matrix $\rho$ under noise scaling then compute
+the expectation value.
+
+Noise scaling is done 
 
 ## Estimation procedures
 ### Non-adaptive estimation
