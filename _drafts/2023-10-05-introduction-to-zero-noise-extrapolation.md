@@ -428,7 +428,7 @@ $$
 {% endkatexmm %}
 
 We can now see that $\hat{\braket{H}}$ depends on the factor $\lambda$ that
-depends on the strength of the noise in the circuit!
+scales proportionally to the strength of the noise in the circuit!
 
 So our final expression of the expectation value is given by:
 
