@@ -770,7 +770,7 @@ Applying the first circuit folding, we get:
 {% katexmm %}
 $$
 \begin{align}
-    \rho \rightarrow p^3 U(U^\dagger U)\rho (U^\dagger U)U^\dagger + (1-p^3) \dfrac{\mathbb{1}}{2}
+    \rho' = p^3 U(U^\dagger U)\rho (U^\dagger U)U^\dagger + (1-p^3) \dfrac{\mathbb{1}}{2}
 \end{align}
 $$
 {% endkatexmm %}
@@ -780,8 +780,8 @@ After the $n^{\text{th}}$ circuit folding, $\rho$ will have evolved as:
 {% katexmm %}
 $$
 \begin{align}
-    \rho &\rightarrow p^{(1+2n)} U(U^\dagger U)^n\rho (U^\dagger U)^n U^\dagger + (1-p^{(1+2n)}) \dfrac{\mathbb{1}}{2}\\
-    &\rightarrow p^{\lambda} U \rho U^\dagger + (1-p^{\lambda}) \dfrac{\mathbb{1}}{2}
+    \rho' &= p^{(1+2n)} U(U^\dagger U)^n\rho (U^\dagger U)^n U^\dagger + (1-p^{(1+2n)}) \dfrac{\mathbb{1}}{2}\\
+    &= p^{\lambda} U \rho U^\dagger + (1-p^{\lambda}) \dfrac{\mathbb{1}}{2}
 \end{align}
 $$
 {% endkatexmm %}
@@ -801,7 +801,7 @@ with respect to the state $\rho$:
 {% katexmm %}
 $$
 \begin{align}
-    \hat{\braket{H}}(\lambda) &= \text{Tr}[H\rho] \\
+    \hat{\braket{H}}(\lambda) &= \text{Tr}[H\rho'] \\
     &= \text{Tr}[H(p^{\lambda} U \rho U^\dagger + (1-p^{\lambda}) \dfrac{\mathbb{1}}{2})] \\
     &= p^{\lambda}\text{Tr}[HU \rho U^\dagger] + \dfrac{1}{2}\text{Tr}[H] - \dfrac{p^{\lambda}}{2}\text{Tr}[H] \\
     &= \dfrac{1}{2}\text{Tr}[H] + p^{\lambda}\left( \text{Tr}[HU \rho U^\dagger] - \dfrac{1}{2}\text{Tr}[H] \right)
@@ -883,7 +883,7 @@ and is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \rho \rightarrow (1-Q)\rho + QG\rho G
+    \rho' = (1-Q)\rho + QG\rho G
 \end{align}
 $$
 {% endkatexmm %}
@@ -969,6 +969,35 @@ We note the following:
 - If $\lambda > 1$ then $Q$ keeps increasing therefore amplifying
     the probability of $G\rho G$ being the evolution outcome
     of the density matrix.
+
+We now calculate the expectation value under parameter noise scaling:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}}(\lambda) &= \text{Tr}[H\rho'] \\
+    &= \text{Tr}[H((1-Q)\rho + QG\rho G)] \\
+    &= \text{Tr}[H\rho] - \text{Tr}[HQ\rho] + \text{Tr}[QG\rho G] \\
+    &= \text{Tr}[H\rho] - Q(\text{Tr}[H\rho] - \text{Tr}[G\rho G]) \\
+    &= \text{Tr}[H\rho] - \left( \frac{1}{2} - \frac{e^{-2\lambda\sigma^2}}{2} \right)(\text{Tr}[H\rho] - \text{Tr}[G\rho G]) \\
+    &= \text{Tr}[H\rho] - \frac{\text{Tr}[H\rho]}{2} + \frac{\text{Tr}[G\rho G]}{2} + \frac{e^{-2\lambda\sigma^2}}{2} (\text{Tr}[H\rho] - \text{Tr}[G\rho G]) \\
+    &= \frac{1}{2} (\text{Tr}[H\rho] + \text{Tr}[G\rho G]) + \frac{e^{-2\lambda\sigma^2}}{2} (\text{Tr}[H\rho] - \text{Tr}[G\rho G]) 
+\end{align}
+$$
+{% endkatexmm %}
+
+Setting $a = \frac{1}{2} (\text{Tr}[H\rho] + \text{Tr}[G\rho G])$ and
+$b = \frac{1}{2} (\text{Tr}[H\rho] - \text{Tr}[G\rho G])$, we end up with:
+
+{% katexmm %}
+$$
+\begin{align}
+    \hat{\braket{H}}(\lambda) = a + b \, e^{-2\lambda\sigma^2}
+\end{align}
+$$
+{% endkatexmm %}
+
+And that's another exponential function as our estimator.
 
 ## Estimation procedures
 ### Non-adaptive estimation
