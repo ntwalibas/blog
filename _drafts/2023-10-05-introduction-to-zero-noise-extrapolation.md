@@ -684,7 +684,7 @@ We therefore have the following:
 {% katexmm %}
 $$
 \begin{align}
-    n &= k / d \\
+    n &= \lfloor k / d \rfloor \\
     s &= k \% d \tag{10}
 \end{align}
 $$
