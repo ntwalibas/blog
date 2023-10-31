@@ -34,21 +34,10 @@ ground state would be if there was no noise.
 The goal of this post is to build some intuition about ZNE by via very simple
 examples and introduce the tools that allow us to use ZNE professionally.
 
-This post came about as I'm taking part of a graduate-level course
-on error mitigation offer by [QWorld](https://qworld.net/qcourse551-1/),
-an initiave by the [University of Latvia](https://www.df.lu.lv/en/),
-faculty of Computing in collaboration with [Classiq](https://www.classiq.io/)
-an Israeli quantum software company.
-
-This post brings nothing new to the table, in fact it is based
+This post brings nothing new to the table, it is entirely based
 on the paper *Digital zero noise extrapolation for quantum error mitigation*
 {% cite Giurgica_Tiron_2020 %} from the [Unitary Fund](https://unitary.fund/).
-
-Our goal is to present the aforementioned paper in manner that's
-much easier for (quantum) software developers to quickly understand.
-That means, where relevant, we do all the calculations and interpretations,
-and more important we write some code to validate the technique via concrete
-results.
+We just fill in the gaps where the paper wasn't explicit.
 
 ### Prerequisites
 I assume that the reader can do simple linear algebra
@@ -836,27 +825,57 @@ which we can fit and extrapolate from using exponential
 extrapolation as we will do in the next section.
 
 ### ZNE in the presence of a coherent error
-Let $U(\theta)$ be a rotation gate. A coherent error
+Let $R(\theta)$ be a rotation gate. A coherent error
 is one that doesn't result in the loss of coherence,
 that is the error is simply the application of an
 additional unwanted rotation on the state.
 
-We can represent this as:
+We will bother only about single-qubit systems again
+so that the intuition we're building is not marred
+by complications of multi-qubits systems.
+
+Say we're trying to apply a rotation $R(\theta)$
+to a qubit. In the presence of calibration errors
+we will instead end up with $R(\theta')$ where:
 
 {% katexmm %}
 $$
 \begin{align}
-    U(\theta') = U(\hat{\epsilon})U(\theta)
+    \theta' = \theta + \hat{\epsilon}
 \end{align}
 $$
 {% endkatexmm %}
 
-Where $\theta'$ is the actual angle of rotation
-that will be applied, $\theta$ is the angle that
-we wanted, and $\hat{\epsilon}$ is a random variable
-corresponding to the underrotation or overrotation angle
-due to stochastic calibration error.
+Where $\hat{\epsilon}$ is a random variable with
+zero mean and variance $\sigma^2$ that represents
+the overrotation/underrotation under calibration error.
 
+A single-qubit rotation represented in terms of
+its generator (Hamiltonian) is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    R(\theta) = e^{\dfrac{-i\theta G}{2}}
+\end{align}
+$$
+{% endkatexmm %}
+
+It follows then that $R(\theta')$ is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    R(\theta') &= e^{\dfrac{-i\theta' G}{2}} \\
+    &= e^{\dfrac{-i\theta G + -i\hat{\epsilon} G}{2}} \\
+    &= e^{\dfrac{-i\theta G}{2}} e^{\dfrac{-i\hat{\epsilon} G}{2}} \\
+    &= R(\theta) R(\hat{\epsilon})
+\end{align}
+$$
+{% endkatexmm %}
+
+We're interested in the action of $R(\hat{\epsilon})$ on the
+density matrix $\rho$.
 The error channel corresponding to this coherent error on
 a single qubit system is derived in {% cite Giurgica_Tiron_2020 %}
 and is given by:
@@ -869,23 +888,92 @@ $$
 $$
 {% endkatexmm %}
 
-Where $G$ is the generator of $U$ as in $U = \exp(-i\theta G/2)$,
-and $Q = \frac{1}{2}\left( 1 - e^{-2\sigma^2} \right)$;
-$\sigma^2$ being the variance associated with the calibratin error
+Where $Q = \frac{1}{2}\left( 1 - e^{-2\sigma^2} \right)$;
+$\sigma^2$ being the variance associated with the calibration error
 $\hat{\epsilon}$.
 
-As with incoherent errors, we wish to derive a form of the
-density matrix $\rho$ under noise scaling then compute
-the expectation value.
+We now wish to know how to amplify the overrotation/underrotation
+so we can learn what would happen in the absence in the calibration
+error.
 
-Noise scaling is done 
+We do this by further adding classical noise $\hat{\delta}$
+to $\theta'$ with mean zero and variance $(\lambda - 1)\sigma^2$,
+resulting in the following parameter scaling noise:
+
+{% katexmm %}
+$$
+\begin{align}
+    \theta' \rightarrow \theta + \hat{\epsilon} + \hat{\delta}
+\end{align}
+$$
+{% endkatexmm %}
+
+In order to perform the amplification, we need to find a way
+to set the variance in $Q = \frac{1}{2}\left( 1 - e^{-2\sigma^2} \right)$.
+
+So we calculate the variance of $\hat{\epsilon} + \hat{\delta}$.
+Since $\hat{\epsilon}$ and $\hat{\delta}$ are not correlated,
+the variance is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    \text{Var}(\hat{\epsilon} + \hat{\delta}) &= \text{Var}(\hat{\epsilon}) + \text{Var}(\hat{\delta}) \\
+    &= \sigma^2 + \lambda \sigma^2 - \sigma^2 \\
+    &= \lambda \, \text{Var}(\hat{\epsilon})
+\end{align}
+$$
+{% endkatexmm %}
+
+Let us recall that $\text{Var}(a\,\hat{X}) = a^2\,\text{Var}(\hat{X})$.
+It follows that the variance calculated above can be equivalently written as:
+
+{% katexmm %}
+$$
+\begin{align}
+    \text{Var}(\hat{\epsilon} + \hat{\delta}) &= \lambda \, \text{Var}(\hat{\epsilon}) \\
+    &= \text{Var}(\sqrt{\lambda}\,\hat{\epsilon})
+\end{align}
+$$
+{% endkatexmm %}
+
+The parameter noise scaling can therefore be rewritten as:
+
+{% katexmm %}
+$$
+\begin{align}
+    \theta' = \theta + \sqrt{\lambda}\,\hat{\epsilon}
+\end{align}
+$$
+{% endkatexmm %}
+
+Therefore in the presence of classical noise scaling,
+$Q$ is given by:
+
+{% katexmm %}
+$$
+\begin{align}
+    Q = \frac{1}{2}\left( 1 - e^{-2\lambda\sigma^2} \right)
+\end{align}
+$$
+{% endkatexmm %}
+
+We note the following:
+
+- If $\lambda = 0$ then $Q = 0$ so $\rho$ never suffers
+    the evolution $G\rho G$. This is our extrapolation parameter
+    in the zero-noise limit.
+- If $\lambda = 1$ then $Q = \frac{1}{2}\left( 1 - e^{-2\sigma^2} \right)$
+    which is just the case of machine noise with no classical
+    noise added.
+- If $\lambda > 1$ then $Q$ keeps increasing therefore amplifying
+    the probability of $G\rho G$ being the evolution outcome
+    of the density matrix.
 
 ## Estimation procedures
 ### Non-adaptive estimation
 ### Adaptive estimation
 
 ## Zero-noise extrapolation using Mitiq
-### Using Mitiq with PennyLane
-### Using Mitiq with Classiq
 
 ## Conclusion
