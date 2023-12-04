@@ -2,6 +2,6 @@ a W |0\rangle
 b W X_{\epsilon}|\psi\rangle
 c W X|\psi\rangle
 a H
-a +b +c
+b c SWAP a
 a H
 a M
