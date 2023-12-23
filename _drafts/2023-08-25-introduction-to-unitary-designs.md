@@ -1457,10 +1457,21 @@ In the case of $f_2(\ket{\psi}) = \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ke
 we have exactly two $\ket{\psi}$ and two $\bra{\psi}$, so our function is homogeneous
 in degree $2$.
 
-It has been proven <sup><i>[cite]</i></sup> that the eigenvectors of
-Pauli matrices form a state $2$-design, $P = \\{\ket{0}, \ket{1}, \ket{+}, \ket{-}, \ket{+i}, \ket{-i}\\}$.
+It can be shown that the eigenvectors of Pauli matrices, $P = \\{\ket{0}, \ket{1}, \ket{+}, \ket{-}, \ket{+i}, \ket{-i}\\}$,
+form a state $3$-design (and therefore a $2$-design) since when connected they form an octahedron as in the figure below:
 
-Let's try to calculate the average fidelity of $f(\ket{\psi}) = \lvert \bra{\psi} X \ket{\psi} \rvert^2$
+<div class='figure'>
+    <img src='/assets/images/unitaryd/pauli-states.png'
+         style='width: 50%; height: auto; display: block; margin: 0 auto'/>
+    <div class='caption'>
+        <span class='caption-label'>Pauli states are a $3$-design:</span>
+        when plotted inside the Bloch sphere and connected
+        by lines, the eigenvectors of Pauli matrices form
+        an octahedron.
+    </div>
+</div>
+
+Let's try to calculate the average fidelity of $X$
 using our state $2$-design.
 
 Since our function is relatively simple and we only have $6$ states,
