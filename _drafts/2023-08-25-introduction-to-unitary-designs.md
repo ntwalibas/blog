@@ -1,12 +1,11 @@
 ---
 title: "Quantum designs: faster averaging over quantum states and unitaries"
-subtitle: "A common task in life is calculating the average
-of some quantities. The average is the most common and intuitive statistic every
-human learns and uses. Unitary designs allow us to compute averages over
-unitaries faster than doing Monte Carlo integration. In this post, we build some intuition
-about unitary designs and how they relate to integrals over the unitary group."
+subtitle: "In order to calculate, say the mean, of a random variable
+we need a large number of samples. Sometimes we need to calculate
+the mean of a function over (randomly chosen) quantum states or unitaries requiring a large number of the latter. Quantum designs
+allow us to compute said mean using far fewer samples."
 layout: default
-date: 2023-08-25
+date: 2024-02-28
 keywords: unitary designs, integration over the unitary group
 toc: true
 published: false
