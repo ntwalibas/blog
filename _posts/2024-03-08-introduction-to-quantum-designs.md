@@ -1149,7 +1149,7 @@ Consequently $f$ can be rewritten as:
 {% katexmm %}
 $$
 \begin{align}
-f : \mathbb{C}^n &\rightarrow \mathbb{R} \\
+f : \mathbb{C}^{2^n} &\rightarrow \mathbb{R} \\
 \ket{\psi} &\mapsto \bra{\psi}\mathcal{E} \ket{\psi}\bra{\psi} \mathcal{E}^\dagger\ket{\psi} \\
 &\mapsto \lvert \bra{\psi}\mathcal{E} \ket{\psi} \rvert^2 \tag{12}
 \end{align}
@@ -1180,7 +1180,7 @@ The average is given by:
 {% katexmm %}
 $$
 \begin{align}
-\bar{f} &= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^{2^n}))} \int_{\mathcal{S}(\mathbb{C}^n{2^n})} f(\ket{\psi}) d_{\mu}\ket{\psi} \\
+\bar{f} &= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^{2^n}))} \int_{\mathcal{S}(\mathbb{C}^{2^n})} f(\ket{\psi}) d_{\mu}\ket{\psi} \\
 &= \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^{2^n}))} \int_{\mathcal{S}(\mathbb{C}^{2^n})} \bra{\psi}\mathcal{E}(\ket{\psi}\bra{\psi})\ket{\psi} d_{\mu}\ket{\psi} \tag{13}
 \end{align}
 $$
@@ -1203,7 +1203,7 @@ of computing the integral above over the Bloch sphere:
 
 And of course, we always need to make sure to normalize
 our integral by dividing the result by the volume of the sphere
-$Vol(\mathcal{S}(\mathbb{C}^n))$.
+$Vol(\mathcal{S}(\mathbb{C}^{2^n}))$.
 In the case of the Bloch sphere, it is exactly the same as before
 when we learned about regular spheres.
 
@@ -1662,7 +1662,7 @@ The average fidelity is given by:
 {% katexmm %}
 $$
 \begin{align}
-    \bar{f} = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^n))} \int_{\mathcal{S}(\mathbb{C}^n)} \bra{\psi}G^{\dagger} \cdot G_{\epsilon}(\ket{\psi}\bra{\psi}) \cdot G\ket{\psi} d_{\mu}\ket{\psi} \tag{16}
+    \bar{f} = \dfrac{1}{Vol(\mathcal{S}(\mathbb{C}^{2^n}))} \int_{\mathcal{S}(\mathbb{C}^{2^n})} \bra{\psi}G^{\dagger} \cdot G_{\epsilon}(\ket{\psi}\bra{\psi}) \cdot G\ket{\psi} d_{\mu}\ket{\psi} \tag{16}
 \end{align}
 $$
 {% endkatexmm %}
@@ -2541,7 +2541,7 @@ $$
 {% endkatexmm %}
 
 To simplify our reasoning process, let's first assume that
-the Haar measure is uniform, that is $d\ket{\psi} = \frac{d_{\mu}\ket{\psi}}{Vol(\mathcal{S}(\mathbb{C}^n{2^n}))}$:
+the Haar measure is uniform, that is $d\ket{\psi} = \frac{d_{\mu}\ket{\psi}}{Vol(\mathcal{S}(\mathbb{C}^{2^n}))}$:
 
 {% katexmm %}
 $$
