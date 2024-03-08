@@ -8,7 +8,7 @@ layout: default
 date: 2024-03-08
 keywords: unitary designs, integration over the unitary group
 toc: true
-published: false
+published: true
 ---
 
 ## Introduction
