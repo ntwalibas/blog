@@ -2685,7 +2685,7 @@ on two qubits (by adding the $CNOT$ gate to the generating set),
 and that would be easier than using state designs.
 
 ## Next steps
-As (quantum) software developers/engineers, we need to get acquainted
+As quantum software developers/engineers, we need to get acquainted
 with the mathematics and physics behind the numerous techniques discovered
 by scientists so we can choose the best tool for the job at hand.
 
@@ -2702,9 +2702,9 @@ Towards that goal, here are some resources to hit that road:
 
 - Antonio Anna Mele has a nice article that covers the mathematics related
     to the Haar measure in {% cite mele2024introduction %}.
-- Lin Zhang article {% cite zhang2015matrix %} with detailed calculations is a good starting point
+- Lin Zhang's article {% cite zhang2015matrix %} with detailed calculations is a good starting point
     to learn how to do such calculations by hand.
-- Olivia Di Matteo article {% cite DiMatteo_2014 %} has a detailed derivation
+- Olivia Di Matteo's article {% cite DiMatteo_2014 %} has a detailed derivation
     of the fact that the Clifford group is a $2$-design.
     This is good to help practice such calculations using a guide.
     Moreover, their tutorials on [unitary designs](https://pennylane.ai/qml/demos/tutorial_unitary_designs/)
@@ -2712,13 +2712,13 @@ Towards that goal, here are some resources to hit that road:
     For instance, we never elaborated how to generate random unitaries,
     this is covered in their tutorial on the Haar measure.
     Moreover, their method of finding the average fidelity is worth
-    taking experimenting with instead of using the SWAP test as did
+    experimenting with instead of using the SWAP test as we did
     in this article (it is the method to use if some state tomography was done).
 
 After getting better acquainted with the basic mathematics behind
 unitary designs, it is worth exploring the different facets of
 quantum designs in general such as approximate designs,
-the concept of frame, _etc_ and their applications.
+the concept of frame, _etc_, and their applications.
 
 ## Conclusion
 In this tutorial, we have learned the basics of quantum designs,
@@ -2727,7 +2727,7 @@ a practical problem: finding the average fidelity of a quantum gate.
 
 Quantum designs are but another tool we use to solve some of the many
 challenging problems we encounter in quantum computing;
-in our instance to get around the cost of gate (process) tomography.
+in our instance to get around the cost of gate (set|process) tomography.
 
 The reader is encouraged to explore other areas where they are used,
 and an instance is finding the expressibility of a quantum circuit
