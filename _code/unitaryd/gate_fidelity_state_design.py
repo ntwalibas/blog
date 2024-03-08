@@ -1,8 +1,6 @@
 import numpy as np
 import pennylane as qml
 
-# Make sure results are reproducible
-np.random.seed(1)
 
 def zero(wire):
     # This non-circuit prepares the |0> state
@@ -33,8 +31,6 @@ def minus_i(wire):
     qml.S(wires = wire)
 
 def PauliX_e(angle, wire):
-    # We add a randomly generated angle to simulate
-    # stochastic calibration noise
     qml.RX(np.pi + angle, wires = wire)
 
 def swap_test(state_prep_gate, calibration_error_angle):
@@ -60,7 +56,6 @@ def swap_test(state_prep_gate, calibration_error_angle):
         qml.CSWAP(wires = [0, 1, 2])
         qml.Hadamard(wires = 0)
 
-        # Collect counts on qubit 0
         return qml.counts(qml.PauliZ(0))
 
     dist = swap_test_circuit()
@@ -71,12 +66,17 @@ def state_design_average(f, calibration_error_angle, states):
     return np.mean([f(state, calibration_error_angle) for state in states])
 
 if __name__ == "__main__":
-    calibration_error_angles = [0, np.pi / 2, np.pi]
+    """
+    Ideally the calibration error angles will be random.
+    We use deterministic angles of increasing value to demonstrate
+    that the average fidelity decreases as the error angle increases.
+    """
+    calibration_error_angles = [0, np.pi/2, np.pi]
     for calibration_error_angle in calibration_error_angles:
         print(f"Fidelity at angle error {calibration_error_angle} =",
             state_design_average(
                 swap_test,
-                np.random.normal(0, calibration_error_angle, 1)[0],
+                calibration_error_angle,
                 [zero, one, plus, minus, plus_i, minus_i]
             )
         )

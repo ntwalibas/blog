@@ -4,8 +4,6 @@ import scipy.linalg as la
 
 from collections import deque
 
-# Make sure results are reproducible
-np.random.seed(1)
 
 def matrix_in_list(element, list):
     for list_element in list:
@@ -94,8 +92,6 @@ class Clifford:
         return group
 
 def PauliX_e(angle, wire):
-    # We add a randomly generated angle to simulate
-    # stochastic calibration noise
     qml.RX(np.pi + angle, wires = wire)
 
 def swap_test(state_prep_unitary, calibration_error_angle):
@@ -121,7 +117,6 @@ def swap_test(state_prep_unitary, calibration_error_angle):
         qml.CSWAP(wires = [0, 1, 2])
         qml.Hadamard(wires = 0)
 
-        # Collect counts on qubit 0
         return qml.counts(qml.PauliZ(0))
 
     dist = swap_test_circuit()
@@ -132,13 +127,18 @@ def unitary_design_average(f, calibration_error_angle, unitaries):
     return np.mean([f(unitary, calibration_error_angle) for unitary in unitaries])
 
 if __name__ == "__main__":
-    calibration_error_angles = [0, np.pi / 2, np.pi]
-    group = Pauli.group()
+    """
+    Ideally the calibration error angles will be random.
+    We use deterministic angles of increasing value to demonstrate
+    that the average fidelity decreases as the error angle increases.
+    """
+    calibration_error_angles = [0, np.pi/2, np.pi]
+    group = Clifford.group()
     for calibration_error_angle in calibration_error_angles:
         print(f"Fidelity at angle error {calibration_error_angle} =",
             unitary_design_average(
                 swap_test,
-                np.random.normal(0, calibration_error_angle, 1)[0],
+                calibration_error_angle,
                 group
             )
         )
