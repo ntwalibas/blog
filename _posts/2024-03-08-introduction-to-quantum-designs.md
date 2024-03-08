@@ -148,6 +148,19 @@ S =
 $$
 {% endkatexmm %}
 
+<div class='figure figure-alert figure-success' style='margin-top: 10px'>
+<div class='caption'>
+    <div class='caption-label'>
+        Limitation of the notation of this tutorial
+    </div>
+    While quantum designs are applicable to a wide range of quantum systems,
+    we limit ourselves to qubit-based systems.<br>
+    What this means is that while quantum systems belong to a very general
+    Hilbert space $\mathbb{C}^{d}$, we limit ourselves to qubits that are described as elements
+    of $\mathbb{C}^{2^n}$ where $n$ is the number of qubits we are dealing with.
+</div>
+</div>
+
 ### Organization of the post
 In the next section, we introduce all the tools we need to successfully
 make use of this post.
